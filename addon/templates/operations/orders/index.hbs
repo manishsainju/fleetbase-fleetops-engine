@@ -1,0 +1,72 @@
+<MapContainer::Topbar class="next-topbar-{{this.layout}}">
+    <MapContainer::ViewSwitch>
+        <FaIcon @icon="bring-forward" class="mr-2 text-gray-400 dark:text-gray-600" />
+        <button type="button" class="{{if this.isMapLayout 'active'}}" {{on "click" (fn this.setLayoutMode "map")}}>Map</button>
+        <button type="button" class="{{if this.isTableLayout 'active'}} flex-row items-center relative" {{on "click" (fn this.setLayoutMode "table")}}>
+            <div class="mr-5">Table</div>
+            <Badge class="absolute inset-y-0 right-0 flex items-center justify-center" @spanClass="rounded-full px-1 py-0i mr-1.5" @hideStatusDot={{true}} @status="info">{{@model.meta.total}}</Badge>
+        </button>
+        {{!-- <button type="button" class="{{if this.isAnalyticsLayout 'active'}}" {{on "click" (fn this.setLayoutMode "analytics")}}>Analytics</button> --}}
+    </MapContainer::ViewSwitch>
+</MapContainer::Topbar>
+
+{{#if this.isMapLayout}}
+    <MapContainer @layout={{this.layout}} @onReady={{this.onMapContainerReady}}>
+        <GlobalSearch @visible={{this.isSearchVisible}} @onPressOrder={{this.viewOrder}} />
+
+        <MapContainer::Toolbar @activeOrdersCount={{this.activeOrdersCount}} @map={{this.leafletMap}} @onPressViewOrders={{this.toggleOrdersPanel}} @onPressSearch={{this.toggleSearch}} @onPressCreateOrder={{this.createOrder}} @onPressCreateDriver={{this.driversController.createDriver}} @onPressDriverProfile={{this.driversController.viewDriver}} />
+
+        <OrderListOverlay @noBackdrop={{true}} @fullHeight={{true}} @outView={{not this.isOrdersPanelVisible}} @width={{if (media 'isMobile') "100%" "338px"}} @onPressCancel={{this.hideOrdersPanel}} @onPressCreateOrder={{this.createOrder}} @onPressViewOrder={{this.viewOrder}} @onPressCreateFleet={{this.fleetController.createFleet}} @onPressManageFleet={{this.fleetController.viewFleet}} @onPressCancelOrders={{this.bulkCancelOrders}} @onPressDeleteOrders={{this.bulkDeleteOrders}} />
+        <LiveMap id="leafletMap" class="next-leaflet-container-map" @lat={{1.3521}} @lng={{103.8198}} @zoom={{12}} @zoomControl={{false}} @onLoad={{this.setMapReference}} {{set-container-dimensions}} />
+    </MapContainer>
+{{/if}}
+
+{{#if this.isTableLayout}}
+    <div class="p-12">
+        <Button>
+            <span>Hello World</span>
+            <Attach::Tooltip>
+                <span>Hello, am I floating?</span>
+            </Attach::Tooltip>
+            {{!-- <Floating @placement="top" class="border border-black rounded-md text-xs px-4 py-1 bg-gray-700 text-white shadow-md" @arrow={{true}}>This should be floating!</Floating> --}}
+        </Button>
+    </div>
+{{/if}}
+
+{{!-- {{#if this.isTableLayout}}
+    <Next::MapContainer::TableContainer>
+        <Next::ViewSectionSubheader @title="Orders" @onSearch={{this.search}}>
+            <Button @icon="cogs" @text="Config" class="mr-2" @onClick={{fn this.sendTransition "operations.orders.index.config"}} />
+            <FiltersPicker @columns={{this.columns}} @onChange={{this.applyFilters}} class="mr-2" />
+            <VisibleColumnPicker @columns={{this.columns}} @activeParams={{this.activeParams}} @onChange={{this.updateColumns}} class="mr-2" />
+            {{#if this.table.selectedRows}}
+                <DropdownButton @icon="layer-group" @type="magic" @text="Bulk Action" @size="sm" @buttonWrapperClass="mr-2" as |dd|>
+                    <div class="next-dd-menu mt-2 mx-0">
+                        <div class="px-1">
+                            <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.sendDropdownAction dd "bulkCancelOrders")}}>
+                                Cancel Orders
+                            </a>
+                            <a href="javascript:;" class="text-red-500 next-dd-item" {{on "click" (fn this.sendDropdownAction dd "bulkDeleteOrders")}}>
+                                Delete Orders
+                            </a>
+                        </div>
+                    </div>
+                </DropdownButton>
+            {{/if}}
+            <Button @type="primary" @icon="plus" @iconPrefix="fas" @text="New" @wrapperClass="mr-2" @onClick={{fn this.sendTransition "operations.orders.index.new"}} />
+            <Button @icon="long-arrow-up" @iconClass="rotate-icon-45" @text="Export" @onClick={{this.exportOrders}} />
+        </Next::ViewSectionSubheader>
+
+        <Next::TableWrapper @pagination={{true}} @onToggleAll={{this.toggleAll}} @allToggled={{this.allToggled}}>
+            <LightTable @table={{this.table}} @resizeOnDrag={{true}} as |t|>
+                <t.head @fixed={{true}} @resizeOnDrag={{true}} @onColumnClick={{this.onColumnClick}} @iconComponent="light-table-icon" @iconSortable="sort" @iconAscending="sort-up" @iconDescending="sort-down" />
+                <t.body @scrollBuffer={{500}} @canSelect={{true}} @multiSelect={{true}} @multiSelectRequiresKeyboard={{false}} />
+                <t.foot @fixed={{true}} as |columns|>
+                    <Next::Pagination @columns={{columns}} @meta={{this.model.meta}} @page={{this.page}} @onPageChange={{fn (mut this.page)}} />
+                </t.foot>
+            </LightTable>
+        </Next::TableWrapper>
+    </Next::MapContainer::TableContainer>
+{{/if}} --}}
+
+{{outlet}}
