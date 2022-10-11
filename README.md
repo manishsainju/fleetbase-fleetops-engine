@@ -1,6 +1,6 @@
-# @fleetbase/console-fleetops
+# @fleetbase/flb-fleetops-extension
 
-[Short description of the addon.]
+FleetOps extension for Fleetbase.
 
 
 ## Compatibility
@@ -13,7 +13,7 @@
 ## Installation
 
 ```
-ember install @fleetbase/console-fleetops
+ember install @fleetbase/flb-fleetops-extension
 ```
 
 
