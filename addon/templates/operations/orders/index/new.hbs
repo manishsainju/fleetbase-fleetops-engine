@@ -58,7 +58,7 @@
 
                 <InputGroup>
                     <InputLabel @labelText="Schedule" @helpText="The date and time the order will be dispatched. If no driver is assigned at time of dispatch, the dispatch will fail. If the order is Ad-Hoc the order will be pinged to drivers in vicinity of pickup." />
-                    <DateTimeInput class="form-input" @value={{this.order.scheduled_at}} @minDate={{date-format (now) "YYYY-MM-DD" }} @minTime={{date-format (now) "HH:mm" }} @onUpdate={{this.scheduleOrder}} @disabled={{this.order.dispatched}} />
+                    <DateTimeInput class="form-input" @value={{this.order.scheduled_at}} @minDate={{date-format (now) "yyyy-MM-dd" }} @minTime={{date-format (now) "HH:mm" }} @onUpdate={{this.scheduleOrder}} @disabled={{this.order.dispatched}} />
                 </InputGroup>
 
                 <InputGroup @name="Customer" @helpText="Optionally assign the customer of this order. If it's a new customer, use the 'New Customer' button above.">
