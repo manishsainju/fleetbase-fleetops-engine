@@ -1,0 +1,48 @@
+<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+    <div class="modal-body-container">
+        <div class="grid grid-cols-1 text-xs dark:text-gray-100">
+
+            <InputGroup @name="Driver" @value={{@options.fuelReport.driver_uuid}}>
+                <ModelSelect
+                    @modelName="driver"
+                    @selectedModel={{@options.fuelReport.driver_uuid}}
+                    @placeholder="Select Driver"
+                    @triggerClass="form-select form-input"
+                    @infiniteScroll={{false}}
+                    @renderInPlace={{true}}
+                    @onChange={{fn (mut @options.fuelReport.driver_uuid)}} as |model|
+                >
+                    {{model.name}}
+                </ModelSelect>
+            </InputGroup>
+
+            <InputGroup @name="Vehicle" @value={{@options.fuelReport.vehicle_uuid}}>
+                <ModelSelect
+                    @modelName="vehicle"
+                    @selectedModel={{@options.fuelReport.vehicle_uuid}}
+                    @placeholder="Select Vehicle"
+                    @triggerClass="form-select form-input"
+                    @infiniteScroll={{false}}
+                    @renderInPlace={{true}}
+                    @onChange={{fn (mut @options.fuelReport.vehicle_uuid)}} as |model|
+                >
+                    {{model.display_name}}
+                </ModelSelect>
+            </InputGroup>
+
+            <InputGroup @name="Odometer" @value={{@options.fuelReport.odometer}} />
+            <InputGroup @name="Cost" @value={{@options.fuelReport.amount}} />
+            {{!-- <Ui::InputGroup @name="Volume" @value={{@options.fuelReport.volume}} />
+            <Ui::InputGroup @name="Metric Unit" @value={{@options.fuelReport.metric_unit}} /> --}}
+
+            <InputGroup @name="Volume" @helpText="Select the metric unit and volume of fuel to report." @wrapperClass="w-full">
+                <UnitInput class="w-full" @measurement="volume" @value={{@options.fuelReport.volume}} @unit={{@options.fuelReport.metric_unit}} @canSelectUnit={{true}} @onUnitChange={{fn (mut @options.fuelReport.metric_unit)}} />
+            </InputGroup>
+            
+            <InputGroup @name="Coordinates">
+                <CoordinatesInput @value={{@options.fuelReport.location}} @onChange={{fn (mut @options.fuelReport.location)}} />
+            </InputGroup>
+        </div>
+    </div>
+    {{yield}}
+</Modal>

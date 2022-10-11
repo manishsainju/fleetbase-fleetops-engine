@@ -1,0 +1,10 @@
+<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+    <div class="modal-body-container">
+        <div class="flex items-center justify-center mb-10">
+            <div>
+                <PageLoader @loadingMessage={{@options.loadingMessage}} />
+            </div>
+        </div>
+    </div>
+</Modal>
+{{yield}}
