@@ -5,7 +5,6 @@ import { action, computed } from '@ember/object';
 import { A, isArray } from '@ember/array';
 import { task, timeout } from 'ember-concurrency';
 import isModel from '@fleetbase/ember-core/utils/is-model';
-// import Table from 'ember-light-table';
 // import Terraformer from '@terraformer/spatial';
 import Point from '@fleetbase/flb-fleetops-extension/utils/geojson/point';
 
@@ -23,15 +22,6 @@ class Table {
 }
 
 export default class ManagementPlacesIndexController extends Controller {
-    /**
-     * On initializtion create instance of the light table
-     *
-     * @void
-     */
-    constructor() {
-        super(...arguments);
-        this.table = Table.create({ columns: this.columns }, { enableSync: true });
-    }
 
     /**
      * Inject the `operations.zones.index` controller
@@ -280,17 +270,6 @@ export default class ManagementPlacesIndexController extends Controller {
     ]);
 
     /**
-     * Toggles all rows checked or unchecked
-     *
-     * @param {Boolean} selected
-     * @void
-     */
-     @action toggleAll(selected) {
-         this.allToggled = selected;
-         this.table?.rows?.forEach(row => row.setProperties({ selected }));
-     }
-
-    /**
      * Update search query and subjects
      *
      * @param {Object} column
@@ -325,28 +304,6 @@ export default class ManagementPlacesIndexController extends Controller {
         this.set('query', query);
     }).restartable()
     searchTask;
-
-    /**
-     * Update columns
-     *
-     * @param {Array} columns the columns to update to this controller
-     * @void
-     */
-    @action updateColumns(columns) {
-        this.table.setColumns(columns);
-    }
-
-    /**
-     * Sets the sort column and property for the data
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action onColumnClick(column) {
-        if (column.sorted) {
-            this.sort = `${column.ascending ? '' : '-'}${column.sortParam || column.filterParam || column.valuePath}`;
-        }
-    }
 
     /**
      * Apply column filter values to the controller
