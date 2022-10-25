@@ -6,14 +6,8 @@ import { equal } from '@ember/object/computed';
 import { A, isArray } from '@ember/array';
 import { task, timeout } from 'ember-concurrency';
 import isModel from '@fleetbase/ember-core/utils/is-model';
-// import Table from 'ember-light-table';
 
 export default class OperationsOrdersIndexController extends Controller {
-    constructor() {
-        super(...arguments);
-        // this.table = Table.create({ columns: this.columns }, { enableSync: true });
-    }
-
     @controller('management.drivers.index') driversController;
     @controller('management.fleets.index') fleetController;
     // @controller('management.drivers.index') serviceAreasController;
@@ -83,14 +77,14 @@ export default class OperationsOrdersIndexController extends Controller {
             filterable: true,
             filterComponent: 'filter/string',
         },
-        { 
-            label: 'Internal ID', 
-            valuePath: 'internal_id', 
-            width: '125px', 
-            resizable: true, 
-            sortable: true, 
-            filterable: true, 
-            filterComponent: 'filter/string' 
+        {
+            label: 'Internal ID',
+            valuePath: 'internal_id',
+            width: '125px',
+            resizable: true,
+            sortable: true,
+            filterable: true,
+            filterComponent: 'filter/string'
         },
         {
             label: 'Payload',
@@ -168,22 +162,22 @@ export default class OperationsOrdersIndexController extends Controller {
             filterable: true,
             filterComponent: 'filter/date',
         },
-        { 
-            label: '# Items', 
-            cellComponent: 'table/cell/base', 
-            valuePath: 'item_count', 
-            resizable: true, 
-            hidden: true, 
-            width: '50px' 
+        {
+            label: '# Items',
+            cellComponent: 'table/cell/base',
+            valuePath: 'item_count',
+            resizable: true,
+            hidden: true,
+            width: '50px'
         },
-        { 
-            label: 'Transaction Total', 
-            cellComponent: 'table/cell/base', 
-            valuePath: 'transaction_amount', 
-            width: '50px', 
-            resizable: true, 
-            hidden: true, 
-            sortable: true 
+        {
+            label: 'Transaction Total',
+            cellComponent: 'table/cell/base',
+            valuePath: 'transaction_amount',
+            width: '50px',
+            resizable: true,
+            hidden: true,
+            sortable: true
         },
         {
             label: 'Tracking Number',
@@ -208,14 +202,14 @@ export default class OperationsOrdersIndexController extends Controller {
             filterParam: 'driver',
             model: 'driver',
         },
-        { 
-            label: 'Type', 
-            cellComponent: 'cell/humanize', 
-            valuePath: 'type', 
-            width: '100px', 
-            resizable: true, 
-            hidden: true, 
-            sortable: true 
+        {
+            label: 'Type',
+            cellComponent: 'cell/humanize',
+            valuePath: 'type',
+            width: '100px',
+            resizable: true,
+            hidden: true,
+            sortable: true
         },
         {
             label: 'Status',
@@ -342,7 +336,7 @@ export default class OperationsOrdersIndexController extends Controller {
         } else {
             this.leafletMap?.zoomOut();
         }
-    } 
+    }
 
     @action setLayoutMode(mode) {
         this.layout = mode;
@@ -353,17 +347,17 @@ export default class OperationsOrdersIndexController extends Controller {
     }
 
     @action sendDropdownAction(dd, sentAction, ...params) {
-        if(typeof dd.actions.close === 'function') {
+        if (typeof dd.actions.close === 'function') {
             dd.actions.close();
         }
 
-        if(typeof this[sentAction] === 'function') {
+        if (typeof this[sentAction] === 'function') {
             this[sentAction](...params);
         }
     }
 
     @action sendDropdownTransition(dd, route) {
-        if(typeof dd.actions.close === 'function') {
+        if (typeof dd.actions.close === 'function') {
             dd.actions.close();
         }
 
@@ -381,14 +375,14 @@ export default class OperationsOrdersIndexController extends Controller {
     }
 
     @task(function* (query) {
-        if(!query) {
+        if (!query) {
             this.query = null;
             return;
         }
 
         yield timeout(250);
 
-        if(this.page > 1) {
+        if (this.page > 1) {
             return this.setProperties({
                 query,
                 page: 1
@@ -396,13 +390,8 @@ export default class OperationsOrdersIndexController extends Controller {
         }
 
         this.set('query', query);
-    }).restartable() 
+    }).restartable()
     searchTask;
-
-    @action toggleAll(selected) {
-         this.allToggled = selected;
-         this.table?.rows?.forEach(row => row.setProperties({ selected }));
-     }
 
     @action setMapReference(event) {
         this.leafletMap = event?.target;
@@ -481,7 +470,7 @@ export default class OperationsOrdersIndexController extends Controller {
             acceptButtonText: 'Delete Orders',
             onConfirm: (deletedOrders) => {
                 this.allToggled = false;
-                
+
                 deletedOrders.forEach(order => {
                     this.table.removeRow(order);
                 });
@@ -495,7 +484,7 @@ export default class OperationsOrdersIndexController extends Controller {
         console.log('bulkCancelOrders()', ...arguments);
         selected = selected.length > 0 ? selected : this.table.selectedRows.map(({ content }) => content);
 
-        if(!isArray(selected) || selected.length === 0) {
+        if (!isArray(selected) || selected.length === 0) {
             return;
         }
 
@@ -512,16 +501,6 @@ export default class OperationsOrdersIndexController extends Controller {
                 });
             },
         });
-    }
-
-    @action updateColumns(columns) {
-        this.table.setColumns(columns);
-    }
-
-    @action onColumnClick(column) {
-        if (column.sorted) {
-            this.sort = `${column.ascending ? '' : '-'}${column.sortParam || column.filterParam || column.valuePath}`;
-        }
     }
 
     @action applyFilters(columns) {

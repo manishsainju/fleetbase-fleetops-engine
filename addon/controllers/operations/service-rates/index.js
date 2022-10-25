@@ -1,24 +1,11 @@
 import Controller from '@ember/controller';
-// import Table from 'ember-light-table';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, computed } from '@ember/object';
-// import { equal, not } from '@ember/object/computed';
 import { A } from '@ember/array';
 import { task, timeout } from 'ember-concurrency';
-// import isModel from '@fleetbase/ember-core/utils/is-model';
 
 export default class OperationsServiceRatesIndexController extends Controller {
-    /**
-     * On initializtion create instance of the light table
-     *
-     * @void
-     */
-    constructor() {
-        super(...arguments);
-        this.table = Table.create({ columns: this.columns }, { enableSync: true });
-    }
-
     /**
      * Inject the `currentUser` service
      *
@@ -99,15 +86,6 @@ export default class OperationsServiceRatesIndexController extends Controller {
         'limit',
         'sort'
     ];
-
-    /**
-     * Get user selected rows
-     *
-     * @var {Array}
-     */
-    @computed('model.@each.selected') get selectedServiceRates() {
-        return this.model.filter((row) => row.selected);
-    }
 
     /**
      * All columns applicable for orders
@@ -321,19 +299,4 @@ export default class OperationsServiceRatesIndexController extends Controller {
     }).restartable() 
     searchTask;
 
-    /**
-     * Toggles all rows checked or unchecked
-     * 
-     * @param {Boolean} selected
-     * @void
-     */
-    @action toggleAll(selected) {
-        this.allToggled = selected;
-        this.table.rows.forEach(row => {
-            const { content } = row;
-
-            row.setProperties({ selected });
-            content.setProperties({ selected });
-        });
-    }
 }
