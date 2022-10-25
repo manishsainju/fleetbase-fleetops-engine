@@ -8,6 +8,7 @@ export default class ManagementVehiclesIndexRoute extends Route {
      *
      * @var {Service}
      */
+    @service store;
     @service loader;
 
     /**

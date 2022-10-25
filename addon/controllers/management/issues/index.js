@@ -7,26 +7,6 @@ import isModel from '@fleetbase/ember-core/utils/is-model';
 // import Table from 'ember-light-table';
 
 export default class ManagementIssuesIndexController extends Controller {
-    /**
-     * On initializtion create instance of the light table
-     *
-     * @void
-     */
-    constructor() {
-        super(...arguments);
-        this.table = Table.create({ columns: this.columns }, { enableSync: true });
-    }
-
-    /**
-     * Update columns
-     *
-     * @param {Array} columns the columns to update to this controller
-     * @void
-     */
-    @action
-    updateColumns(columns) {
-        this.table.setColumns(columns);
-    }
 
     /**
      * After column is resized save the column state to user options
@@ -38,19 +18,6 @@ export default class ManagementIssuesIndexController extends Controller {
         // const columnIndex = this.columns.findIndex((column) => column.valuePath === resizedColumn.valuePath);
         // this.columns = this.columns.replace(columnIndex, 1, [resizedColumn]);
         // console.log(this.columns);
-    }
-
-    /**
-     * Sets the sort column and property for the data
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action
-    onColumnClick(column) {
-        if (column.sorted) {
-            this.sort = `${column.ascending ? '' : '-'}${column.sortParam || column.filterParam || column.valuePath}`;
-        }
     }
 
     /**
@@ -448,16 +415,6 @@ export default class ManagementIssuesIndexController extends Controller {
             searchable: false,
         },
     ]);
-    /**
-     * Toggles all rows checked or unchecked
-     * 
-     * @param {Boolean} selected
-     * @void
-     */
-     @action toggleAll(selected) {
-         this.allToggled = selected;
-         this.table?.rows?.forEach(row => row.setProperties({ selected }));
-     }
 
      /**
      * Sends up a dropdown action, closes the dropdown then executes the action

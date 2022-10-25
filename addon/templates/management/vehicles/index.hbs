@@ -18,7 +18,15 @@
 
 <Next::TableWrapper @pagination={{true}} @onToggleAll={{this.toggleAll}} @allToggled={{this.allToggled}}>
     <LightTable @table={{this.table}} @resizeOnDrag={{true}} as |t|>
-        <t.head @fixed={{true}} @resizeOnDrag={{true}} @onColumnClick={{this.onColumnClick}} @iconComponent="light-table-icon" @iconSortable="sort" @iconAscending="sort-up" @iconDescending="sort-down" />
+        <t.head
+            @fixed={{true}}
+            @resizeOnDrag={{true}}
+            @onColumnClick={{this.onColumnClick}}
+            @iconComponent="light-table-icon"
+            @iconSortable="sort"
+            @iconAscending="sort-up"
+            @iconDescending="sort-down"
+        />
         <t.body @scrollBuffer={{500}} @canSelect={{true}} @multiSelect={{true}} @multiSelectRequiresKeyboard={{false}} />
         <t.foot @fixed={{true}} as |columns|>
             <Next::Pagination @columns={{columns}} @meta={{@model.meta}} @page={{this.page}} @onPageChange={{fn (mut this.page)}} />
