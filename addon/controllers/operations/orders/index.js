@@ -71,21 +71,12 @@ export default class OperationsOrdersIndexController extends Controller {
     @equal('layout', 'analytics') isAnalyticsLayout;
 
     @tracked columns = A([
-        { 
-            label: '', 
-            valuePath: 'selected', 
-            width: '40px', 
-            cellComponent: 'cell/checkbox', 
-            resizable: false,
-            searchable: false,
-            filterable: false, 
-            sortable: false 
-        },
         {
             label: 'ID',
             valuePath: 'public_id',
             width: '150px',
-            cellComponent: 'cell/link-to',
+            cellComponent: 'table/cell/link-to',
+            route: 'operations.orders.index.view',
             onLinkClick: this.viewOrder,
             resizable: true,
             sortable: true,
@@ -115,7 +106,7 @@ export default class OperationsOrdersIndexController extends Controller {
         {
             label: 'Customer',
             valuePath: 'customer.name',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '125px',
             resizable: true,
             sortable: true,
@@ -129,7 +120,7 @@ export default class OperationsOrdersIndexController extends Controller {
         {
             label: 'Facilitator',
             valuePath: 'facilitator.name',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '125px',
             resizable: true,
             hidden: true,
@@ -143,7 +134,7 @@ export default class OperationsOrdersIndexController extends Controller {
         {
             label: 'Pickup',
             valuePath: 'pickupName',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '160px',
             resizable: true,
             sortable: true,
@@ -156,7 +147,7 @@ export default class OperationsOrdersIndexController extends Controller {
         {
             label: 'Dropoff',
             valuePath: 'dropoff_name',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '160px',
             resizable: true,
             sortable: true,
@@ -179,7 +170,7 @@ export default class OperationsOrdersIndexController extends Controller {
         },
         { 
             label: '# Items', 
-            cellComponent: 'cell/base', 
+            cellComponent: 'table/cell/base', 
             valuePath: 'item_count', 
             resizable: true, 
             hidden: true, 
@@ -187,7 +178,7 @@ export default class OperationsOrdersIndexController extends Controller {
         },
         { 
             label: 'Transaction Total', 
-            cellComponent: 'cell/base', 
+            cellComponent: 'table/cell/base', 
             valuePath: 'transaction_amount', 
             width: '50px', 
             resizable: true, 
@@ -196,7 +187,7 @@ export default class OperationsOrdersIndexController extends Controller {
         },
         {
             label: 'Tracking Number',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             valuePath: 'tracking',
             width: '170px',
             resizable: true,
@@ -207,7 +198,7 @@ export default class OperationsOrdersIndexController extends Controller {
         {
             label: 'Driver Assigned',
             valuePath: 'driver_name',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '170px',
             resizable: true,
             sortable: true,
@@ -229,7 +220,7 @@ export default class OperationsOrdersIndexController extends Controller {
         {
             label: 'Status',
             valuePath: 'status',
-            cellComponent: 'cell/status',
+            cellComponent: 'table/cell/status',
             width: '120px',
             resizable: true,
             sortable: true,
@@ -286,7 +277,7 @@ export default class OperationsOrdersIndexController extends Controller {
         },
         {
             label: '',
-            cellComponent: 'cell/dropdown-button',
+            cellComponent: 'table/cell/dropdown',
             ddButtonText: false,
             ddButtonIcon: 'ellipsis-h',
             ddButtonIconPrefix: 'fas',

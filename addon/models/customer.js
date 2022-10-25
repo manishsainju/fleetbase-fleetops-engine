@@ -1,9 +1,10 @@
-import Model, { attr } from '@ember-data/model';
+import ContactModel from './contact';
+import { attr } from '@ember-data/model';
 import { computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
 import { format, formatDistanceToNow } from 'date-fns';
 
-export default class CustomerModel extends Model {
+export default class CustomerModel extends ContactModel {
   /** @attributes */
   @attr('string') name;
   @attr('string') customer_type;

@@ -30,7 +30,7 @@ export default class OrderModel extends Model {
 
   /** @relationships */
   @belongsTo('company') company;
-  @belongsTo('customer', { polymorphic: true, async: false }) customer;
+  @belongsTo('customer', { polymorphic: true, async: true }) customer;
   @belongsTo('facilitator', { polymorphic: true }) facilitator;
   @belongsTo('transaction', { async: false }) transaction;
   @belongsTo('payload', { async: false }) payload;

@@ -9,6 +9,19 @@ import isModel from '@fleetbase/ember-core/utils/is-model';
 // import Terraformer from '@terraformer/spatial';
 import Point from '@fleetbase/flb-fleetops-extension/utils/geojson/point';
 
+class Table {
+    constructor(columns = [], rows = [], options = {}) {
+        this.columns = columns;
+        this.rows = rows;
+        this.options = options;
+    }
+
+    static create(tableArgs, options = {}) {
+        const { columns, rows } = tableArgs;
+        return new Table(columns, rows, options);
+    }
+}
+
 export default class ManagementPlacesIndexController extends Controller {
     /**
      * On initializtion create instance of the light table

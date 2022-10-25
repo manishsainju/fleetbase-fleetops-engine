@@ -13,24 +13,37 @@
 {{#if this.isMapLayout}}
     <MapContainer @layout={{this.layout}} @onReady={{this.onMapContainerReady}}>
         <GlobalSearch @visible={{this.isSearchVisible}} @onPressOrder={{this.viewOrder}} />
-
         <MapContainer::Toolbar @activeOrdersCount={{this.activeOrdersCount}} @map={{this.leafletMap}} @onPressViewOrders={{this.toggleOrdersPanel}} @onPressSearch={{this.toggleSearch}} @onPressCreateOrder={{this.createOrder}} @onPressCreateDriver={{this.driversController.createDriver}} @onPressDriverProfile={{this.driversController.viewDriver}} />
-
         <OrderListOverlay @noBackdrop={{true}} @fullHeight={{true}} @outView={{not this.isOrdersPanelVisible}} @width={{if (media 'isMobile') "100%" "338px"}} @onPressCancel={{this.hideOrdersPanel}} @onPressCreateOrder={{this.createOrder}} @onPressViewOrder={{this.viewOrder}} @onPressCreateFleet={{this.fleetController.createFleet}} @onPressManageFleet={{this.fleetController.viewFleet}} @onPressCancelOrders={{this.bulkCancelOrders}} @onPressDeleteOrders={{this.bulkDeleteOrders}} />
         <LiveMap id="leafletMap" class="next-leaflet-container-map" @lat={{1.3521}} @lng={{103.8198}} @zoom={{12}} @zoomControl={{false}} @onLoad={{this.setMapReference}} {{set-container-dimensions}} />
     </MapContainer>
 {{/if}}
 
 {{#if this.isTableLayout}}
-    <div class="p-12">
-        <Button>
-            <span>Hello World</span>
-            <Attach::Tooltip>
-                <span>Hello, am I floating?</span>
-            </Attach::Tooltip>
-            {{!-- <Floating @placement="top" class="border border-black rounded-md text-xs px-4 py-1 bg-gray-700 text-white shadow-md" @arrow={{true}}>This should be floating!</Floating> --}}
-        </Button>
-    </div>
+    <Layout::Section::Header @title="Orders" @onSearch={{this.search}}>
+        <Button @icon="cogs" @text="Config" class="mr-2" @onClick={{fn this.sendTransition "operations.orders.index.config"}} />
+        {{!-- <FiltersPicker @columns={{this.columns}} @onChange={{this.applyFilters}} class="mr-2" /> --}}
+        {{!-- <VisibleColumnPicker @columns={{this.columns}} @activeParams={{this.activeParams}} @onChange={{this.updateColumns}} class="mr-2" /> --}}
+        {{#if this.table.selectedRows}}
+            <DropdownButton @icon="layer-group" @type="magic" @text="Bulk Action" @size="sm" @buttonWrapperClass="mr-2" as |dd|>
+                <div class="next-dd-menu mt-2 mx-0">
+                    <div class="px-1">
+                        <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.sendDropdownAction dd "bulkCancelOrders")}}>
+                            Cancel Orders
+                        </a>
+                        <a href="javascript:;" class="text-red-500 next-dd-item" {{on "click" (fn this.sendDropdownAction dd "bulkDeleteOrders")}}>
+                            Delete Orders
+                        </a>
+                    </div>
+                </div>
+            </DropdownButton>
+        {{/if}}
+        <Button @type="primary" @icon="plus" @iconPrefix="fas" @text="New" @wrapperClass="mr-2" @onClick={{fn this.sendTransition "operations.orders.index.new"}} />
+        <Button @icon="long-arrow-up" @iconClass="rotate-icon-45" @text="Export" @onClick={{this.exportOrders}} />
+    </Layout::Section::Header>
+    <Layout::Section::Body>
+        <Table @rows={{@model}} @columns={{this.columns}} @selectable={{true}} @canSelectAll={{true}} />
+    </Layout::Section::Body>
 {{/if}}
 
 {{!-- {{#if this.isTableLayout}}

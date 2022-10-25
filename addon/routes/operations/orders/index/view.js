@@ -4,6 +4,7 @@ import { action } from '@ember/object';
 
 export default class OperationsOrdersIndexViewRoute extends Route {
   @service currentUser;
+  @service store;
 
   @action willTransition() {
     this.controller?.resetView();

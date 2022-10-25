@@ -8,7 +8,7 @@ import {
   OSRMv1,
   Control as RoutingControl,
 } from '@fleetbase/leaflet-routing-machine';
-import groupBy from 'ember-group-by';
+import groupBy from '@fleetbase/ember-core/utils/macros/group-by';
 import refreshRoute from '@fleetbase/ember-core/utils/refresh-route';
 import findClosestWaypoint from '@fleetbase/ember-core/utils/find-closest-waypoint';
 import getRoutingHost from '@fleetbase/ember-core/utils/get-routing-host';

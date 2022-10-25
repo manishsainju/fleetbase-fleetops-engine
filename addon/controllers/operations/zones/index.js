@@ -2,9 +2,10 @@ import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import GeoJson from '@fleetbase/flb-fleetops-extension/utils/geojson/geo-json';
+import FeatureCollection from '@fleetbase/flb-fleetops-extension/utils/geojson/feature-collection';
 import last from '@fleetbase/ember-core/utils/last';
 import refreshRoute from '@fleetbase/ember-core/utils/refresh-route';
-import Terraformer from 'terraformer';
 
 export default class OperationsZonesIndexController extends Controller {
   /**
@@ -195,7 +196,7 @@ export default class OperationsZonesIndexController extends Controller {
 
       if (zone) {
         const geoJson = layer.toGeoJSON();
-        const border = new Terraformer.Primitive(geoJson.geometry);
+        const border = new GeoJson(geoJson.geometry);
 
         zone.border = border;
         zone.save();
@@ -250,11 +251,11 @@ export default class OperationsZonesIndexController extends Controller {
     }
 
     const leafletLayerGeoJson = layer.toGeoJSON();
-    const featureCollection = new Terraformer.FeatureCollection(
+    const featureCollection = new FeatureCollection(
       leafletLayerGeoJson
     );
     const feature = last(featureCollection.features);
-    const border = new Terraformer.Primitive(feature.geometry);
+    const border = new GeoJson(feature.geometry);
 
     return this.createZone({
       service_area_uuid: serviceArea.id,
