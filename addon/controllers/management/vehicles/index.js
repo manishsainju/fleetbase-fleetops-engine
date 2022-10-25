@@ -6,18 +6,8 @@ import { A, isArray } from '@ember/array';
 import { task, timeout } from 'ember-concurrency';
 import isModel from '@fleetbase/ember-core/utils/is-model';
 import withDefaultValue from '@fleetbase/ember-core/utils/with-default-value';
-// import Table from 'ember-light-table';
 
 export default class ManagementVehiclesIndexController extends Controller {
-    /**
-     * On initializtion create instance of the light table
-     *
-     * @void
-     */
-    constructor() {
-        super(...arguments);
-        this.table = Table.create({ columns: this.columns }, { enableSync: true });
-    }
 
     /**
      * Inject the `management.drivers.index` controller
@@ -318,16 +308,6 @@ export default class ManagementVehiclesIndexController extends Controller {
     ]);
 
      /**
-     * Toggles all rows checked or unchecked
-     * 
-     * @param {Boolean} selected
-     * @void
-     */
-     @action toggleAll(selected) {
-         this.allToggled = selected;
-         this.table?.rows?.forEach(row => row.setProperties({ selected }));
-     }
-     /**
      * Sends up a dropdown action, closes the dropdown then executes the action
      * 
      * @void
@@ -402,30 +382,6 @@ export default class ManagementVehiclesIndexController extends Controller {
         this.set('query', query);
     }).restartable() 
     searchTask;
-
-    /**
-     * Update columns
-     *
-     * @param {Array} columns the columns to update to this controller
-     * @void
-     */
-    @action
-    updateColumns(columns) {
-        this.table.setColumns(columns);
-    }
-
-    /**
-     * Sets the sort column and property for the data
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action
-    onColumnClick(column) {
-        if (column.sorted) {
-            this.sort = `${column.ascending ? '' : '-'}${column.sortParam || column.filterParam || column.valuePath}`;
-        }
-    }
 
     /**
      * Apply column filter values to the controller
