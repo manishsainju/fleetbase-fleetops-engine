@@ -13,6 +13,13 @@ export default class OperationsZonesIndexController extends Controller {
    *
    * @var {Service}
    */
+  @service store;
+
+  /**
+   * Inject the `currentUser` service
+   *
+   * @var {Service}
+   */
   @service currentUser;
 
   /**
@@ -251,9 +258,7 @@ export default class OperationsZonesIndexController extends Controller {
     }
 
     const leafletLayerGeoJson = layer.toGeoJSON();
-    const featureCollection = new FeatureCollection(
-      leafletLayerGeoJson
-    );
+    const featureCollection = new FeatureCollection(leafletLayerGeoJson);
     const feature = last(featureCollection.features);
     const border = new GeoJson(feature.geometry);
 

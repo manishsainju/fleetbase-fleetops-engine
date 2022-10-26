@@ -6,7 +6,7 @@
                     Group Name
                 </label>
                 <span class="block truncate">
-                    {{n-a @options.group.name}}
+                    {{@options.group.name}}
                 </span>
             </div>
 
@@ -15,7 +15,7 @@
                     Members
                 </label>
                 <span class="block truncate">
-                    {{n-a @options.user.internal_id}}
+                    {{@options.user.internal_id}}
                 </span>
             </div>
 
@@ -33,7 +33,7 @@
                     Address
                 </label>
                 <div>
-                    {{n-a (html-safe @options.vendor.address)}}
+                    {{(html-safe @options.vendor.address)}}
                 </div>
             </div>
         </div>

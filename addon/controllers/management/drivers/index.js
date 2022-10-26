@@ -46,6 +46,13 @@ export default class ManagementDriversIndexController extends Controller {3
     @service crud;
 
     /**
+     * Inject the `store` service
+     *
+     * @var {Service}
+     */
+    @service store;
+
+    /**
      * Inject the `fetch` service
      *
      * @var {Service}
@@ -158,6 +165,7 @@ export default class ManagementDriversIndexController extends Controller {3
     @tracked allToggled = false;
 
     @tracked layout = 'table';
+
     @equal('layout', 'grid') isGridLayout;
     @equal('layout', 'table') isTableLayout;
 
@@ -167,16 +175,6 @@ export default class ManagementDriversIndexController extends Controller {3
      * @var {Array}
      */
     @tracked columns = A([
-        { 
-            label: '', 
-            valuePath: 'selected', 
-            width: '40px', 
-            cellComponent: 'cell/checkbox', 
-            resizable: false,
-            searchable: false,
-            filterable: false, 
-            sortable: false 
-        },
         {
             label: 'Name',
             valuePath: 'name',
@@ -192,7 +190,7 @@ export default class ManagementDriversIndexController extends Controller {3
             label: 'ID',
             valuePath: 'public_id',
             width: '130px',
-            cellComponent: 'ui/click-to-copy',
+            cellComponent: 'click-to-copy',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -202,7 +200,7 @@ export default class ManagementDriversIndexController extends Controller {3
         {
             label: 'Internal ID',
             valuePath: 'internal_id',
-            cellComponent: 'ui/click-to-copy',
+            cellComponent: 'click-to-copy',
             width: '130px',
             resizable: true,
             sortable: true,
@@ -211,7 +209,7 @@ export default class ManagementDriversIndexController extends Controller {3
         },
         {
             label: 'Vendor',
-            cellComponent: 'cell/action',
+            cellComponent: 'table/cell/anchor',
             action: this.viewDriverVendor,
             valuePath: 'vendor_name',
             width: '180px',
@@ -224,7 +222,7 @@ export default class ManagementDriversIndexController extends Controller {3
         },
         {
             label: 'Vehicle',
-            cellComponent: 'cell/action',
+            cellComponent: 'table/cell/anchor',
             action: this.viewDriverVehicle,
             valuePath: 'vehicle_name',
             resizable: true,
@@ -237,11 +235,7 @@ export default class ManagementDriversIndexController extends Controller {3
         },
         {
             label: 'Fleets',
-            cellComponent: 'cell/model-link-list',
-            action: (driver) => {
-                // load vendor open vendor view details
-                console.log(driver);
-            },
+            cellComponent: 'table/cell/link-list',
             valuePath: 'fleets',
             width: '180px',
             resizable: true,
@@ -255,7 +249,7 @@ export default class ManagementDriversIndexController extends Controller {3
         {
             label: 'License',
             valuePath: 'drivers_license_number',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '150px',
             resizable: true,
             sortable: true,
@@ -265,7 +259,7 @@ export default class ManagementDriversIndexController extends Controller {3
         {
             label: 'Phone',
             valuePath: 'phone',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '150px',
             resizable: true,
             sortable: true,
@@ -289,7 +283,7 @@ export default class ManagementDriversIndexController extends Controller {3
         {
             label: 'Status',
             valuePath: 'status',
-            cellComponent: 'cell/status',
+            cellComponent: 'table/cell/status',
             width: '130px',
             resizable: true,
             sortable: true,
@@ -320,7 +314,7 @@ export default class ManagementDriversIndexController extends Controller {3
         },
         {
             label: '',
-            cellComponent: 'cell/dropdown-button',
+            cellComponent: 'table/cell/dropdown',
             ddButtonText: false,
             ddButtonIcon: 'ellipsis-h',
             ddButtonIconPrefix: 'fas',

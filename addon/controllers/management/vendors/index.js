@@ -125,7 +125,7 @@ export default class ManagementVendorsIndexController extends Controller {
             label: '', 
             valuePath: 'selected', 
             width: '40px', 
-            cellComponent: 'cell/checkbox', 
+            cellComponent: 'table/cell/checkbox', 
             resizable: false,
             searchable: false,
             filterable: false, 
@@ -145,7 +145,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'ID',
             valuePath: 'public_id',
-            cellComponent: 'ui/click-to-copy',
+            cellComponent: 'click-to-copy',
             width: '120px',
             resizable: true,
             sortable: true,
@@ -155,7 +155,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Internal ID',
             valuePath: 'internal_id',
-            cellComponent: 'ui/click-to-copy',
+            cellComponent: 'click-to-copy',
             width: '120px',
             resizable: true,
             sortable: true,
@@ -165,7 +165,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Email',
             valuePath: 'email',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '80px',
             resizable: true,
             sortable: true,
@@ -176,7 +176,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Phone',
             valuePath: 'phone',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '80px',
             resizable: true,
             sortable: true,
@@ -187,7 +187,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Address',
             valuePath: 'address_street',
-            cellComponent: 'cell/action',
+            cellComponent: 'table/cell/anchor',
             action: this.viewVendorPlace,
             width: '150px',
             resizable: true,
@@ -199,7 +199,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Type',
             valuePath: 'type',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '140px',
             resizable: true,
             sortable: true,
@@ -209,7 +209,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Country',
             valuePath: 'country',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             cellClassNames: 'uppercase',
             width: '130px',
             resizable: true,
@@ -242,7 +242,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Status',
             valuePath: 'status',
-            cellComponent: 'cell/status',
+            cellComponent: 'table/cell/status',
             width: '130px',
             resizable: true,
             sortable: true,
@@ -252,7 +252,7 @@ export default class ManagementVendorsIndexController extends Controller {
         },
         {
             label: '',
-            cellComponent: 'cell/dropdown-button',
+            cellComponent: 'table/cell/dropdown',
             ddButtonText: false,
             ddButtonIcon: 'ellipsis-h',
             ddButtonIconPrefix: 'fas',

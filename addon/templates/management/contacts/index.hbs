@@ -1,4 +1,4 @@
-<Next::ViewSectionSubheader @title="Contacts" @onSearch={{fn (mut this.search)}}>
+<Layout::Section::Header @title="Contacts" @onSearch={{fn (mut this.search)}}>
     <FiltersPicker @columns={{this.columns}} @onChange={{this.applyFilters}} class="mr-2" />
     <VisibleColumnPicker @columns={{this.columns}} @activeParams={{this.activeParams}} @onChange={{this.updateColumns}} class="mr-2" />
     {{#if this.table.selectedRows}}
@@ -14,7 +14,7 @@
     {{/if}}
     <Button @icon="plus" @iconPrefix="fas" @type="primary" @text="New" class="mr-2" @onClick={{this.createContact}} />
     <Button @icon="long-arrow-up" @iconClass="rotate-icon-45" @text="Export" @onClick={{this.exportContacts}} />
-</Next::ViewSectionSubheader>
+</Layout::Section::Header>
 
 <Layout::Section::Body>
     <Table @rows={{@model}} @columns={{this.columns}} @selectable={{true}} @canSelectAll={{true}} @onSetup={{fn (mut this.table)}} />

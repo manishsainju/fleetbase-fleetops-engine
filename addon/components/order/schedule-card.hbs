@@ -25,7 +25,7 @@
                 <FaIcon @icon="calendar" class="mr-2" />
                 <span class="font-semibold">Driver Assigned</span>
             </div>
-            <span>{{n-a @order.driver_assigned.name "None"}}</span>
+            <span>{{@order.driver_assigned.name "None"}}</span>
         </div>
         <div class="z-20 relative">
             <RouteList @order={{@order}} />

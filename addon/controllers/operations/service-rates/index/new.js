@@ -12,6 +12,13 @@ export default class OperationsServiceRatesIndexNewController extends Controller
   @controller('operations.service-rates.index') index;
 
   /**
+   * Inject the `currentUser` service
+   *
+   * @var {Service}
+   */
+  @service store;
+
+  /**
    * Inject the `notifications` service
    *
    * @var {Service}

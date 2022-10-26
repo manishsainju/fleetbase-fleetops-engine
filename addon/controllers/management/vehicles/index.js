@@ -119,7 +119,7 @@ export default class ManagementVehiclesIndexController extends Controller {
             label: '', 
             valuePath: 'selected', 
             width: '40px', 
-            cellComponent: 'cell/checkbox', 
+            cellComponent: 'table/cell/checkbox', 
             resizable: false,
             searchable: false,
             filterable: false, 
@@ -150,7 +150,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         },
         {
             label: 'Driver Assigned',
-            cellComponent: 'cell/action',
+            cellComponent: 'table/cell/anchor',
             action: async (vehicle) => {
                 const driver = await vehicle.loadDriver();
                 
@@ -168,7 +168,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         {
             label: 'ID',
             valuePath: 'public_id',
-            cellComponent: 'ui/click-to-copy',
+            cellComponent: 'click-to-copy',
             width: '120px',
             resizable: true,
             sortable: true,
@@ -178,7 +178,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         {
             label: 'Internal ID',
             valuePath: 'internal_id',
-            cellComponent: 'ui/click-to-copy',
+            cellComponent: 'click-to-copy',
             width: '120px',
             hidden: true,
             resizable: true,
@@ -189,7 +189,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         {
             label: 'Make',
             valuePath: 'make',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '80px',
             resizable: true,
             sortable: true,
@@ -200,7 +200,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         {
             label: 'Model',
             valuePath: 'model',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '80px',
             resizable: true,
             sortable: true,
@@ -211,7 +211,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         {
             label: 'Year',
             valuePath: 'model',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '80px',
             resizable: true,
             sortable: true,
@@ -221,7 +221,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         },
         {
             label: 'Vendor',
-            cellComponent: 'cell/action',
+            cellComponent: 'table/cell/anchor',
             action: async ({ vendor_uuid }) => {
                 const vendor = await this.store.findRecord('vendor', vendor_uuid);
                 
@@ -240,7 +240,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         {
             label: 'Status',
             valuePath: 'status',
-            cellComponent: 'cell/status',
+            cellComponent: 'table/cell/status',
             width: '10%',
             resizable: true,
             sortable: true,
@@ -271,7 +271,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         },
         {
             label: '',
-            cellComponent: 'cell/dropdown-button',
+            cellComponent: 'table/cell/dropdown',
             ddButtonText: false,
             ddButtonIcon: 'ellipsis-h',
             ddButtonIconPrefix: 'fas',

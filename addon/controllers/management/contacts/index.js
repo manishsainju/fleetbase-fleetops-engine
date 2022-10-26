@@ -16,6 +16,13 @@ export default class ManagementContactsIndexController extends Controller {
     @controller('operations.zones.index') zones;
 
     /**
+     * Inject the `currentUser` service
+     *
+     * @var {Service}
+     */
+    @service store;
+
+    /**
      * Inject the `notifications` service
      *
      * @var {Service}
@@ -123,7 +130,7 @@ export default class ManagementContactsIndexController extends Controller {
             label: '', 
             valuePath: 'selected', 
             width: '40px', 
-            cellComponent: 'cell/checkbox', 
+            cellComponent: 'table/cell/checkbox', 
             resizable: false,
             searchable: false,
             filterable: false, 
@@ -144,7 +151,7 @@ export default class ManagementContactsIndexController extends Controller {
         {
             label: 'ID',
             valuePath: 'public_id',
-            cellComponent: 'ui/click-to-copy',
+            cellComponent: 'click-to-copy',
             width: '120px',
             resizable: true,
             sortable: true,
@@ -154,7 +161,7 @@ export default class ManagementContactsIndexController extends Controller {
         {
             label: 'Internal ID',
             valuePath: 'internal_id',
-            cellComponent: 'ui/click-to-copy',
+            cellComponent: 'click-to-copy',
             width: '130px',
             resizable: true,
             sortable: true,
@@ -164,7 +171,7 @@ export default class ManagementContactsIndexController extends Controller {
         {
             label: 'Email',
             valuePath: 'email',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '160px',
             resizable: true,
             sortable: true,
@@ -174,7 +181,7 @@ export default class ManagementContactsIndexController extends Controller {
         {
             label: 'Phone',
             valuePath: 'phone',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '140px',
             resizable: true,
             sortable: true,
@@ -184,7 +191,7 @@ export default class ManagementContactsIndexController extends Controller {
         {
             label: 'Type',
             valuePath: 'type',
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '140px',
             resizable: true,
             sortable: true,
@@ -214,7 +221,7 @@ export default class ManagementContactsIndexController extends Controller {
         },
         {
             label: '',
-            cellComponent: 'cell/dropdown-button',
+            cellComponent: 'table/cell/dropdown',
             ddButtonText: false,
             ddButtonIcon: 'ellipsis-h',
             ddButtonIconPrefix: 'fas',

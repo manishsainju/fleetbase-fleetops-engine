@@ -11,6 +11,13 @@ export default class OperationsServiceRatesIndexController extends Controller {
      *
      * @var {Service}
      */
+    @service store;
+    
+    /**
+     * Inject the `currentUser` service
+     *
+     * @var {Service}
+     */
     @service currentUser;
 
     /**
@@ -97,7 +104,7 @@ export default class OperationsServiceRatesIndexController extends Controller {
             label: '', 
             valuePath: 'selected', 
             width: '40px', 
-            cellComponent: 'cell/checkbox', 
+            cellComponent: 'table/cell/checkbox', 
             resizable: false,
             searchable: false,
             filterable: false, 
@@ -117,7 +124,7 @@ export default class OperationsServiceRatesIndexController extends Controller {
         { 
             label: 'Service', 
             valuePath: 'service_name', 
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '125px', 
             resizable: true, 
             sortable: true, 
@@ -126,7 +133,7 @@ export default class OperationsServiceRatesIndexController extends Controller {
         { 
             label: 'Service Area', 
             valuePath: 'service_area_name', 
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '125px', 
             resizable: true, 
             sortable: true, 
@@ -135,7 +142,7 @@ export default class OperationsServiceRatesIndexController extends Controller {
         { 
             label: 'Zone', 
             valuePath: 'zone_name', 
-            cellComponent: 'cell/base',
+            cellComponent: 'table/cell/base',
             width: '125px', 
             resizable: true, 
             sortable: true, 
@@ -164,7 +171,7 @@ export default class OperationsServiceRatesIndexController extends Controller {
         },
         {
             label: '',
-            cellComponent: 'cell/dropdown-button',
+            cellComponent: 'table/cell/dropdown',
             ddButtonText: false,
             ddButtonIcon: 'ellipsis-h',
             ddButtonIconPrefix: 'fas',

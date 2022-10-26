@@ -2,21 +2,21 @@ import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 
 export default class ManagementPlacesIndexRoute extends Route {
-    @service store;
+  @service store;
 
-    queryParams = {
-        page: { refreshModel: true },
-        limit: { refreshModel: true },
-        sort: { refreshModel: true },
-        query: { refreshModel: true },
-        country: { refreshModel: true },
-    };
+  queryParams = {
+    page: { refreshModel: true },
+    limit: { refreshModel: true },
+    sort: { refreshModel: true },
+    query: { refreshModel: true },
+    country: { refreshModel: true },
+  };
 
-    model(params) {
-        return this.store.query('place', { ...params });
-    }
+  model(params) {
+    return this.store.query('place', { ...params });
+  }
 
-    async setupController(controller, model) {
-        super.setupController(controller, model);
-    }
+  async setupController(controller, model) {
+    super.setupController(controller, model);
+  }
 }

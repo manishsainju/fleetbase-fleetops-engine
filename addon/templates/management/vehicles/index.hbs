@@ -1,4 +1,4 @@
-<Next::ViewSectionSubheader @title="Vehicles" @onSearch={{fn (mut this.search)}}>
+<Layout::Section::Header @title="Vehicles" @onSearch={{fn (mut this.search)}}>
     <FiltersPicker @columns={{this.columns}} @onChange={{this.applyFilters}} class="mr-2" />
     <VisibleColumnPicker @columns={{this.columns}} @activeParams={{this.activeParams}} @onChange={{this.updateColumns}} class="mr-2" />
     {{#if this.table.selectedRows}}
@@ -14,7 +14,7 @@
     {{/if}}
     <Button @icon="plus" @iconPrefix="fas" @type="primary" @text="New" class="mr-2" @onClick={{this.createVehicle}} />
     <Button @icon="long-arrow-up" @iconClass="rotate-icon-45" @wrapperClass="hidden md:flex" @text="Export" @onClick={{this.exportVehicles}} />
-</Next::ViewSectionSubheader>
+</Layout::Section::Header>
 
 <Next::TableWrapper @pagination={{true}} @onToggleAll={{this.toggleAll}} @allToggled={{this.allToggled}}>
     <LightTable @table={{this.table}} @resizeOnDrag={{true}} as |t|>

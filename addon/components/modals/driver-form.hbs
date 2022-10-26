@@ -3,7 +3,7 @@
         <div class="flex">
             <div class="w-32 mb-6 mr-6">
                 <img src={{@options.driver.photo_url}} alt={{@options.driver.name}} height="128" width="128" class="h-32 w-32 rounded-md" />
-                <FileUpload @name="photos" @accept="image/*" @onfileadd={{@options.uploadNewPhoto}} as |queue|>
+                {{!-- <FileUpload @name="photos" @accept="image/*" @onfileadd={{@options.uploadNewPhoto}} as |queue|>
                     <a tabindex={{0}} class="flex items-center px-0 mt-2 text-xs no-underline truncate btn btn-sm btn-default">
                         {{#if queue.files.length}}
                             <Spinner class="mr-1" />
@@ -17,7 +17,7 @@
                             </span>
                         {{/if}}
                     </a>
-                </FileUpload>
+                </FileUpload> --}}
             </div>
             <div class="flex-1">
                 <div class="grid grid-cols-1 gap-2 text-xs dark:text-gray-100">

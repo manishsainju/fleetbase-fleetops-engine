@@ -65,11 +65,11 @@ export default class ServiceRate extends Model {
   }
 
   @computed('created_at') get createdAt() {
-    return format(this.created_at, 'PPP p');
+    return this.created_at ? format(this.created_at, 'PPP p') : null;
   }
 
   @computed('created_at') get createdAtShort() {
-    return format(this.created_at, 'PP');
+    return this.created_at ? format(this.created_at, 'PP') : null;
   }
 
   @computed('rate_calculation_method') get isFixedMeter() {
