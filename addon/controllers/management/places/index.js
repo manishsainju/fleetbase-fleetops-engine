@@ -5,21 +5,7 @@ import { action, computed } from '@ember/object';
 import { A, isArray } from '@ember/array';
 import { task, timeout } from 'ember-concurrency';
 import isModel from '@fleetbase/ember-core/utils/is-model';
-// import Terraformer from '@terraformer/spatial';
 import Point from '@fleetbase/flb-fleetops-extension/utils/geojson/point';
-
-class Table {
-    constructor(columns = [], rows = [], options = {}) {
-        this.columns = columns;
-        this.rows = rows;
-        this.options = options;
-    }
-
-    static create(tableArgs, options = {}) {
-        const { columns, rows } = tableArgs;
-        return new Table(columns, rows, options);
-    }
-}
 
 export default class ManagementPlacesIndexController extends Controller {
 
@@ -120,16 +106,6 @@ export default class ManagementPlacesIndexController extends Controller {
      * @var {Array}
      */
     @tracked columns = A([
-        {
-            label: '',
-            valuePath: 'selected',
-            width: '40px',
-            cellComponent: 'table/cell/checkbox',
-            resizable: false,
-            searchable: false,
-            filterable: false,
-            sortable: false
-        },
         {
             label: 'Name',
             valuePath: 'name',

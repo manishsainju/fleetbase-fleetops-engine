@@ -125,16 +125,6 @@ export default class ManagementFleetsIndexController extends Controller {
      * @var {Array}
      */
     @tracked columns = A([
-         { 
-            label: '', 
-            valuePath: 'selected', 
-            width: '40px', 
-            cellComponent: 'table/cell/checkbox', 
-            resizable: false,
-            searchable: false,
-            filterable: false, 
-            sortable: false 
-        },
         {
             label: 'Name',
             valuePath: 'name',

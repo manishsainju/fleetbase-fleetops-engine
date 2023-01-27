@@ -10,192 +10,194 @@ import isLongitude from '@fleetbase/ember-core/utils/is-longitude';
 import config from '../config/environment';
 
 export default class DriverModel extends Model {
-    /** @ids */
-    @attr('string') public_id;
-    @attr('string') company_uuid;
-    @attr('string') user_uuid;
-    @attr('string') vehicle_uuid;
-    @attr('string') vendor_uuid;
-    @attr('string') photo_uuid;
-    @attr('string') signup_token_uuid;
-    @attr('string') current_job_uuid;
-    @attr('string') vehicle_id;
-    @attr('string') vendor_id;
-    @attr('string') current_job_id;
+  /** @ids */
+  @attr('string') public_id;
+  @attr('string') company_uuid;
+  @attr('string') user_uuid;
+  @attr('string') vehicle_uuid;
+  @attr('string') vendor_uuid;
+  @attr('string') photo_uuid;
+  @attr('string') signup_token_uuid;
+  @attr('string') current_job_uuid;
+  @attr('string') vehicle_id;
+  @attr('string') vendor_id;
+  @attr('string') current_job_id;
 
-    /** @relationships */
-    @belongsTo('user', { async: true }) user;
-    @hasMany('fleet', { async: true }) fleets;
-    @hasMany('user-device', { async: true }) devices;
-    @hasMany('order', { async: true }) jobs;
-    @belongsTo('vehicle', { async: true }) vehicle;
-    @belongsTo('file', { async: true }) photo;
-    @belongsTo('order', { async: true }) current_job;
-    @belongsTo('vendor', { async: true }) vendor;
+  /** @relationships */
+  @belongsTo('user', { async: true }) user;
+  @hasMany('fleet', { async: true }) fleets;
+  @hasMany('user-device', { async: true }) devices;
+  @hasMany('order', { async: true }) jobs;
+  @belongsTo('vehicle', { async: true }) vehicle;
+  @belongsTo('file', { async: true }) photo;
+  @belongsTo('order', { async: true }) current_job;
+  @belongsTo('vendor', { async: true }) vendor;
 
-    /** @attributes */
-    @attr('string') name;
-    @attr('string') phone;
-    @attr('string') email;
-    @attr('string') password;
-    @attr('string', {
-        defaultValue: get(config, 'defaultValues.driverImage'),
-    })
-    photo_url;
-    @attr('string') vehicle_name;
-    @attr('string') vehicle_avatar;
-    @attr('string') vendor_name;
-    @attr('string') drivers_license_number;
-    @attr('point') location;
-    @attr('string') heading;
-    @attr('string') country;
-    @attr('string') city;
-    @attr('string') status;
-    @attr('boolean') online;
+  /** @attributes */
+  @attr('string') name;
+  @attr('string') phone;
+  @attr('string') email;
+  @attr('string') password;
+  @attr('string', {
+    defaultValue: get(config, 'defaultValues.driverImage'),
+  })
+  photo_url;
+  @attr('string') vehicle_name;
+  @attr('string') vehicle_avatar;
+  @attr('string') vendor_name;
+  @attr('string') drivers_license_number;
+  @attr('point') location;
+  @attr('string') heading;
+  @attr('string') country;
+  @attr('string') city;
+  @attr('string') status;
+  @attr('boolean') online;
 
-    /** @dates */
-    @attr('date') deleted_at;
-    @attr('date') created_at;
-    @attr('date') updated_at;
+  /** @dates */
+  @attr('date') deleted_at;
+  @attr('date') created_at;
+  @attr('date') updated_at;
 
-    /** @computed */
-    @computed('photo_url') get photoUrl() {
-        if (!this.photo_url) {
-            return 'https://s3.ap-southeast-1.amazonaws.com/flb-assets/static/no-avatar.png';
-        }
-
-        return this.photo_url;
+  /** @computed */
+  @computed('photo_url') get photoUrl() {
+    if (!this.photo_url) {
+      return 'https://s3.ap-southeast-1.amazonaws.com/flb-assets/static/no-avatar.png';
     }
 
-    @computed('name', 'public_id') get displayName() {
-        if (!this.name) {
-            return this.public_id;
-        }
+    return this.photo_url;
+  }
 
-        return this.name;
+  @computed('name', 'public_id') get displayName() {
+    if (!this.name) {
+      return this.public_id;
     }
 
-    @computed('updated_at') get updatedAgo() {
-        return formatDistanceToNow(this.updated_at);
+    return this.name;
+  }
+
+  @computed('updated_at') get updatedAgo() {
+    return formatDistanceToNow(this.updated_at);
+  }
+
+  @computed('updated_at') get updatedAt() {
+    return format(this.updated_at, 'PPP p');
+  }
+
+  @computed('updated_at') get updatedAtShort() {
+    return format(this.updated_at, 'PP');
+  }
+
+  @computed('created_at') get createdAgo() {
+    return formatDistanceToNow(this.created_at);
+  }
+
+  @computed('created_at') get createdAt() {
+    return format(this.created_at, 'PPP p');
+  }
+
+  @computed('created_at') get createdAtShort() {
+    return format(this.created_at, 'PP');
+  }
+
+  @computed('location') get latitude() {
+    if (this.location) {
+      let x = get(this.location, 'coordinates.0');
+      let y = get(this.location, 'coordinates.1');
+
+      return isLatitude(x) ? x : y;
     }
 
-    @computed('updated_at') get updatedAt() {
-        return format(this.updated_at, 'PPP p');
+    return 0;
+  }
+
+  @computed('location') get longitude() {
+    if (this.location) {
+      let x = get(this.location, 'coordinates.0');
+      let y = get(this.location, 'coordinates.1');
+
+      return isLongitude(y) ? y : x;
     }
 
-    @computed('updated_at') get updatedAtShort() {
-        return format(this.updated_at, 'PP');
-    }
+    return 0;
+  }
 
-    @computed('created_at') get createdAgo() {
-        return formatDistanceToNow(this.created_at);
-    }
+  @computed('latitude', 'longitude') get coordinates() {
+    // eslint-disable-next-line ember/no-get
+    return [get(this, 'latitude'), get(this, 'longitude')];
+  }
 
-    @computed('created_at') get createdAt() {
-        return format(this.created_at, 'PPP p');
-    }
+  @computed('latitude', 'longitude') get latlng() {
+    return {
+      // eslint-disable-next-line ember/no-get
+      lat: get(this, 'latitude'),
+      // eslint-disable-next-line ember/no-get
+      lng: get(this, 'longitude'),
+    };
+  }
 
-    @computed('created_at') get createdAtShort() {
-        return format(this.created_at, 'PP');
-    }
+  @computed('latitude', 'longitude') get latitudelongitude() {
+    return {
+      // eslint-disable-next-line ember/no-get
+      latitude: get(this, 'latitude'),
+      // eslint-disable-next-line ember/no-get
+      longitude: get(this, 'longitude'),
+    };
+  }
 
-    @computed('location') get latitude() {
-        if (this.location) {
-            let x = get(this.location, 'coordinates.0');
-            let y = get(this.location, 'coordinates.1');
+  @computed('coordinates') get hasValidCoordinates() {
+    return isValidCoordinates(this.coordinates);
+  }
 
-            return isLatitude(x) ? x : y;
-        }
+  @not('hasValidCoordinates') hasInvalidCoordinates;
 
-        return 0;
-    }
+  @computed('jobs.@each.status') get activeJobs() {
+    return this.jobs.filter(
+      (order) => !['completed', 'canceled'].includes(order.status)
+    );
+  }
 
-    @computed('location') get longitude() {
-        if (this.location) {
-            let x = get(this.location, 'coordinates.0');
-            let y = get(this.location, 'coordinates.1');
+  /** @methods */
+  loadVehicle() {
+    const owner = getOwner(this);
+    const store = owner.lookup(`service:store`);
 
-            return isLongitude(y) ? y : x;
-        }
+    return new Promise((resolve) => {
+      if (isRelationMissing(this, 'vehicle')) {
+        return store
+          .findRecord('vehicle', this.vehicle_uuid)
+          .then((vehicle) => {
+            this.vehicle = vehicle;
 
-        return 0;
-    }
+            resolve(vehicle);
+          })
+          .catch(() => {
+            resolve(null);
+          });
+      }
 
-    @computed('latitude', 'longitude') get coordinates() {
-        // eslint-disable-next-line ember/no-get
-        return [get(this, 'latitude'), get(this, 'longitude')];
-    }
+      resolve(this.vehicle);
+    });
+  }
 
-    @computed('latitude', 'longitude') get latlng() {
-        return {
-            // eslint-disable-next-line ember/no-get
-            lat: get(this, 'latitude'),
-            // eslint-disable-next-line ember/no-get
-            lng: get(this, 'longitude'),
-        };
-    }
+  loadVendor() {
+    const owner = getOwner(this);
+    const store = owner.lookup(`service:store`);
 
-    @computed('latitude', 'longitude') get latitudelongitude() {
-        return {
-            // eslint-disable-next-line ember/no-get
-            latitude: get(this, 'latitude'),
-            // eslint-disable-next-line ember/no-get
-            longitude: get(this, 'longitude'),
-        };
-    }
+    return new Promise((resolve) => {
+      if (isRelationMissing(this, 'vendor')) {
+        return store
+          .findRecord('vendor', this.vendor_uuid)
+          .then((vendor) => {
+            this.vendor = vendor;
 
-    @computed('coordinates') get hasValidCoordinates() {
-        return isValidCoordinates(this.coordinates);
-    }
+            resolve(vendor);
+          })
+          .catch(() => {
+            resolve(null);
+          });
+      }
 
-    @not('hasValidCoordinates') hasInvalidCoordinates;
-
-    @computed('jobs.@each.status') get activeJobs() {
-        return this.jobs.filter((order) => !['completed', 'canceled'].includes(order.status));
-    }
-
-    /** @methods */
-    loadVehicle() {
-        const owner = getOwner(this);
-        const store = owner.lookup(`service:store`);
-
-        return new Promise((resolve) => {
-            if (isRelationMissing(this, 'vehicle')) {
-                return store
-                    .findRecord('vehicle', this.vehicle_uuid)
-                    .then((vehicle) => {
-                        this.vehicle = vehicle;
-
-                        resolve(vehicle);
-                    })
-                    .catch(() => {
-                        resolve(null);
-                    });
-            }
-
-            resolve(this.vehicle);
-        });
-    }
-
-    loadVendor() {
-        const owner = getOwner(this);
-        const store = owner.lookup(`service:store`);
-
-        return new Promise((resolve) => {
-            if (isRelationMissing(this, 'vendor')) {
-                return store
-                    .findRecord('vendor', this.vendor_uuid)
-                    .then((vendor) => {
-                        this.vendor = vendor;
-
-                        resolve(vendor);
-                    })
-                    .catch(() => {
-                        resolve(null);
-                    });
-            }
-
-            resolve(this.vendor);
-        });
-    }
+      resolve(this.vendor);
+    });
+  }
 }

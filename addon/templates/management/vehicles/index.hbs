@@ -16,21 +16,7 @@
     <Button @icon="long-arrow-up" @iconClass="rotate-icon-45" @wrapperClass="hidden md:flex" @text="Export" @onClick={{this.exportVehicles}} />
 </Layout::Section::Header>
 
-<Next::TableWrapper @pagination={{true}} @onToggleAll={{this.toggleAll}} @allToggled={{this.allToggled}}>
-    <LightTable @table={{this.table}} @resizeOnDrag={{true}} as |t|>
-        <t.head
-            @fixed={{true}}
-            @resizeOnDrag={{true}}
-            @onColumnClick={{this.onColumnClick}}
-            @iconComponent="light-table-icon"
-            @iconSortable="sort"
-            @iconAscending="sort-up"
-            @iconDescending="sort-down"
-        />
-        <t.body @scrollBuffer={{500}} @canSelect={{true}} @multiSelect={{true}} @multiSelectRequiresKeyboard={{false}} />
-        <t.foot @fixed={{true}} as |columns|>
-            <Next::Pagination @columns={{columns}} @meta={{@model.meta}} @page={{this.page}} @onPageChange={{fn (mut this.page)}} />
-        </t.foot>
-    </LightTable>
-</Next::TableWrapper>
+<Layout::Section::Body>
+    <Table @rows={{@model}} @columns={{this.columns}} @selectable={{true}} @canSelectAll={{true}} @onSetup={{fn (mut this.table)}} />
+</Layout::Section::Body>
 {{outlet}}

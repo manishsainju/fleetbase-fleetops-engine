@@ -135,7 +135,7 @@ export default class ManagementVendorsIndexController extends Controller {
             label: 'Name',
             valuePath: 'name',
             width: '200px',
-            cellComponent: 'cell/media-name',
+            cellComponent: 'table/cell/media-name',
             action: this.viewVendor,
             resizable: true,
             sortable: true,

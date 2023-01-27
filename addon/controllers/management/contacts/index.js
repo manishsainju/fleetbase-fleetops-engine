@@ -126,22 +126,11 @@ export default class ManagementContactsIndexController extends Controller {
      * @var {Array}
      */
     @tracked columns = A([
-        { 
-            label: '', 
-            valuePath: 'selected', 
-            width: '40px', 
-            cellComponent: 'table/cell/checkbox', 
-            resizable: false,
-            searchable: false,
-            filterable: false, 
-            sortable: false 
-        },
-        
         {
             label: 'Name',
             valuePath: 'name',
             width: '170px',
-            cellComponent: 'cell/media-name',
+            cellComponent: 'table/cell/media-name',
             action: this.viewContact,
             resizable: true,
             sortable: true,

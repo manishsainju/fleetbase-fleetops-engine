@@ -115,22 +115,12 @@ export default class ManagementVehiclesIndexController extends Controller {
      * @var {Array}
      */
     @tracked columns = A([
-        { 
-            label: '', 
-            valuePath: 'selected', 
-            width: '40px', 
-            cellComponent: 'table/cell/checkbox', 
-            resizable: false,
-            searchable: false,
-            filterable: false, 
-            sortable: false 
-        },
         {
             label: 'Name',
             valuePath: 'display_name',
             photoPath: 'avatar_url',
             width: '200px',
-            cellComponent: 'cell/media-name',
+            cellComponent: 'table/cell/media-name',
             action: this.viewVehicle,
             resizable: true,
             sortable: true,
