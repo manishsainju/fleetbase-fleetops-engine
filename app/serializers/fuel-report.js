@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/serializers/fuel-report';
+export { default } from '@fleetbase/fleetops-engine/serializers/fuel-report';

@@ -140,7 +140,7 @@ export default class OperationsOrdersIndexController extends Controller {
         },
         {
             label: 'Dropoff',
-            valuePath: 'dropoff_name',
+            valuePath: 'dropoffName',
             cellComponent: 'table/cell/base',
             width: '160px',
             resizable: true,
@@ -182,7 +182,7 @@ export default class OperationsOrdersIndexController extends Controller {
         {
             label: 'Tracking Number',
             cellComponent: 'table/cell/base',
-            valuePath: 'tracking',
+            valuePath: 'tracking_number.tracking_number',
             width: '170px',
             resizable: true,
             sortable: true,
@@ -191,8 +191,9 @@ export default class OperationsOrdersIndexController extends Controller {
         },
         {
             label: 'Driver Assigned',
-            valuePath: 'driver_name',
-            cellComponent: 'table/cell/base',
+            cellComponent: 'cell/driver-name',
+            valuePath: 'driver_assigned',
+            modelPath: 'driver_assigned',
             width: '170px',
             resizable: true,
             sortable: true,
@@ -227,7 +228,7 @@ export default class OperationsOrdersIndexController extends Controller {
             valuePath: 'createdAt',
             sortParam: 'created_at',
             filterParam: 'created_at',
-            width: '125px',
+            width: '140px',
             resizable: true,
             sortable: true,
             filterable: true,

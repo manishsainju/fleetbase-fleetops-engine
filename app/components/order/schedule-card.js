@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/order/schedule-card';
+export { default } from '@fleetbase/fleetops-engine/components/order/schedule-card';

@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/utils/geojson/multi-point';
+export { default } from '@fleetbase/fleetops-engine/utils/geojson/multi-point';

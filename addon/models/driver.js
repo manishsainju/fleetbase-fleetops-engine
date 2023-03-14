@@ -43,7 +43,10 @@ export default class DriverModel extends Model {
   })
   photo_url;
   @attr('string') vehicle_name;
-  @attr('string') vehicle_avatar;
+  @attr('string', {
+    defaultValue: get(config, 'defaultValues.vehicleImage'),
+  })
+  vehicle_avatar;
   @attr('string') vendor_name;
   @attr('string') drivers_license_number;
   @attr('point') location;
@@ -61,7 +64,7 @@ export default class DriverModel extends Model {
   /** @computed */
   @computed('photo_url') get photoUrl() {
     if (!this.photo_url) {
-      return 'https://s3.ap-southeast-1.amazonaws.com/flb-assets/static/no-avatar.png';
+      return get(config, 'defaultValues.driverImage');
     }
 
     return this.photo_url;

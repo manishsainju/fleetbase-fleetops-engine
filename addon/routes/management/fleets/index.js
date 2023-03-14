@@ -2,22 +2,22 @@ import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 
 export default class ManagementFleetsIndexRoute extends Route {
-    @service store;
+  @service store;
 
-    /**
-     * Queryable parameters
-     *
-     * @var {Object}
-     */
-    queryParams = {
-        page: { refreshModel: true },
-        limit: { refreshModel: true },
-        sort: { refreshModel: true },
-        query: { refreshModel: true },
-        status: { refreshModel: true },
-    };
+  /**
+   * Queryable parameters
+   *
+   * @var {Object}
+   */
+  queryParams = {
+    page: { refreshModel: true },
+    limit: { refreshModel: true },
+    sort: { refreshModel: true },
+    query: { refreshModel: true },
+    status: { refreshModel: true },
+  };
 
-    model(params) {
-        return this.store.query('fleet', { ...params });
-    }
+  model(params) {
+    return this.store.query('fleet', { ...params });
+  }
 }

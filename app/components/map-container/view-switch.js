@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/map-container/view-switch';
+export { default } from '@fleetbase/fleetops-engine/components/map-container/view-switch';

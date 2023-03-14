@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="grid grid-cols-2 flex-col md:flex-row gap-2 mb-6">
             <div class="field-info-container">
@@ -28,4 +28,4 @@
         </div>
         <FleetDriverListing @fleet={{@options.fleet}} @onAddDriver={{@options.addDriver}} @onRemoveDriver={{@options.removeDriver}} />
     </div>
-</Modal>
+</Modal::Default>

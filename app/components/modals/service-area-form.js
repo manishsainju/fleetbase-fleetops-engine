@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/modals/service-area-form';
+export { default } from '@fleetbase/fleetops-engine/components/modals/service-area-form';

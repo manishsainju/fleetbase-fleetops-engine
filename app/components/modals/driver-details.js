@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/modals/driver-details';
+export { default } from '@fleetbase/fleetops-engine/components/modals/driver-details';

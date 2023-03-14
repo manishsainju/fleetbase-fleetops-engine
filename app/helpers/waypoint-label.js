@@ -1,4 +1,4 @@
 export {
   default,
   waypointLabel,
-} from '@fleetbase/flb-fleetops-extension/helpers/waypoint-label';
+} from '@fleetbase/fleetops-engine/helpers/waypoint-label';

@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/templates/operations/scheduler';
+export { default } from '@fleetbase/fleetops-engine/templates/operations/scheduler';

@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="text-xs dark:text-gray-100">
             <div class="input-group">
@@ -51,4 +51,4 @@
         </div>
     </div>
     {{yield}}
-</Modal>
+</Modal::Default>

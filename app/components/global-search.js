@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/global-search';
+export { default } from '@fleetbase/fleetops-engine/components/global-search';

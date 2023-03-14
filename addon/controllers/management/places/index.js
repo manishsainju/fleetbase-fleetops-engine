@@ -5,7 +5,7 @@ import { action, computed } from '@ember/object';
 import { A, isArray } from '@ember/array';
 import { task, timeout } from 'ember-concurrency';
 import isModel from '@fleetbase/ember-core/utils/is-model';
-import Point from '@fleetbase/flb-fleetops-extension/utils/geojson/point';
+import Point from '@fleetbase/fleetops-engine/utils/geojson/point';
 
 export default class ManagementPlacesIndexController extends Controller {
 
@@ -372,7 +372,7 @@ export default class ManagementPlacesIndexController extends Controller {
         this.modalsManager.show('modals/place-details', {
             title: place.name,
             place,
-            titleComponent: 'modals/layout/title-with-buttons',
+            titleComponent: 'modal/title-with-buttons',
             acceptButtonText: 'Done',
             args: ['place'],
             headerButtons: [

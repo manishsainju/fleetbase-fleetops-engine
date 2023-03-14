@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/serializers/service-rate-fee';
+export { default } from '@fleetbase/fleetops-engine/serializers/service-rate-fee';

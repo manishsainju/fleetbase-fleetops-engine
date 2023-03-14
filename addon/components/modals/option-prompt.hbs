@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="flex items-center justify-center p-3">
             <select class="form-select w-full" {{on "change" @options.selectOption}}>
@@ -14,4 +14,4 @@
         </div>
     </div>
     {{yield}}
-</Modal>
+</Modal::Default>

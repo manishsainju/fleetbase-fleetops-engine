@@ -1,4 +1,4 @@
 export {
   default,
   isWaypointRecord,
-} from '@fleetbase/flb-fleetops-extension/helpers/is-waypoint-record';
+} from '@fleetbase/fleetops-engine/helpers/is-waypoint-record';

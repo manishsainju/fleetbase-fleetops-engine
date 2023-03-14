@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="grid grid-cols-1 text-xs dark:text-gray-100">
 
@@ -32,8 +32,8 @@
 
             <InputGroup @name="Odometer" @value={{@options.fuelReport.odometer}} />
             <InputGroup @name="Cost" @value={{@options.fuelReport.amount}} />
-            {{!-- <Ui::InputGroup @name="Volume" @value={{@options.fuelReport.volume}} />
-            <Ui::InputGroup @name="Metric Unit" @value={{@options.fuelReport.metric_unit}} /> --}}
+            {{!-- <InputGroup @name="Volume" @value={{@options.fuelReport.volume}} />
+            <InputGroup @name="Metric Unit" @value={{@options.fuelReport.metric_unit}} /> --}}
 
             <InputGroup @name="Volume" @helpText="Select the metric unit and volume of fuel to report." @wrapperClass="w-full">
                 <UnitInput class="w-full" @measurement="volume" @value={{@options.fuelReport.volume}} @unit={{@options.fuelReport.metric_unit}} @canSelectUnit={{true}} @onUnitChange={{fn (mut @options.fuelReport.metric_unit)}} />
@@ -45,4 +45,4 @@
         </div>
     </div>
     {{yield}}
-</Modal>
+</Modal::Default>

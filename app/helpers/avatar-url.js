@@ -1,4 +1,4 @@
 export {
   default,
   avatarUrl,
-} from '@fleetbase/flb-fleetops-extension/helpers/avatar-url';
+} from '@fleetbase/fleetops-engine/helpers/avatar-url';

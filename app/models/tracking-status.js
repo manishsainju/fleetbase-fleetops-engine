@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/models/tracking-status';
+export { default } from '@fleetbase/fleetops-engine/models/tracking-status';

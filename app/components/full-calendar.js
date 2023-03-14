@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/full-calendar';
+export { default } from '@fleetbase/fleetops-engine/components/full-calendar';

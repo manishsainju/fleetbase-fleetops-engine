@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="flex flex-row justify-between mb-6">
             <div class="flex">
@@ -6,7 +6,7 @@
             </div>
             <div class="flex flex-1 justify-end space-x-2">
                 {{#if @options.order.payload.isMultiDrop}}
-                    {{!-- <Ui::Button @type="magic" @icon="magic" @text="Optimize Route" @size="sm" @onClick={{fn @options.optimizeRoute}} @helpText="Fleetbase will automatically optimize the route." @disabled={{lt @options.order.payload.waypoints.length 3}} @isLoading={{@options.isOptimizingRoute}} /> --}}
+                    {{!-- <Button @type="magic" @icon="magic" @text="Optimize Route" @size="sm" @onClick={{fn @options.optimizeRoute}} @helpText="Fleetbase will automatically optimize the route." @disabled={{lt @options.order.payload.waypoints.length 3}} @isLoading={{@options.isOptimizingRoute}} /> --}}
                     <Button @icon="map-marked-alt" @text="Add Waypoint" @size="sm" @onClick={{@options.addWaypoint}} @helpText="Use the `Add Waypoint` button to add more stops for this order. The Fleetbase routing engine will automatically optimize the route as each stop is added or removed." />
                 {{/if}}
             </div>
@@ -108,4 +108,4 @@
             </div>
         {{/if}}
     </div>
-</Modal>
+</Modal::Default>

@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="grid grid-cols-1 gap-2 text-xs dark:text-gray-100">
             <InputGroup @name="Select Vendor" @value={{@options.place.vendor_uuid}}>
@@ -17,4 +17,4 @@
         </div>
     </div>
     {{yield}}
-</Modal>
+</Modal::Default>

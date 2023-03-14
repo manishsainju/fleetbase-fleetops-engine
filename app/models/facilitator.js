@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/models/facilitator';
+export { default } from '@fleetbase/fleetops-engine/models/facilitator';

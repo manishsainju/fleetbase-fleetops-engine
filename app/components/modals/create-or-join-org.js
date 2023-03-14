@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/modals/create-or-join-org';
+export { default } from '@fleetbase/fleetops-engine/components/modals/create-or-join-org';

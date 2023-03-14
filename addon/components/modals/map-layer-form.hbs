@@ -1,8 +1,8 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="mb-4 border border-gray-700 shadow-sm rounded-md pt-2 px-4">
             <InputGroup @name="Layer Type" @helpText="Select the type of layer you wish to create.">
-                <Ui::Select @options={{@options.layerTypes}} @value={{@options.selectedLayerType}} @onSelect={{fn (mut @options.selectedLayerType)}} @placeholder="Select layer type..." class="w-full" />
+                <Select @options={{@options.layerTypes}} @value={{@options.selectedLayerType}} @onSelect={{fn (mut @options.selectedLayerType)}} @placeholder="Select layer type..." class="w-full" />
             </InputGroup>
         </div>
         {{#if (eq @options.selectedLayerType "Zone")}}
@@ -26,4 +26,4 @@
             </InputGroup>
         {{/if}}
     </div>
-</Modal>
+</Modal::Default>

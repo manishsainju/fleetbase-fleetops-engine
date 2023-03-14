@@ -48,21 +48,19 @@
                 </div>
             {{/if}}
 
-            <EmberScrollable @vertical={{true}}>
-                <div class="p-4 mb-20">
-                    {{#if this.orderConfig}}
-                        {{#if this.isDetailsTab}}
-                            <OrderConfig::DetailsEditor @orderConfig={{this.orderConfig}} @onUninstall={{this.uninstallConfiguration}} @onDelete={{this.deleteExtension}} @onClone={{this.cloneConfiguration}} />
-                        {{else if (eq this.activeTab "meta")}}
-                            <OrderConfig::FieldsEditor @orderConfig={{this.orderConfig}} @onFieldsChanged={{this.setMetaFields}} />
-                        {{else if (eq this.activeTab "activity")}}
-                            <OrderConfig::ActivityFlowEditor @orderConfig={{this.orderConfig}} @onFlowChanged={{this.setFlow}} />
-                        {{else if (eq this.activeTab "entities")}}
-                            <OrderConfig::EntitiesEditor @orderConfig={{this.orderConfig}} @onEntitiesChanged={{this.setEntities}} />
-                        {{/if}}
+            <div class="p-4 mb-20">
+                {{#if this.orderConfig}}
+                    {{#if this.isDetailsTab}}
+                        <OrderConfig::DetailsEditor @orderConfig={{this.orderConfig}} @onUninstall={{this.uninstallConfiguration}} @onDelete={{this.deleteExtension}} @onClone={{this.cloneConfiguration}} />
+                    {{else if (eq this.activeTab "meta")}}
+                        <OrderConfig::FieldsEditor @orderConfig={{this.orderConfig}} @onFieldsChanged={{this.setMetaFields}} />
+                    {{else if (eq this.activeTab "activity")}}
+                        <OrderConfig::ActivityFlowEditor @orderConfig={{this.orderConfig}} @onFlowChanged={{this.setFlow}} />
+                    {{else if (eq this.activeTab "entities")}}
+                        <OrderConfig::EntitiesEditor @orderConfig={{this.orderConfig}} @onEntitiesChanged={{this.setEntities}} />
                     {{/if}}
-                </div>
-            </EmberScrollable>
+                {{/if}}
+            </div>
         </div>
     </div>
 </div>

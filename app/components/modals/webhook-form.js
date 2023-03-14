@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/modals/webhook-form';
+export { default } from '@fleetbase/fleetops-engine/components/modals/webhook-form';

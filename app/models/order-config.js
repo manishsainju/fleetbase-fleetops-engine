@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/models/order-config';
+export { default } from '@fleetbase/fleetops-engine/models/order-config';

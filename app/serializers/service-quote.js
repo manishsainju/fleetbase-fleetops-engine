@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/serializers/service-quote';
+export { default } from '@fleetbase/fleetops-engine/serializers/service-quote';

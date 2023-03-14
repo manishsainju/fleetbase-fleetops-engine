@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/utils/geojson/geometry-collection';
+export { default } from '@fleetbase/fleetops-engine/utils/geojson/geometry-collection';

@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}} as |options|>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}} as |options|>
     <div class="modal-body-container">
         <div class="input-group">
             <label>
@@ -7,4 +7,4 @@
             <Input @value={{options.apiKey.name}} type="text" class="w-full form-input" placeholder="Enter a nickname or environment name for API Key" />
         </div>
     </div>
-</Modal>
+</Modal::Default>

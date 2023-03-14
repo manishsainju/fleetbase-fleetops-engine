@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <InputGroup @value={{@options.serviceArea.name}} @name="Service Area Name" @helpText="Set a display name for the service area." @required={{true}} />
         <InputGroup @name="Service Area Type" @helpText="Select the type definition for this service area .">
@@ -28,4 +28,4 @@
             <CountrySelect class="w-full form-input" @value={{@options.serviceArea.country}} @onChange={{fn (mut @options.serviceArea.country)}} />
         </InputGroup>
     </div>
-</Modal>
+</Modal::Default>

@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/serializers/tracking-status';
+export { default } from '@fleetbase/fleetops-engine/serializers/tracking-status';

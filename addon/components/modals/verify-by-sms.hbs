@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="bg-yellow-50 rounded shadow-sm border-l-4 border-yellow-400 p-4 mb-5">
             <div class="flex">
@@ -23,4 +23,4 @@
             <PhoneInput @value={{@options.phone}} @onInput={{fn (mut @options.phone)}} class="form-input input-lg w-full" />
         </InputGroup>
     </div>
-</Modal>
+</Modal::Default>

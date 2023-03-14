@@ -2,8 +2,8 @@ import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import GeoJson from '@fleetbase/flb-fleetops-extension/utils/geojson/geo-json';
-import FeatureCollection from '@fleetbase/flb-fleetops-extension/utils/geojson/feature-collection';
+import GeoJson from '@fleetbase/fleetops-engine/utils/geojson/geo-json';
+import FeatureCollection from '@fleetbase/fleetops-engine/utils/geojson/feature-collection';
 import last from '@fleetbase/ember-core/utils/last';
 import refreshRoute from '@fleetbase/ember-core/utils/refresh-route';
 

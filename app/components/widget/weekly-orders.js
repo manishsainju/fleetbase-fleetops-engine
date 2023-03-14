@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/widget/weekly-orders';
+export { default } from '@fleetbase/fleetops-engine/components/widget/weekly-orders';

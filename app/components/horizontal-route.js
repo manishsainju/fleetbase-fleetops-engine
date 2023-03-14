@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/horizontal-route';
+export { default } from '@fleetbase/fleetops-engine/components/horizontal-route';

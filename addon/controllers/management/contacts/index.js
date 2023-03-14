@@ -384,7 +384,7 @@ export default class ManagementContactsIndexController extends Controller {
     @action viewContact(contact, options) {
         this.modalsManager.show('modals/contact-details', {
             title: contact.name,
-            titleComponent: 'modals/layout/title-with-buttons',
+            titleComponent: 'modal/title-with-buttons',
             acceptButtonText: 'Done',
             acceptButtonIcon: 'check',
             acceptButtonIconPrefix: 'fas',

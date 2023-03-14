@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/controllers/operations/zones/index';
+export { default } from '@fleetbase/fleetops-engine/controllers/operations/zones/index';

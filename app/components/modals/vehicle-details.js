@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/modals/vehicle-details';
+export { default } from '@fleetbase/fleetops-engine/components/modals/vehicle-details';

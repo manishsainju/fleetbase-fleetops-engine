@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="flex flex-col md:flex-row">
             <div class="w-32 mb-6 mr-6">
@@ -44,7 +44,7 @@
 
                         <div class="field-info-container">
                             <div class="field-name">Status</div>
-                            <Ui::Badge @status={{@options.vehicle.status}} />
+                            <Badge @status={{@options.vehicle.status}} />
                         </div>
                     </div>
 
@@ -222,4 +222,4 @@
         </div>
     </div>
     {{yield}}
-</Modal>
+</Modal::Default>

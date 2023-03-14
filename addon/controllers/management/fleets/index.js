@@ -414,7 +414,7 @@ export default class ManagementFleetsIndexController extends Controller {
     @action viewFleet(fleet, options = {}) {
         this.modalsManager.show('modals/fleet-details', {
             title: fleet.name,
-            titleComponent: 'modals/layout/title-with-buttons',
+            titleComponent: 'modal/title-with-buttons',
             args: ['fleet'],
             headerStatus: fleet.status,
             headerButtons: [

@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         {{#if @options.isIntegratedVendor}}
             <div class="integrated-vendor-button border-0 mb-1">
@@ -48,7 +48,7 @@
                 <div class="field-info-container">
                     <div class="field-name">Country</div>
                     <div class="field-value">
-                        <Ui::CountryName @country={{@options.vendor.country}} @showFlag={{true}} />
+                        <CountryName @country={{@options.vendor.country}} @showFlag={{true}} />
                     </div>
                 </div>
 
@@ -65,4 +65,4 @@
         {{/if}}
     </div>
     {{yield}}
-</Modal>
+</Modal::Default>

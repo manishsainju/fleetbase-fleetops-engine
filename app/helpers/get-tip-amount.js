@@ -1,4 +1,4 @@
 export {
   default,
   getTipAmount,
-} from '@fleetbase/flb-fleetops-extension/helpers/get-tip-amount';
+} from '@fleetbase/fleetops-engine/helpers/get-tip-amount';

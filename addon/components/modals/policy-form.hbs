@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}} as |options|>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}} as |options|>
     <div class="modal-body-container" ...attributes>
         <div class="input-group">
             <label>
@@ -19,4 +19,4 @@
             <PermissionPicker @selected={{@options.policy.permissions}} @onChange={{fn (mut @options.policy.permissions)}} />
         </div>
     </div>
-</Modal>
+</Modal::Default>

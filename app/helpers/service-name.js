@@ -1,4 +1,4 @@
 export {
   default,
   serviceName,
-} from '@fleetbase/flb-fleetops-extension/helpers/service-name';
+} from '@fleetbase/fleetops-engine/helpers/service-name';

@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         {{#each @options.paymentMethods as |paymentMethod|}}
             <a href="javascript:;" {{on "click" (fn @options.selectPaymentMethod paymentMethod)}} class="flex items-center justify-between px-3 py-2 shadow-sm rounded-md border border-gray-900 {{if (eq @options.selectedPaymentMethod.id paymentMethod.id) 'border-blue-500 shadow-outline-blue'}}">
@@ -9,4 +9,4 @@
             </a>
         {{/each}}
     </div>
-</Modal>
+</Modal::Default>

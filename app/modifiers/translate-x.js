@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/modifiers/translate-x';
+export { default } from '@fleetbase/fleetops-engine/modifiers/translate-x';

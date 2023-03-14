@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/models/fuel-report';
+export { default } from '@fleetbase/fleetops-engine/models/fuel-report';

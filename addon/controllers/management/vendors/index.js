@@ -427,7 +427,7 @@ export default class ManagementVendorsIndexController extends Controller {
 
         this.modalsManager.show('modals/vendor-details', {
             title: vendor.name,
-            titleComponent: 'modals/layout/title-with-buttons',
+            titleComponent: 'modal/title-with-buttons',
             acceptButtonText: 'Done',
             args: ['vendor'],
             headerButtons: [

@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="flex">
             <div class="w-48 mb-6 mr-6">
@@ -54,7 +54,7 @@
 
                     <div class="field-info-container">
                         <div class="field-name">Country</div>
-                        <div class="field-value"><Ui::CountryName @country={{@options.place.country}} @showFlag={{true}} /></div>
+                        <div class="field-value"><CountryName @country={{@options.place.country}} @showFlag={{true}} /></div>
                     </div>
                 </div>
 
@@ -102,4 +102,4 @@
         </div>
     </div>
     {{yield}}
-</Modal>
+</Modal::Default>

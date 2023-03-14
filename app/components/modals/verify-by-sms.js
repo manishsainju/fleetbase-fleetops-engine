@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/modals/verify-by-sms';
+export { default } from '@fleetbase/fleetops-engine/components/modals/verify-by-sms';

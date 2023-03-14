@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/modals/rename-api-key-form';
+export { default } from '@fleetbase/fleetops-engine/components/modals/rename-api-key-form';

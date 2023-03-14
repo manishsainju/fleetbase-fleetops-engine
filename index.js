@@ -14,6 +14,14 @@ module.exports = buildEngine({
   included: function (app) {
     this._super.included.apply(this, arguments);
 
+    // socketcluster
+    this.import(
+      'node_modules/socketcluster-client/socketcluster-client.min.js',
+      {
+        using: [{ transformation: 'es6', as: 'socketcluster' }],
+      }
+    );
+
     // leaflet-contextmenu
     this.import(
       'node_modules/leaflet-contextmenu/dist/leaflet.contextmenu.js',

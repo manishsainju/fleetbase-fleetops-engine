@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/utils/extract-coordinates';
+export { default } from '@fleetbase/fleetops-engine/utils/extract-coordinates';

@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/modals/place-assign-vendor';
+export { default } from '@fleetbase/fleetops-engine/components/modals/place-assign-vendor';

@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/utils/geojson/points-equal';
+export { default } from '@fleetbase/fleetops-engine/utils/geojson/points-equal';

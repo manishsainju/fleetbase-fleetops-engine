@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/widget/transactions';
+export { default } from '@fleetbase/fleetops-engine/components/widget/transactions';

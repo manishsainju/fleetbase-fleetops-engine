@@ -131,6 +131,7 @@ export default class ManagementVehiclesIndexController extends Controller {
         {
             label: 'Plate Number',
             valuePath: 'plate_number',
+            cellComponent: 'table/cell/base',
             width: '100px',
             resizable: true,
             sortable: true,
@@ -445,7 +446,7 @@ export default class ManagementVehiclesIndexController extends Controller {
 
         this.modalsManager.show('modals/vehicle-details', {
             title: withDefaultValue(vehicle.display_name),
-            titleComponent: 'modals/layout/title-with-buttons',
+            titleComponent: 'modal/title-with-buttons',
             modalClass: 'modal-lg',
             acceptButtonText: 'Done',
             args: ['vehicle'],

@@ -1,5 +1,5 @@
 {
-    "name": "@fleetbase/flb-fleetops-extension",
+    "name": "@fleetbase/fleetops-engine",
     "extension": "Fleet Ops",
     "icon": "route",
     "version": "0.0.1",
@@ -29,7 +29,7 @@
         "test:ember-compatibility": "ember try:each"
     },
     "dependencies": {
-        "@fleetbase/ember-ui": "../ember-ui",
+        "@fleetbase/ember-ui": "file:../ember-ui",
         "@fleetbase/leaflet-routing-machine": "^3.2.15",
         "@fortawesome/ember-fontawesome": "^0.4.1",
         "@fortawesome/free-solid-svg-icons": "^6.2.0",
@@ -48,7 +48,7 @@
         "leaflet-contextmenu": "^1.4.0",
         "leaflet-draw": "^1.0.4",
         "leaflet-rotatedmarker": "^0.2.0",
-        "socketcluster": "^17.2.0"
+        "socketcluster-client": "^17.1.1"
     },
     "devDependencies": {
         "@ember/optional-features": "^2.0.0",
@@ -70,7 +70,6 @@
         "ember-data": "^4.6.1",
         "ember-disable-prototype-extensions": "^1.1.3",
         "ember-engines": "^0.8.23",
-        "ember-file-upload": "^7.1.0",
         "ember-load-initializers": "^2.1.2",
         "ember-page-title": "^7.0.0",
         "ember-qunit": "^5.1.5",
@@ -94,7 +93,8 @@
         "webpack": "^5.74.0"
     },
     "peerDependencies": {
-        "@fleetbase/ember-core": "../ember-core",
+        "@fleetbase/ember-core": "file:../ember-core",
+        "@fleetbase/ember-ui": "file:../ember-ui",
         "ember-engines": "^0.8.23"
     },
     "resolutions": {

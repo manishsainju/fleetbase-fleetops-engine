@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="input-group">
             <InputLabel @labelText="Zone Name" @helpText="Set a display name for the zone." @required={{true}} />
@@ -13,4 +13,4 @@
             <Textarea @value={{@options.zone.description}} rows={{3}} type="text" class="w-full form-input" placeholder="Description of Zone" />
         </div>
     </div>
-</Modal>
+</Modal::Default>

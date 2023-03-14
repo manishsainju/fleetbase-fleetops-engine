@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/models/service-quote';
+export { default } from '@fleetbase/fleetops-engine/models/service-quote';

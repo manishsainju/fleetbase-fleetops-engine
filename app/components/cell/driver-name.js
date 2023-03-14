@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/cell/driver-name';
+export { default } from '@fleetbase/fleetops-engine/components/cell/driver-name';

@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/services/map-manager';
+export { default } from '@fleetbase/fleetops-engine/services/map-manager';

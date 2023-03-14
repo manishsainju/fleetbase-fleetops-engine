@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/models/contact';
+export { default } from '@fleetbase/fleetops-engine/models/contact';

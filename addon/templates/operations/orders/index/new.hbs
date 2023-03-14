@@ -46,7 +46,7 @@
         <Button @icon="box-check" @type="primary" @text={{if (media 'isMobile') "" "Submit"}} @onClick={{this.createOrder}} @isLoading={{this.isCreatingOrder}} @isSubscriptionRequired={{true}} @disabled={{not this.isValid}} />
     </Overlay::Header>
 
-    <Overlay::Body @wrapperClass="new-order-overlay-body px-4 space-y-4 pt-4">
+    <Overlay::Body @wrapperClass="new-order-overlay-body" @increaseInnerBodyHeightBy={{1000}}>
         <ContentPanel @title="Details" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-2">
                 <div class="input-group">
@@ -58,7 +58,7 @@
 
                 <InputGroup>
                     <InputLabel @labelText="Schedule" @helpText="The date and time the order will be dispatched. If no driver is assigned at time of dispatch, the dispatch will fail. If the order is Ad-Hoc the order will be pinged to drivers in vicinity of pickup." />
-                    <DateTimeInput class="form-input" @value={{this.order.scheduled_at}} @minDate={{date-format (now) "yyyy-MM-dd" }} @minTime={{date-format (now) "HH:mm" }} @onUpdate={{this.scheduleOrder}} @disabled={{this.order.dispatched}} />
+                    <DateTimeInput class="form-input" @value={{this.order.scheduled_at}} @minDate={{format-date (now) "yyyy-MM-dd" }} @minTime={{format-date (now) "HH:mm" }} @onUpdate={{this.scheduleOrder}} @disabled={{this.order.dispatched}} />
                 </InputGroup>
 
                 <InputGroup @name="Customer" @helpText="Optionally assign the customer of this order. If it's a new customer, use the 'New Customer' button above.">
@@ -162,9 +162,9 @@
                         {{#each group.items as |metaField|}}
                             <div class="input-group {{if (eq metaField.type "boolean") "col-span-2 items-center" ""}}">
                                 <div class="flex items-center justify-between">
-                                    {{#unless (eq metaField.type "boolean")}}
+                                    {{#if (not (eq metaField.type "boolean"))}}
                                         <InputLabel @labelText={{metaField.label}} @required={{metaField.required}} />
-                                    {{/unless}}
+                                    {{/if}}
 
                                     {{#if metaField.removable}}
                                         <div class="flex items-center pr-1">

@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/serializers/integrated-vendor';
+export { default } from '@fleetbase/fleetops-engine/serializers/integrated-vendor';

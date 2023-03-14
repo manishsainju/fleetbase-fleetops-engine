@@ -1,4 +1,1 @@
-export {
-  default,
-  formatPoint,
-} from '@fleetbase/flb-fleetops-extension/helpers/format-point';
+export { default } from '@fleetbase/fleetops-engine/helpers/format-point';

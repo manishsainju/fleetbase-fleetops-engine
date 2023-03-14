@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/controllers/application';
+export { default } from '@fleetbase/fleetops-engine/controllers/application';

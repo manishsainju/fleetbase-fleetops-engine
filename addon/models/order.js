@@ -31,7 +31,7 @@ export default class OrderModel extends Model {
   /** @relationships */
   @belongsTo('company') company;
   @belongsTo('customer', { polymorphic: true, async: true }) customer;
-  @belongsTo('facilitator', { polymorphic: true }) facilitator;
+  @belongsTo('facilitator', { polymorphic: true, async: false }) facilitator;
   @belongsTo('transaction', { async: false }) transaction;
   @belongsTo('payload', { async: false }) payload;
   @belongsTo('driver', { async: false, inverse: 'jobs' }) driver_assigned;
@@ -122,6 +122,27 @@ export default class OrderModel extends Model {
       return (
         payload.waypoints.firstObject.name ??
         payload.waypoints.firstObject.street1
+      );
+    }
+
+    if (meta.pickup_is_driver_location === true) {
+      return 'Dynamic';
+    }
+
+    return 'None';
+  }
+
+  get dropoffName() {
+    const { payload, meta } = this;
+
+    if (payload.dropoff) {
+      return payload.dropoff.name ?? payload.dropoff.street1;
+    }
+
+    if (payload.waypoints.lastObject) {
+      return (
+        payload.waypoints.lastObject.name ??
+        payload.waypoints.lastObject.street1
       );
     }
 

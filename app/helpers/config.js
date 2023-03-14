@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/helpers/config';
+export { default } from '@fleetbase/fleetops-engine/helpers/config';

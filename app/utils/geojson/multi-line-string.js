@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/utils/geojson/multi-line-string';
+export { default } from '@fleetbase/fleetops-engine/utils/geojson/multi-line-string';

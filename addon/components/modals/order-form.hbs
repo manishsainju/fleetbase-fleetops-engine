@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="grid grid-cols-2 gap-3 text-xs dark:text-gray-100">
             <InputGroup @name="Internal ID" @value={{@options.order.internal_id}} @helpText="Use this field to optionally set a custom identifier or internal identifier for the order." />
@@ -6,7 +6,7 @@
             <div class="input-group">
                 <InputLabel @labelText="Schedule" @helpText="The date and time the order will be dispatched. If no driver is assigned at time of dispatch, the dispatch will fail. If the order is Ad-Hoc the order will be pinged to drivers in vicinity of pickup." />
 
-                <DateTimeInput class="form-input" @value={{@options.order.scheduled_at}} @minDate={{moment-format (now) "YYYY-MM-DD"}} @minTime={{moment-format (now) "HH:mm"}} @onUpdate={{@options.scheduleOrder}} @disabled={{@options.order.isIntegratedVendorOrder}} />
+                <DateTimeInput class="form-input" @value={{@options.order.scheduled_at}} @minDate={{format-date (now) "yyyy-MM-d"}} @minTime={{format-date (now) "HH:mm"}} @onUpdate={{@options.scheduleOrder}} @disabled={{@options.order.isIntegratedVendorOrder}} />
             </div>
 
             <InputGroup @name="Customer" @helpText="Optionally assign the customer of this order. If it's a new customer, use the 'New Customer' button above.">
@@ -57,4 +57,4 @@
         </div>
     </div>
     {{yield}}
-</Modal>
+</Modal::Default>

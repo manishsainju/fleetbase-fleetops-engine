@@ -1,8 +1,9 @@
 import Model, { attr, belongsTo } from '@ember-data/model';
-import { computed } from '@ember/object';
+import { get, computed } from '@ember/object';
 import { format, formatDistanceToNow } from 'date-fns';
 import { getOwner } from '@ember/application';
 import isRelationMissing from '@fleetbase/ember-core/utils/is-relation-missing';
+import config from '../config/environment';
 
 export default class VehicleModel extends Model {
   /** @ids */
@@ -24,7 +25,10 @@ export default class VehicleModel extends Model {
   @attr('string') vendor_name;
   @attr('string') vendor_id;
   @attr('string') display_name;
-  @attr('string') avatar_url;
+  @attr('string', {
+    defaultValue: get(config, 'defaultValues.vehicleImage'),
+  })
+  avatar_url;
   @attr('string') make;
   @attr('string') model;
   @attr('string') year;

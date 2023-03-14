@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/utils/is-latitude';
+export { default } from '@fleetbase/fleetops-engine/utils/is-latitude';

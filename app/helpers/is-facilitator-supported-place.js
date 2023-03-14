@@ -1,4 +1,4 @@
 export {
   default,
   isFacilitatorSupportedPlace,
-} from '@fleetbase/flb-fleetops-extension/helpers/is-facilitator-supported-place';
+} from '@fleetbase/fleetops-engine/helpers/is-facilitator-supported-place';

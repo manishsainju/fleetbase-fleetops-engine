@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/models/waypoint';
+export { default } from '@fleetbase/fleetops-engine/models/waypoint';

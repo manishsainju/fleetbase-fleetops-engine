@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="bg-blue-50 rounded shadow-sm border-l-4 border-blue-400 p-4 mb-5">
             <div class="flex">
@@ -24,4 +24,4 @@
             <InputGroup @type="email" @name="Verify your email address" @value={{@options.email}} @helpText="Have a second look and confirm your email address is correct." @inputClass="input-lg" />
         {{/if}}
     </div>
-</Modal>
+</Modal::Default>

@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="next-map-container">
         <LeafletMap class="h-screen-65 w-full {{@options.mapClass}}" @lat={{this.latitude}} @lng={{this.longitude}} @zoom={{11}} @zoomControl={{false}} @onLoad={{this.setupMap}} ...attributes as |layers|>
             <layers.tile @url={{this.tileSourceUrl}} />
@@ -9,4 +9,4 @@
             {{/if}}
         </LeafletMap>
     </div>
-</Modal>
+</Modal::Default>

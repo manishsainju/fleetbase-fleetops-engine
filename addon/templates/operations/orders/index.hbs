@@ -2,9 +2,9 @@
     <MapContainer::ViewSwitch>
         <FaIcon @icon="bring-forward" class="mr-2 text-gray-400 dark:text-gray-600" />
         <button type="button" class="{{if this.isMapLayout 'active'}}" {{on "click" (fn this.setLayoutMode "map")}}>Map</button>
-        <button type="button" class="{{if this.isTableLayout 'active'}} flex-row items-center relative" {{on "click" (fn this.setLayoutMode "table")}}>
-            <div class="mr-5">Table</div>
-            <Badge class="absolute inset-y-0 right-0 flex items-center justify-center" @spanClass="rounded-full px-1 py-0i mr-1.5" @hideStatusDot={{true}} @status="info">{{@model.meta.total}}</Badge>
+        <button type="button" class="{{if this.isTableLayout 'active'}} flex flex-row items-center relative" {{on "click" (fn this.setLayoutMode "table")}}>
+            <div class="mr-1.5">Table</div>
+            <Badge class="flex items-center justify-center -mr-4" @spanClass="rounded-full px-1 py-0i" @hideStatusDot={{true}} @status="info">{{@model.meta.total}}</Badge>
         </button>
         {{!-- <button type="button" class="{{if this.isAnalyticsLayout 'active'}}" {{on "click" (fn this.setLayoutMode "analytics")}}>Analytics</button> --}}
     </MapContainer::ViewSwitch>
@@ -42,7 +42,7 @@
         <Button @icon="long-arrow-up" @iconClass="rotate-icon-45" @text="Export" @onClick={{this.exportOrders}} />
     </Layout::Section::Header>
     <Layout::Section::Body>
-        <Table @rows={{@model}} @columns={{this.columns}} @selectable={{true}} @canSelectAll={{true}} @onSetup={{fn (mut this.table)}} />
+        <Table @rows={{@model}} @columns={{this.columns}} @selectable={{true}} @canSelectAll={{true}} @onSetup={{fn (mut this.table)}} @pagination={{true}} @paginationMeta={{@model.meta}} @page={{this.page}} @onPageChange={{fn (mut this.page)}} />
     </Layout::Section::Body>
 {{/if}}
 

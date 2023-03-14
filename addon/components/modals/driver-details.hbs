@@ -1,35 +1,35 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="flex flex-col md:flex-row">
-            <div class="flex-1 lg:flex-none lg:w-40 mb-4 md:mb-0">
+            <div class="lg:flex-none lg:w-40 mb-4 md:mb-0">
                 <div class="w-32">
                     <img src={{@options.driver.photo_url}} alt={{@options.driver.name}} height="128" width="128" class="h-32 w-32 rounded-md" />
                 </div>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-6">
+            <div class="flex-1 grid grid-cols-2 md:grid-cols-3 gap-2">
                 <div class="field-info-container ">
                     <div class="field-name">Name</div>
-                    <div class="field-value">{{@options.driver.name}}</div>
+                    <div class="field-value">{{n-a @options.driver.name}}</div>
                 </div>
                 <div class="field-info-container">
                     <div class="field-name">ID</div>
-                    <div class="field-value">{{@options.driver.public_id}}</div>
+                    <div class="field-value">{{n-a @options.driver.public_id}}</div>
                 </div>
                 <div class="field-info-container">
                     <div class="field-name">Internal ID</div>
-                    <div class="field-value">{{@options.driver.internal_id}}</div>
+                    <div class="field-value">{{n-a @options.driver.internal_id}}</div>
                 </div>
                 <div class="field-info-container md:col-span-3">
                     <div class="field-name">Drivers License</div>
-                    <div class="field-value">{{@options.driver.drivers_license}}</div>
+                    <div class="field-value">{{n-a @options.driver.drivers_license}}</div>
                 </div>
                 <div class="field-info-container md:col-span-3">
                     <div class="field-name">Email</div>
-                    <div class="field-value">{{@options.driver.email}}</div>
+                    <div class="field-value">{{n-a @options.driver.email}}</div>
                 </div>
                 <div class="field-info-container md:col-span-3">
                     <div class="field-name">Phone</div>
-                    <div class="field-value">{{@options.driver.phone}}</div>
+                    <div class="field-value">{{n-a @options.driver.phone}}</div>
                 </div>
                 <div class="field-info-container md:col-span-3">
                     <div class="field-name">Status</div>
@@ -39,15 +39,15 @@
                 </div>
                 <div class="field-info-container">
                     <div class="field-name">Current Job</div>
-                    <div class="field-value">{{@options.driver.current_job_id}}</div>
+                    <div class="field-value">{{n-a @options.driver.current_job_id}}</div>
                 </div>
                 <div class="field-info-container">
-                    <div class="field-name">Vehicle Assigned</div>
+                    <div class="field-name">Vehicle</div>
                     <div class="field-value">
                         {{#if @options.driver.vehicle_uuid}}
                             <a href="javascript:;" {{on "click" @options.viewVehicle}}>{{@options.driver.vehicle_name}}</a>
                         {{else}}
-                            {{@options.driver.vehicle_name}}
+                            {{n-a @options.driver.vehicle_name}}
                         {{/if}}
                     </div>
                 </div>
@@ -57,13 +57,13 @@
                         {{#if @options.driver.vendor_uuid}}
                             <a href="javascript:;" {{on "click" @options.viewVendor}}>{{@options.driver.vendor_name}}</a>
                         {{else}}
-                            {{@options.driver.vendor_name}}
+                            {{n-a @options.driver.vendor_name}}
                         {{/if}}
                     </div>
                 </div>
                 <div class="field-info-container">
                     <div class="field-name">City</div>
-                    <div class="field-value">{{@options.driver.city}}</div>
+                    <div class="field-value">{{n-a @options.driver.city}}</div>
                 </div>
                 <div class="field-info-container">
                     <div class="field-name">Country</div>
@@ -82,140 +82,4 @@
             </div>
         </div>
     </div>
-</Modal>
-
-{{!-- <Ui::Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
-    <div class="modal-body-container">
-        <div class="flex">
-            <div class="w-32 mb-6 mr-6">
-                <img src={{@options.driver.photo_url}} alt={{@options.driver.name}} class="w-full rounded-md" />
-            </div>
-            <div class="flex-1">
-                <div class="grid grid-cols-3 gap-2 text-xs dark:text-gray-100">
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Name
-                        </label>
-                        <span class="block truncate">
-                            {{@options.driver.name}}
-                        </span>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Internal ID
-                        </label>
-                        <span class="block truncate">
-                            {{@options.driver.internal_id}}
-                        </span>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Drivers License
-                        </label>
-                        <span class="block truncate">
-                            {{@options.driver.drivers_license}}
-                        </span>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Email
-                        </label>
-                        <span class="block truncate">
-                            {{@options.driver.email}}
-                        </span>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Phone
-                        </label>
-                        <span class="block truncate">
-                            {{@options.driver.phone}}
-                        </span>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Status
-                        </label>
-                        <Ui::Badge @status={{@options.driver.status}} />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2 text-xs dark:text-gray-100">
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Current Job
-                        </label>
-                        <span class="block truncate">
-                            {{@options.driver.current_job_id}}
-                        </span>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Vehicle Assigned
-                        </label>
-                        <span class="block truncate">
-                            {{#if @options.driver.vehicle_uuid}}
-                                <a href="javascript:;" {{on "click" (fn @options.viewVehicle)}}>{{@options.driver.vehicle_name}}</a>
-                            {{else}}
-                                {{@options.driver.vehicle_name}}
-                            {{/if}}
-                        </span>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Vendor
-                        </label>
-                        <span class="block truncate">
-                            {{#if @options.driver.vendor_uuid}}
-                                <a href="javascript:;" {{on "click" (fn @options.viewVendor)}}>{{@options.driver.vendor_name}}</a>
-                            {{else}}
-                                {{@options.driver.vendor_name}}
-                            {{/if}}
-                        </span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2 text-xs dark:text-gray-100">
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            City
-                        </label>
-                        <span class="block truncate">
-                            {{@options.driver.city}}
-                        </span>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="block mb-2 font-bold">
-                            Country
-                        </label>
-                        <Ui::CountryName @country={{@options.driver.country}} @showFlag={{true}} />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 text-xs dark:text-gray-100">
-                    <div class="mb-5">
-                        <label class="flex items-center mb-2 font-bold">
-                            Coordinates
-                            <a href="javascript:;" class="block ml-3" {{on "click" (fn @options.viewDriverOnMap)}}>
-                                <FaIcon @icon="map" class="mr-1" />
-                                View on map
-                            </a>
-                        </label>
-                        <span class="block truncate">
-                            {{point-coordinates @options.driver.location}}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{yield}}
-</Ui::Modal> --}}
+</Modal::Default>

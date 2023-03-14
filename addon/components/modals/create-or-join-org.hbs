@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}} as |options|>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}} as |options|>
     <div class="modal-body-container">
         <InputGroup>
             <div class="space-x-4 flex">
@@ -30,8 +30,8 @@
                 <PhoneInput @value={{@options.phone}} @onInput={{fn (mut @options.phone)}} class="form-input w-full" />
             </InputGroup>
             <InputGroup @name="Organization currency">
-                <Ui::CurrencySelect @value={{@options.currency}} @onSelect={{fn (mut @options.currency)}} class="w-full" />
+                <CurrencySelect @value={{@options.currency}} @onSelect={{fn (mut @options.currency)}} class="w-full" />
             </InputGroup>
         {{/if}}
     </div>
-</Modal>
+</Modal::Default>

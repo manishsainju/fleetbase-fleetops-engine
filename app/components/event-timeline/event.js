@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/event-timeline/event';
+export { default } from '@fleetbase/fleetops-engine/components/event-timeline/event';

@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}} as |options|>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}} as |options|>
     <div class="p-5 border-b border-gray-200 dark:border-gray-800">
         <div class="mb-5 input-group">
             <InputLabel @labelText="Endpoint URL" @helpText="The URL Fleetbase should send event callbacks to." @required={{true}} />
@@ -127,5 +127,5 @@
             </div>
         </div>
     </div>
-</Modal>
+</Modal::Default>
 {{yield}}

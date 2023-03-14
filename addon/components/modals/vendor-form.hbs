@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         {{#if @options.action}}
             <InputGroup>
@@ -129,10 +129,10 @@
                     </InputGroup>
 
                     <InputGroup @name="Country" @wrapperClass="mb-0">
-                        <Ui::CountrySelect class="w-full form-input form-select form-datalist" @value={{@options.vendor.country}} @onChange={{fn (mut @options.vendor.country)}} placeholder="Country" />
+                        <CountrySelect class="w-full form-input form-select form-datalist" @value={{@options.vendor.country}} @onChange={{fn (mut @options.vendor.country)}} placeholder="Country" />
                     </InputGroup>
                 </div>
             {{/if}}
         {{/if}}
     </div>
-</Modal>
+</Modal::Default>

@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/serializers/purchase-rate';
+export { default } from '@fleetbase/fleetops-engine/serializers/purchase-rate';

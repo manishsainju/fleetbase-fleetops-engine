@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/models/zone';
+export { default } from '@fleetbase/fleetops-engine/models/zone';

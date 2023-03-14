@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/modals/edit-meta-form';
+export { default } from '@fleetbase/fleetops-engine/components/modals/edit-meta-form';

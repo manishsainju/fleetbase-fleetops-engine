@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/utils/extend';
+export { default } from '@fleetbase/fleetops-engine/utils/extend';

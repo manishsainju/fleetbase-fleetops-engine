@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/serializers/fleet-driver';
+export { default } from '@fleetbase/fleetops-engine/serializers/fleet-driver';

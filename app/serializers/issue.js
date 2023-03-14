@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/serializers/issue';
+export { default } from '@fleetbase/fleetops-engine/serializers/issue';

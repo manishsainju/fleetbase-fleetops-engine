@@ -1,4 +1,4 @@
-<Modal @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <div class="flex flex-row mb-5">
             <Button @text="Add metafield" @icon="plus" @iconPrefix="fas" @onClick={{fn @options.addMetaField @options.meta}} />
@@ -17,4 +17,4 @@
             {{/each}}
         </div>
     </div>
-</Modal>
+</Modal::Default>

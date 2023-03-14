@@ -1,1 +1,1 @@
-export { default } from '@fleetbase/flb-fleetops-extension/components/widget/key-metrics';
+export { default } from '@fleetbase/fleetops-engine/components/widget/key-metrics';

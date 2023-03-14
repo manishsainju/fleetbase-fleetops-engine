@@ -34,13 +34,13 @@
                                             <div class="relative px-3 py-2 status-element {{dasherize (flow-raw-status status)}}-status-element rounded-md flex flex-col items-center justify-center">
                                                 <Badge @status={{flow-raw-status status}} class="status-badge-lg shadow-none" />
                                                 <Button @text="New Activity" @icon="plus" @iconPrefix="fas" @wrapperClass="my-2" @onClick={{fn this.addNewActivity status}} />
-                                                {{#unless (includes status (w "created dispatched completed"))}}
+                                                {{#if (not (includes status (w "created dispatched completed")))}}
                                                     <div class="absolute top-0 right-0">
                                                         <button type="button" class="flex items-center justify-center rounded-full w-6 h-6 bg-gray-900 font-semibold text-white -mt-3 -mr-3 shadow-sm" {{on "click" (fn this.removeStatus status)}}>
                                                             <FaIcon @prefix="fas" @icon="times" class="text-white" />
                                                         </button>
                                                     </div>
-                                                {{/unless}}
+                                                {{/if}}
                                             </div>
                                         </div>
                                         <div class="activity-events-list">

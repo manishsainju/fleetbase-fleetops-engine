@@ -515,7 +515,7 @@ export default class ManagementDriversIndexController extends Controller {3
 
         this.modalsManager.show('modals/driver-details', {
             title: driver.name,
-            titleComponent: 'modals/layout/title-with-buttons',
+            titleComponent: 'modal/title-with-buttons',
             acceptButtonText: 'Done',
             acceptButtonIcon: 'check',
             acceptButtonIconPrefix: 'fas',
@@ -634,7 +634,6 @@ export default class ManagementDriversIndexController extends Controller {3
      */
     @action createDriver() {
         const driver = this.store.createRecord('driver', {
-            photo_url: `/images/no-avatar.png`,
             status: `active`
         });
 
@@ -662,7 +661,6 @@ export default class ManagementDriversIndexController extends Controller {3
      * @void
      */
     @action editDriver(driver, options = {}) {
-
         // make sure vehicle is loaded
         driver.loadVehicle();
 
@@ -827,7 +825,7 @@ export default class ManagementDriversIndexController extends Controller {3
             location,
             popupText: `${driver.name} (${driver.public_id})`,
             icon: leafletIcon({
-                iconUrl: driver.vehicle_avatar,
+                iconUrl: driver?.vehicle_avatar,
                 iconSize: [40, 40]
             }),
             ...options,

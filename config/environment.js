@@ -10,6 +10,8 @@ module.exports = function (environment) {
     defaultValues: {
       driverImage:
         'https://s3.ap-southeast-1.amazonaws.com/flb-assets/static/no-avatar.png',
+      vehicleImage:
+        'https://flb-assets.s3.ap-southeast-1.amazonaws.com/static/vehicle-icons/light_commercial_van.svg',
     },
   };
 
