@@ -8,6 +8,7 @@ import { task, timeout } from 'ember-concurrency';
 import isModel from '@fleetbase/ember-core/utils/is-model';
 import extractCoordinates from '@fleetbase/ember-core/utils/extract-coordinates';
 import leafletIcon from '@fleetbase/ember-core/utils/leaflet-icon';
+import generateSlug from '@fleetbase/ember-core/utils/generate-slug';
 
 export default class ManagementDriversIndexController extends Controller {3
     /**
@@ -65,6 +66,13 @@ export default class ManagementDriversIndexController extends Controller {3
      * @var {Service}
      */
     @service hostRouter;
+
+    /**
+     * Inject the `currentUser` service
+     *
+     * @var {Service}
+     */
+    @service currentUser;
 
     /**
      * Queryable parameters for this controller's model
@@ -361,6 +369,12 @@ export default class ManagementDriversIndexController extends Controller {3
         },
     ]);
 
+    /**
+     * Switch layout view.
+     *
+     * @param {String} layout
+     * @memberof ManagementDriversIndexController
+     */
     @action changeLayout(layout) {
         this.layout = layout;
     }
@@ -429,7 +443,7 @@ export default class ManagementDriversIndexController extends Controller {3
 
         yield timeout(250);
 
-        if(this.page > 1) {
+        if (this.page > 1) {
             return this.setProperties({
                 query,
                 page: 1
@@ -634,7 +648,8 @@ export default class ManagementDriversIndexController extends Controller {3
      */
     @action createDriver() {
         const driver = this.store.createRecord('driver', {
-            status: `active`
+            status: `active`,
+            slug: generateSlug()
         });
 
         return this.editDriver(driver, {
@@ -674,15 +689,16 @@ export default class ManagementDriversIndexController extends Controller {3
             uploadNewPhoto: (file) => {
                 this.fetch.uploadFile.perform(file, 
                     {
-                        path: `uploads/${driver.company_uuid}/drivers/${driver.slug}`,
+                        path: `uploads/${this.currentUser.companyId}/drivers/${driver.slug}`,
                         key_uuid: driver.id,
                         key_type: `driver`,
                         type: `driver_photo`
                     }, 
                     (uploadedFile) => {
+                        console.log('uploadedFile', uploadedFile);
                         driver.setProperties({
                             photo_uuid: uploadedFile.id,
-                            photo_url: uploadedFile.s3url,
+                            photo_url: uploadedFile.url,
                             photo: uploadedFile,
                         });
                     }

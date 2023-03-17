@@ -1,8 +1,9 @@
-import Model, { attr } from '@ember-data/model';
+import FacilitatorModel from './facilitator';
+import { attr } from '@ember-data/model';
 import { computed } from '@ember/object';
 import { format, formatDistanceToNow } from 'date-fns';
 
-export default class IntegratedVendorModel extends Model {
+export default class IntegratedVendorModel extends FacilitatorModel {
   /** @ids */
   @attr('string') public_id;
   @attr('string') company_uuid;
