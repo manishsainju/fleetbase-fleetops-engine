@@ -38,6 +38,13 @@ export default class ManagementPlacesIndexController extends Controller {
     @service modalsManager;
 
     /**
+     * Inject the `store` service
+     *
+     * @var {Service}
+     */
+    @service store;
+
+    /**
      * Inject the `crud` service
      *
      * @var {Service}

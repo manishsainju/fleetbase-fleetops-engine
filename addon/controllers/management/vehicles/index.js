@@ -31,6 +31,13 @@ export default class ManagementVehiclesIndexController extends Controller {
     @service modalsManager;
 
     /**
+     * Inject the `store` service
+     *
+     * @var {Service}
+     */
+    @service store;
+
+    /**
      * Inject the `fetch` service
      *
      * @var {Service}

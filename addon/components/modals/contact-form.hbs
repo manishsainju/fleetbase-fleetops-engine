@@ -2,22 +2,8 @@
     <div class="modal-body-container">
         <div class="flex">
             <div class="w-32 mb-6 mr-6">
-                <img src={{@options.contact.photo_url}} alt={{@options.contact.name}} class="w-full rounded-md" />
-                <FileUpload @name="photos" @accept="image/*" @onfileadd={{@options.uploadNewPhoto}} as |queue|>
-                    <a tabindex={{0}} class="flex items-center px-0 mt-2 text-xs no-underline truncate btn btn-sm btn-default" disabled={{queue.files.length}}>
-                        {{#if queue.files.length}}
-                            <Spinner class="mr-1" />
-                            <span>
-                                Uploading...
-                            </span>
-                        {{else}}
-                            <FaIcon @icon="image" class="mr-1" />
-                            <span>
-                                Upload new
-                            </span>
-                        {{/if}}
-                    </a>
-                </FileUpload>
+                <img src={{@options.contact.photo_url}} alt={{@options.contact.name}} height="128" width="128" class="h-32 w-32 rounded-md" />
+                <UploadButton @name="photos" @accept="image/*" @onFileAdded={{@options.uploadNewPhoto}} class="w-32" />
             </div>
             <div class="flex-1">
                 <div class="grid grid-cols-2 gap-2 text-xs dark:text-gray-100">
