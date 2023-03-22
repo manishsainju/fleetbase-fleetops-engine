@@ -3,12 +3,14 @@ import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { A, isArray } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
+import { isBlank } from '@ember/utils';
+import { timeout } from 'ember-concurrency';
+import { task } from 'ember-concurrency-decorators';
 import isModel from '@fleetbase/ember-core/utils/is-model';
 import withDefaultValue from '@fleetbase/ember-core/utils/with-default-value';
+import generateSlug from '@fleetbase/ember-core/utils/generate-slug';
 
 export default class ManagementVehiclesIndexController extends Controller {
-
     /**
      * Inject the `management.drivers.index` controller
      *
@@ -52,6 +54,20 @@ export default class ManagementVehiclesIndexController extends Controller {
     @service crud;
 
     /**
+     * Inject the `currentUser` service
+     *
+     * @var {Service}
+     */
+    @service currentUser;
+
+    /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
+
+    /**
      * Queryable parameters for this controller's model
      *
      * @var {Array}
@@ -66,55 +82,74 @@ export default class ManagementVehiclesIndexController extends Controller {
     @tracked isRouteLoading;
 
     /**
-     * The current page of data being viewed
+     * The search query.
+     *
+     * @var {String}
+     */
+    @tracked query = null;
+
+    /**
+     * The current page of data being viewed.
      *
      * @var {Integer}
      */
     @tracked page = 1;
 
     /**
-     * The maximum number of items to show per page
+     * The maximum number of items to show per page.
      *
      * @var {Integer}
      */
     @tracked limit;
 
     /**
-     * The param to sort the data on, the param with prepended `-` is descending
+     * The param to sort the data on, the param with prepended `-` is descending.
      *
      * @var {String}
      */
     @tracked sort;
 
     /**
-     * The filterable param `public_id`
+     * The filterable param `public_id`.
      *
      * @var {String}
      */
     @tracked public_id;
 
     /**
-     * The filterable param `internal_id`
+     * The filterable param `internal_id`.
      *
      * @var {String}
      */
     @tracked internal_id;
 
     /**
-     * The filterable param `status`
+     * The filterable param `status`.
      *
      * @var {Array}
      */
     @tracked status;
 
     /**
-     * All possible order status options
+     * All possible order status options.
      *
      * @var {String}
      */
     @tracked statusOptions = [];
 
+    /**
+     * True if all records are checked.
+     *
+     * @memberof ManagementVehiclesIndexController
+     */
     @tracked allToggled = false;
+
+    /**
+     * Table component ref.
+     *
+     * @memberof ManagementVehiclesIndexController
+     */
+    @tracked table = null;
 
     /**
      * All columns applicable for orders
@@ -133,7 +168,7 @@ export default class ManagementVehiclesIndexController extends Controller {
             sortable: true,
             filterable: true,
             filterComponent: 'filter/string',
-            filterParam: 'query'
+            filterParam: 'query',
         },
         {
             label: 'Plate Number',
@@ -144,14 +179,14 @@ export default class ManagementVehiclesIndexController extends Controller {
             sortable: true,
             filterable: true,
             filterComponent: 'filter/string',
-            filterParam: 'plate_number'
+            filterParam: 'plate_number',
         },
         {
             label: 'Driver Assigned',
             cellComponent: 'table/cell/anchor',
             action: async (vehicle) => {
                 const driver = await vehicle.loadDriver();
-                
+
                 return this.drivers.viewDriver(driver);
             },
             valuePath: 'driver_name',
@@ -161,7 +196,7 @@ export default class ManagementVehiclesIndexController extends Controller {
             filterComponent: 'filter/model',
             filterComponentPlaceholder: 'Select driver to filter by',
             filterParam: 'driver',
-            model: 'driver'
+            model: 'driver',
         },
         {
             label: 'ID',
@@ -222,7 +257,7 @@ export default class ManagementVehiclesIndexController extends Controller {
             cellComponent: 'table/cell/anchor',
             action: async ({ vendor_uuid }) => {
                 const vendor = await this.store.findRecord('vendor', vendor_uuid);
-                
+
                 this.vendors.viewVendor(vendor);
             },
             valuePath: 'vendor_name',
@@ -233,7 +268,7 @@ export default class ManagementVehiclesIndexController extends Controller {
             filterComponent: 'filter/model',
             filterComponentPlaceholder: 'Select vendor to filter by',
             filterParam: 'vendor',
-            model: 'vendor'
+            model: 'vendor',
         },
         {
             label: 'Status',
@@ -287,7 +322,7 @@ export default class ManagementVehiclesIndexController extends Controller {
                     fn: this.editVehicle,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 // {
                 //     label: 'Assign driver to vehicle...',
@@ -305,81 +340,48 @@ export default class ManagementVehiclesIndexController extends Controller {
         },
     ]);
 
-     /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
-     * @void
-     */
-     @action sendDropdownAction(dd, sentAction, ...params) { 
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
- 
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
-
-     /**
+    /**
      * Bulk deletes selected `vehicle` via confirm prompt
      *
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeleteVehicles() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeleteVehicles() {
+        const { selectedRows } = this.table;
 
-         this.crud.bulkDelete(selected, {
-             modelNamePath: `display_name`,
-             acceptButtonText: 'Delete Vehicles',
-             onConfirm: (deletedVehicles) => {
-                 this.allToggled = false;
-                 
-                 deletedVehicles.forEach(place => {
-                     this.table.removeRow(place);
-                 });
- 
-                this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action
-    search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
+        this.crud.bulkDelete(selectedRows, {
+            modelNamePath: `display_name`,
+            acceptButtonText: 'Delete Vehicles',
+            onSuccess: () => {
+                this.table.removeRows(selectedRows);
+                this.hostRouter.refresh();
+            },
+        });
     }
 
     /**
      * The actual search task
-     * 
+     *
      * @void
      */
-    @task(function* (query) {
-        if(!query) {
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
             this.query = null;
             return;
         }
 
+        // timeout for typing
         yield timeout(250);
 
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
         }
 
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
+        // update the query param
+        this.query = value;
+    }
 
     /**
      * Apply column filter values to the controller
@@ -388,8 +390,7 @@ export default class ManagementVehiclesIndexController extends Controller {
      *
      * @void
      */
-    @action
-    applyFilters(columns) {
+    @action applyFilters(columns) {
         columns.forEach((column) => {
             // if value is a model only filter by id
             if (isModel(column.filterValue)) {
@@ -410,7 +411,7 @@ export default class ManagementVehiclesIndexController extends Controller {
                 column.filterValue = undefined;
             }
         });
-        
+
         this.columns = columns;
     }
 
@@ -421,8 +422,7 @@ export default class ManagementVehiclesIndexController extends Controller {
      *
      * @void
      */
-    @action
-    setFilterOptions(valuePath, options) {
+    @action setFilterOptions(valuePath, options) {
         const updatedColumns = this.columns.map((column) => {
             if (column.valuePath === valuePath) {
                 column.filterOptions = options;
@@ -501,8 +501,8 @@ export default class ManagementVehiclesIndexController extends Controller {
                                 });
                             },
                         },
-                    ]
-                }
+                    ],
+                },
             ],
             viewDriver: (driver) => {
                 this.modalsManager.done().then(() => {
@@ -526,9 +526,8 @@ export default class ManagementVehiclesIndexController extends Controller {
      */
     @action createVehicle() {
         const vehicle = this.store.createRecord('vehicle', {
-            photo_url: `/images/vehicle-placeholder.png`,
-            avatar_url: 'https://flb-assets.s3-ap-southeast-1.amazonaws.com/static/vehicle-icons/mini_bus.svg',
-            status: 'active'
+            status: 'active',
+            slug: generateSlug(),
         });
 
         return this.editVehicle(vehicle, {
@@ -536,14 +535,14 @@ export default class ManagementVehiclesIndexController extends Controller {
             acceptButtonText: 'Confirm & Create',
             acceptButtonIcon: 'check',
             acceptButtonIconPrefix: 'fas',
-            successNotification: (vehicle) => `New vehicle (${vehicle.name}) created.`,
+            // successNotification: `New vehicle (${vehicle.name}) created.`,
             onConfirm: () => {
                 if (vehicle.get('isNew')) {
                     return;
                 }
 
                 this.table.addRow(vehicle);
-            }
+            },
         });
     }
 
@@ -564,13 +563,14 @@ export default class ManagementVehiclesIndexController extends Controller {
             modalClass: 'modal-lg',
             vehicle,
             uploadNewPhoto: (file) => {
-                this.fetch.uploadFile.perform(file, 
+                this.fetch.uploadFile.perform(
+                    file,
                     {
-                        path: `uploads/${vehicle.company_uuid}/drivers/${vehicle.slug}`,
+                        path: `uploads/${this.currentUser.companyId}/vehicles/${vehicle.slug}`,
                         key_uuid: vehicle.id,
                         key_type: `vehicle`,
-                        type: `vehicle_photo`
-                    }, 
+                        type: `vehicle_photo`,
+                    },
                     (uploadedFile) => {
                         vehicle.setProperties({
                             photo_uuid: uploadedFile.id,
@@ -583,19 +583,18 @@ export default class ManagementVehiclesIndexController extends Controller {
             confirm: (modal, done) => {
                 modal.startLoading();
 
-                vehicle.save().then((vehicle) => {
-                    if (typeof options.successNotification === 'function') {
-                        this.notifications.success(options.successNotification(vehicle));
-                    } else {
-                        this.notifications.success(options.successNotification || `${vehicle.name} details updated.`);
-                    }
-
-                    done();
-                }).catch((error) => {
-                    // driver.rollbackAttributes();
-                    modal.stopLoading();
-                    this.notifications.serverError(error);
-                });
+                vehicle
+                    .save()
+                    .then((vehicle) => {
+                        this.notifications.success(options.successNotification ?? `${vehicle.name} details updated.`);
+                    })
+                    .catch((error) => {
+                        modal.stopLoading();
+                        this.notifications.serverError(error);
+                    })
+                    .finally(() => {
+                        done();
+                    });
             },
             ...options,
         });
@@ -624,9 +623,8 @@ export default class ManagementVehiclesIndexController extends Controller {
      *
      * @param {VehicleModel} vehicle
      * @param {Object} options
+     * @todo implement
      * @void
      */
-    @action assignDriver(vehicle, options = {}) {
-        
-    }
+    @action assignDriver(vehicle, options = {}) {}
 }

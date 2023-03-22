@@ -1,4 +1,4 @@
-<Layout::Section::Header @title="Drivers" @onSearch={{fn (mut this.search)}}>
+<Layout::Section::Header @title="Drivers" @searchQuery={{this.query}} @onSearch={{perform this.search}}>
     <Button @icon="grip-horizontal" @prefix="fas" @onClick={{fn this.changeLayout "grid"}} @disabled={{this.isGridLayout}} class="mr-2" />
     <Button @icon="table" @prefix="fas" @onClick={{fn this.changeLayout "table"}} @disabled={{this.isTableLayout}} class="mr-2" />
     <FiltersPicker @columns={{this.columns}} @onChange={{this.applyFilters}} class="mr-2" />

@@ -1,4 +1,4 @@
-<Layout::Section::Header @title="Fuel Reports" @onSearch={{fn (mut this.search)}}>
+<Layout::Section::Header @title="Fuel Reports" @searchQuery={{this.query}} @onSearch={{perform this.search}}>
     <FiltersPicker @columns={{this.columns}} @onChange={{this.applyFilters}} class="mr-2" />
     <VisibleColumnPicker @columns={{this.columns}} @activeParams={{this.activeParams}} @onChange={{this.updateColumns}} class="mr-2" />
     {{#if this.table.selectedRows}}

@@ -2,7 +2,7 @@
     <div class="modal-body-container">
         <div class="flex">
             <div class="w-32 mb-6 mr-6">
-                <img src={{@options.driver.photo_url}} alt={{@options.driver.name}} height="128" width="128" class="h-32 w-32 rounded-md" />
+                <Image src={{@options.driver.photo_url}} alt={{@options.driver.name}} height="128" width="128" class="h-32 w-32 rounded-md" />
                 <UploadButton @name="photos" @accept="image/*" @onFileAdded={{@options.uploadNewPhoto}} class="w-32" />
             </div>
             <div class="flex-1">
