@@ -1,8 +1,9 @@
-import Controller, { inject as controller } from '@ember/controller';
+import ManagementController from '../../management';
+import { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { A, isArray } from '@ember/array';
+import { isArray } from '@ember/array';
 import { isBlank } from '@ember/utils';
 import { timeout } from 'ember-concurrency';
 import { task } from 'ember-concurrency-decorators';
@@ -10,14 +11,7 @@ import isModel from '@fleetbase/ember-core/utils/is-model';
 import withDefaultValue from '@fleetbase/ember-core/utils/with-default-value';
 import generateSlug from '@fleetbase/ember-core/utils/generate-slug';
 
-export default class ManagementVehiclesIndexController extends Controller {
-    /**
-     * Inject the `management.drivers.index` controller
-     *
-     * @var {Controller}
-     */
-    @controller('management.drivers.index') drivers;
-
+export default class ManagementVehiclesIndexController extends ManagementController {
     /**
      * Inject the `notifications` service
      *
@@ -68,18 +62,23 @@ export default class ManagementVehiclesIndexController extends Controller {
     @service hostRouter;
 
     /**
-     * Queryable parameters for this controller's model
+     * Default query parameters for management controllers.
      *
      * @var {Array}
      */
-    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_by', 'updated_by', 'status'];
-
-    /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
+    queryParams = [
+        'page', 
+        'limit', 
+        'sort', 
+        'query', 
+        'public_id', 
+        'internal_id', 
+        'status',
+        'created_at', 
+        'updated_at', 
+        'created_by', 
+        'updated_by', 
+    ];
 
     /**
      * The search query.
@@ -89,14 +88,14 @@ export default class ManagementVehiclesIndexController extends Controller {
     @tracked query = null;
 
     /**
-     * The current page of data being viewed.
+     * The current page.
      *
      * @var {Integer}
      */
     @tracked page = 1;
 
     /**
-     * The maximum number of items to show per page.
+     * The number of results to query.
      *
      * @var {Integer}
      */
@@ -131,6 +130,20 @@ export default class ManagementVehiclesIndexController extends Controller {
     @tracked status;
 
     /**
+     * TableComponent instance.
+     *
+     * @var {TableComponent}
+     */
+    @tracked table;
+
+    /**
+     * Inject the `management.drivers.index` controller
+     *
+     * @var {Controller}
+     */
+    @controller('management.drivers.index') drivers;
+
+    /**
      * All possible order status options.
      *
      * @var {String}
@@ -138,25 +151,11 @@ export default class ManagementVehiclesIndexController extends Controller {
     @tracked statusOptions = [];
 
     /**
-     * True if all records are checked.
-     *
-     * @memberof ManagementVehiclesIndexController
-     */
-    @tracked allToggled = false;
-
-    /**
-     * Table component ref.
-     *
-     * @memberof ManagementVehiclesIndexController
-     */
-    @tracked table = null;
-
-    /**
      * All columns applicable for orders
      *
      * @var {Array}
      */
-    @tracked columns = A([
+    @tracked columns = [
         {
             label: 'Name',
             valuePath: 'display_name',
@@ -338,7 +337,7 @@ export default class ManagementVehiclesIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
     /**
      * Bulk deletes selected `vehicle` via confirm prompt
