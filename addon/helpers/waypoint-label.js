@@ -1,4 +1,1 @@
-export {
-  default,
-  waypointLabel,
-} from '@fleetbase/console/helpers/waypoint-label';
+export { default, waypointLabel } from '@fleetbase/console/helpers/waypoint-label';

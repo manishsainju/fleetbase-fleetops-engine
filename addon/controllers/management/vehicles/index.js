@@ -66,19 +66,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
      *
      * @var {Array}
      */
-    queryParams = [
-        'page', 
-        'limit', 
-        'sort', 
-        'query', 
-        'public_id', 
-        'internal_id', 
-        'status',
-        'created_at', 
-        'updated_at', 
-        'created_by', 
-        'updated_by', 
-    ];
+    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'status', 'created_at', 'updated_at', 'created_by', 'updated_by'];
 
     /**
      * The search query.

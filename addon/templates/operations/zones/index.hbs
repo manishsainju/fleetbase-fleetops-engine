@@ -1,6 +1,5 @@
 <div class="relative shadow-inner h-full" {{did-resize (fn this.handleMapResize (hash verticalTopPadding=65))}}>
-    <LeafletMap {{set-container-dimensions (hash verticalTopPadding=65)}}  class="z-0 zones-leaflet" @lat={{this.userLatitude}} @lng={{this.userLongitude}} @zoom={{14}}
-        @onLoad={{this.setMapReference}} as |layers|>
+    <LeafletMap {{set-container-dimensions (hash verticalTopPadding=65)}} class="z-0 zones-leaflet" @lat={{this.userLatitude}} @lng={{this.userLongitude}} @zoom={{14}} @onLoad={{this.setMapReference}} as |layers|>
         <layers.tile @url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />
 
         {{#each @model as |serviceArea|}}
@@ -11,13 +10,7 @@
         {{/each}}
 
         {{#if this.showDrawControl}}
-            <LeafletDrawControl 
-                @draw={{hash marker=false circlemarker=false circle=false polyline=false}} 
-                @onDrawDrawstop={{this.createZoneFromLayer}} 
-                @onDrawDeleted={{this.deleteZoneBorders}} 
-                @onDrawEditstop={{this.saveZoneCoordinateChanges}}
-                @onDrawFeatureGroupCreated={{this.setFeatureGroup}} 
-            />
+            <LeafletDrawControl @draw={{hash marker=false circlemarker=false circle=false polyline=false}} @onDrawDrawstop={{this.createZoneFromLayer}} @onDrawDeleted={{this.deleteZoneBorders}} @onDrawEditstop={{this.saveZoneCoordinateChanges}} @onDrawFeatureGroupCreated={{this.setFeatureGroup}} />
         {{/if}}
 
         {{#if this.activeServiceArea}}
@@ -39,52 +32,38 @@
                     </div>
                 </div>
                 <div class="content-panel-body no-padding sidebar-panels not-service-nav w-full">
-                    <CpPanels as |panels|>
-                        {{#each @model as |serviceArea|}}
-                            <panels.panel @open={{true}} as |panel|>
-                                <panel.toggle>
-                                    <span>
-                                        <FaIcon @icon="caret-right" @prefix="fas" />
-                                    </span>
-                                    <span class="flex items-center justify-between w-full">
-                                        <span>{{serviceArea.name}}</span>
-                                    </span>
-                                </panel.toggle>
-                                <panel.body class="no-padding">
-                                    <div class="px-2 mb-2">
-                                        <div class="flex items-center justify-end">
-                                            <Button class="mr-2" @icon="eye" @type="magic" @text="Focus" @onClick={{fn this.startZoneEditing serviceArea}} @helpText="Moves map focus to {{serviceArea.name}}. Once focused you will then be able to edit, delete, and define zone bounds for the service area." />
-                                            <DropdownButton @icon="cog" @size="sm" @contentClass="dropdown-menu" @size="xs" @horizontalPosition="right" @helpText="Service Area options." as |dd|>
-                                                <div class="dropdown-menu-content context-menu">
-                                                    <a href="javascript:;" class="dropdown-menu-item" {{on "click" (fn this.renameServiceArea serviceArea)}}>Rename Service Area</a>
-                                                    <a href="javascript:;" class="dropdown-menu-item" {{on "click" (fn this.deleteServiceArea serviceArea)}}>Delete Service Area</a>
-                                                </div>
-                                            </DropdownButton>
+                    <ContentPanel @title={{serviceArea.name}} @open={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
+                        <div class="px-2 mb-2">
+                            <div class="flex items-center justify-end">
+                                <Button class="mr-2" @icon="eye" @type="magic" @text="Focus" @onClick={{fn this.startZoneEditing serviceArea}} @helpText="Moves map focus to {{serviceArea.name}}. Once focused you will then be able to edit, delete, and define zone bounds for the service area." />
+                                <DropdownButton @icon="cog" @size="sm" @contentClass="dropdown-menu" @size="xs" @horizontalPosition="right" @helpText="Service Area options." as |dd|>
+                                    <div class="dropdown-menu-content context-menu">
+                                        <a href="javascript:;" class="dropdown-menu-item" {{on "click" (fn this.renameServiceArea serviceArea)}}>Rename Service Area</a>
+                                        <a href="javascript:;" class="dropdown-menu-item" {{on "click" (fn this.deleteServiceArea serviceArea)}}>Delete Service Area</a>
+                                    </div>
+                                </DropdownButton>
+                            </div>
+                        </div>
+                        <div class="px-0 py-1">
+                            {{#each serviceArea.zones as |zone|}}
+                                <div class="flex items-center justify-between border-t w-full border-gray-900 py-3 px-5 dark:text-gray-100">
+                                    <div>
+                                        <div class="font-semibold mb-1">
+                                            <FaIcon @icon="map-marker" class="mr-1" />
+                                            {{zone.name}}
                                         </div>
+                                        <div>Created At: {{zone.createdAt}}</div>
                                     </div>
-                                    <div class="px-0 py-1">
-                                        {{#each serviceArea.zones as |zone|}}
-                                            <div class="flex items-center justify-between border-t w-full border-gray-900 py-3 px-5 dark:text-gray-100">
-                                                <div>
-                                                    <div class="font-semibold mb-1">
-                                                        <FaIcon @icon="map-marker" class="mr-1" />
-                                                        {{zone.name}}
-                                                    </div>
-                                                    <div>Created At: {{zone.createdAt}}</div>
-                                                </div>
 
-                                                <div>
-                                                    <Button @icon="edit" @size="xs" @helpText="Edit the zone boundary." />
-                                                    <Button @icon="drafting-compass" @size="xs" @helpText="View zone details." @onClick={{fn this.editZone zone}} />
-                                                    <Button @icon="trash" @size="xs" @helpText="Delete this zone." @onClick={{fn this.deleteZone zone}} />
-                                                </div>
-                                            </div>
-                                        {{/each}}
+                                    <div>
+                                        <Button @icon="edit" @size="xs" @helpText="Edit the zone boundary." />
+                                        <Button @icon="drafting-compass" @size="xs" @helpText="View zone details." @onClick={{fn this.editZone zone}} />
+                                        <Button @icon="trash" @size="xs" @helpText="Delete this zone." @onClick={{fn this.deleteZone zone}} />
                                     </div>
-                                </panel.body>
-                            </panels.panel>
-                        {{/each}}
-                    </CpPanels>
+                                </div>
+                            {{/each}}
+                        </div>
+                    </ContentPanel>
                 </div>
             </div>
         </div>

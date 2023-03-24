@@ -29,8 +29,8 @@
         "test:ember-compatibility": "ember try:each"
     },
     "dependencies": {
-        "@fleetbase/ember-ui": "file:../ember-ui",
         "@fleetbase/ember-core": "file:../ember-core",
+        "@fleetbase/ember-ui": "file:../ember-ui",
         "@fleetbase/leaflet-routing-machine": "^3.2.15",
         "@fortawesome/ember-fontawesome": "^0.4.1",
         "@fortawesome/free-solid-svg-icons": "^6.2.0",
@@ -38,14 +38,8 @@
         "ember-cli-babel": "^7.26.11",
         "ember-cli-es6-transform": "^1.0.0",
         "ember-cli-htmlbars": "^6.1.0",
-        "ember-collapsible-panel": "^5.0.0",
-        "ember-concurrency": "^2.3.7",
-        "ember-concurrency-decorators": "^2.0.3",
-        "ember-drag-sort": "^3.0.1",
-        "ember-leaflet": "^5.0.1",
-        "ember-math-helpers": "^2.18.2",
-        "ember-responsive": "^5.0.0",
         "ember-wormhole": "^0.6.0",
+        "ember-leaflet": "^5.0.1",
         "leaflet": "^1.8.0",
         "leaflet-contextmenu": "^1.4.0",
         "leaflet-draw": "^1.0.4",
@@ -53,6 +47,8 @@
         "socketcluster-client": "^17.1.1"
     },
     "devDependencies": {
+        "@ember-data/model": "^4.11.3",
+        "@ember-data/serializer": "^4.11.3",
         "@ember/optional-features": "^2.0.0",
         "@ember/test-helpers": "^2.8.1",
         "@embroider/test-setup": "^1.8.3",
@@ -67,18 +63,21 @@
         "ember-cli-sri": "^2.1.1",
         "ember-cli-terser": "^4.0.2",
         "ember-composable-helpers": "^5.0.0",
-        "ember-data": "^4.6.1",
+        "ember-concurrency": "^2.3.7",
+        "ember-concurrency-decorators": "^2.0.3",
         "ember-disable-prototype-extensions": "^1.1.3",
+        "ember-drag-sort": "^3.0.1",
         "ember-engines": "^0.8.23",
         "ember-load-initializers": "^2.1.2",
+        "ember-math-helpers": "^2.18.2",
         "ember-page-title": "^7.0.0",
         "ember-qunit": "^5.1.5",
         "ember-resolver": "^8.0.3",
+        "ember-responsive": "^5.0.0",
         "ember-source": "~4.6.0",
         "ember-source-channel-url": "^3.0.0",
         "ember-template-lint": "^4.10.1",
         "ember-try": "^2.0.0",
-        "ember-wormhole": "^0.6.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-ember": "^11.0.2",
@@ -97,9 +96,6 @@
         "@fleetbase/ember-ui": "file:../ember-ui",
         "ember-engines": "^0.8.23"
     },
-    "resolutions": {
-        "ember-model-select/ember-power-select/ember-element-helper": "^0.6.1"
-    },
     "engines": {
         "node": "14.* || >= 16"
     },
@@ -116,12 +112,12 @@
         "singleQuote": true,
         "printWidth": 190,
         "overrides": [
-          {
-            "files": "*.hbs",
-            "options": {
-              "singleQuote": false
+            {
+                "files": "*.hbs",
+                "options": {
+                    "singleQuote": false
+                }
             }
-          }
         ]
-      }
+    }
 }

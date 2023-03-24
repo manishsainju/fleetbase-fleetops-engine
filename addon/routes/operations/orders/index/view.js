@@ -3,42 +3,35 @@ import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
 
 export default class OperationsOrdersIndexViewRoute extends Route {
-  @service currentUser;
-  @service store;
+    @service currentUser;
+    @service store;
 
-  @action willTransition() {
-    this.controller?.resetView();
-  }
+    @action willTransition() {
+        this.controller?.resetView();
+    }
 
-  model(order) {
-    const { public_id } = order;
+    model(order) {
+        const { public_id } = order;
 
-    return this.store.queryRecord('order', {
-      public_id,
-      single: true,
-      with: [
-        'payload',
-        'driverAssigned',
-        'customer',
-        'facilitator',
-        'trackingStatuses',
-        'trackingNumber',
-      ],
-    });
-  }
+        return this.store.queryRecord('order', {
+            public_id,
+            single: true,
+            with: ['payload', 'driverAssigned', 'customer', 'facilitator', 'trackingStatuses', 'trackingNumber'],
+        });
+    }
 
-  async setupController(controller, model) {
-    super.setupController(controller, model);
+    async setupController(controller, model) {
+        super.setupController(controller, model);
 
-    controller.isLoadingAdditionalData = true;
+        controller.isLoadingAdditionalData = true;
 
-    await model.loadPayload();
-    await model.loadDriver();
-    await model.loadTrackingNumber();
-    await model.loadCustomer();
-    await model.loadTrackingActivity();
-    await model.loadOrderConfig();
+        await model.loadPayload();
+        await model.loadDriver();
+        await model.loadTrackingNumber();
+        await model.loadCustomer();
+        await model.loadTrackingActivity();
+        await model.loadOrderConfig();
 
-    controller.isLoadingAdditionalData = false;
-  }
+        controller.isLoadingAdditionalData = false;
+    }
 }

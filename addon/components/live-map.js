@@ -20,881 +20,838 @@ const DEFAULT_LATITUDE = 1.369;
 const DEFAULT_LONGITUDE = 103.8864;
 
 export default class LiveMapComponent extends Component {
-  @service store;
-  @service fetch;
-  @service currentUser;
-  @service notifications;
-  @service serviceAreas;
-  @service appCache;
+    @service store;
+    @service fetch;
+    @service currentUser;
+    @service notifications;
+    @service serviceAreas;
+    @service appCache;
 
-  @tracked routes = [];
-  @tracked drivers = [];
-  @tracked channels = [];
-  @tracked isLoading = true;
-  @tracked isReady = false;
-  @tracked isDriversVisible = true;
-  @tracked isRoutesVisible = true;
-  @tracked isDrawControlsVisible = false;
-  @tracked isCreatingServiceArea = false;
-  @tracked isCreatingZone = false;
-  @tracked currentContextMenuItems = [];
-  @tracked activeServiceAreas = [];
-  @tracked editableLayers = [];
-  @tracked leafletMap;
-  @tracked activeFeatureGroup;
-  @tracked drawFeatureGroup;
-  @tracked drawControl;
-  @tracked latitude = DEFAULT_LATITUDE;
-  @tracked longitude = DEFAULT_LONGITUDE;
-  @tracked mapId = guidFor(this);
-  @alias('currentUser.latitude') userLatitude;
-  @alias('currentUser.longitude') userLongitude;
+    @tracked routes = [];
+    @tracked drivers = [];
+    @tracked channels = [];
+    @tracked isLoading = true;
+    @tracked isReady = false;
+    @tracked isDriversVisible = true;
+    @tracked isRoutesVisible = true;
+    @tracked isDrawControlsVisible = false;
+    @tracked isCreatingServiceArea = false;
+    @tracked isCreatingZone = false;
+    @tracked currentContextMenuItems = [];
+    @tracked activeServiceAreas = [];
+    @tracked editableLayers = [];
+    @tracked leafletMap;
+    @tracked activeFeatureGroup;
+    @tracked drawFeatureGroup;
+    @tracked drawControl;
+    @tracked latitude = DEFAULT_LATITUDE;
+    @tracked longitude = DEFAULT_LONGITUDE;
+    @tracked mapId = guidFor(this);
+    @alias('currentUser.latitude') userLatitude;
+    @alias('currentUser.longitude') userLongitude;
 
-  @computed('args.zoom') get zoom() {
-    return this.args.zoom || 12;
-  }
-
-  @computed('args.{tileSourceUrl,darkMode}') get tileSourceUrl() {
-    const { darkMode, tileSourceUrl } = this.args;
-
-    if (darkMode === true) {
-      return 'https://{s}.tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=';
+    @computed('args.zoom') get zoom() {
+        return this.args.zoom || 12;
     }
 
-    return (
-      tileSourceUrl ??
-      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
-    );
-  }
+    @computed('args.{tileSourceUrl,darkMode}') get tileSourceUrl() {
+        const { darkMode, tileSourceUrl } = this.args;
 
-  /**
-   * ----------------------------------------------------------------------------
-   * SETUP
-   * ----------------------------------------------------------------------------
-   *
-   * Functions for initialization and setup.
-   */
+        if (darkMode === true) {
+            return 'https://{s}.tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=';
+        }
 
-  @action async setupLiveMap() {
-    if (this.appCache.has(['map_latitude', 'map_longitude'])) {
-      this.latitude = this.appCache.get('map_latitude');
-      this.longitude = this.appCache.get('map_longitude');
-      this.isReady = true;
+        return tileSourceUrl ?? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
     }
 
-    const { latitude, longitude } = await this.getInitialCoordinates();
+    /**
+     * ----------------------------------------------------------------------------
+     * SETUP
+     * ----------------------------------------------------------------------------
+     *
+     * Functions for initialization and setup.
+     */
 
-    if (this.appCache.doesntHave(['map_latitude', 'map_longitude'])) {
-      this.appCache.set('map_latitude', latitude);
-      this.appCache.set('map_longitude', longitude);
+    @action async setupLiveMap() {
+        if (this.appCache.has(['map_latitude', 'map_longitude'])) {
+            this.latitude = this.appCache.get('map_latitude');
+            this.longitude = this.appCache.get('map_longitude');
+            this.isReady = true;
+        }
+
+        const { latitude, longitude } = await this.getInitialCoordinates();
+
+        if (this.appCache.doesntHave(['map_latitude', 'map_longitude'])) {
+            this.appCache.set('map_latitude', latitude);
+            this.appCache.set('map_longitude', longitude);
+        }
+
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.routes = await this.fetchActiveRoutes();
+        this.drivers = await this.fetchActiveDrivers();
+        this.serviceAreaRecords = await this.fetchServiceAreas();
+        this.isReady = true;
+
+        this.watchDrivers(this.drivers);
+
+        if (typeof this.args.onReady === 'function') {
+            this.args.onReady(this);
+        }
     }
 
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.routes = await this.fetchActiveRoutes();
-    this.drivers = await this.fetchActiveDrivers();
-    this.serviceAreaRecords = await this.fetchServiceAreas();
-    this.isReady = true;
+    @action setMapReference(event) {
+        const { target } = event;
 
-    this.watchDrivers(this.drivers);
+        // set liveMapComponent component to instance
+        set(event, 'target.liveMap', this);
 
-    if (typeof this.args.onReady === 'function') {
-      this.args.onReady(this);
-    }
-  }
+        // set map instance
+        this.leafletMap = target;
 
-  @action setMapReference(event) {
-    const { target } = event;
+        // setup context menu
+        this.setupContextMenu(target);
 
-    // set liveMapComponent component to instance
-    set(event, 'target.liveMap', this);
+        // hide draw controls by default
+        this.hideDrawControls();
 
-    // set map instance
-    this.leafletMap = target;
+        // set instance to service areas service
+        this.serviceAreas.setMapInstance(target);
 
-    // setup context menu
-    this.setupContextMenu(target);
-
-    // hide draw controls by default
-    this.hideDrawControls();
-
-    // set instance to service areas service
-    this.serviceAreas.setMapInstance(target);
-
-    if (typeof this.args.onLoad === 'function') {
-      this.args.onLoad(...arguments);
-    }
-  }
-
-  @action setupContextMenu(map) {
-    if (!map?.contextmenu) {
-      return;
+        if (typeof this.args.onLoad === 'function') {
+            this.args.onLoad(...arguments);
+        }
     }
 
-    // reset items if any
-    if (typeof map?.contextmenu?.removeAllItems === 'function') {
-      map?.contextmenu?.removeAllItems();
+    @action setupContextMenu(map) {
+        if (!map?.contextmenu) {
+            return;
+        }
+
+        // reset items if any
+        if (typeof map?.contextmenu?.removeAllItems === 'function') {
+            map?.contextmenu?.removeAllItems();
+        }
+
+        const { contextmenu } = map;
+        const contextMenuItems = this.buildContextMenuItems();
+
+        contextMenuItems.forEach((options) => contextmenu.addItem(options));
+
+        if (contextmenu.enabled === true || contextmenu._enabled === true) {
+            return;
+        }
+
+        contextmenu.enable();
     }
 
-    const { contextmenu } = map;
-    const contextMenuItems = this.buildContextMenuItems();
+    @action toggleDrawControlContextMenuItem() {
+        const index = this.currentContextMenuItems.findIndex((options) => options.text?.includes('draw controls'));
+        const options = this.currentContextMenuItems.objectAt(index);
 
-    contextMenuItems.forEach((options) => contextmenu.addItem(options));
+        set(options, 'text', this.isDrawControlsVisible ? `Hide draw controls...` : `Enable draw controls...`);
 
-    if (contextmenu.enabled === true || contextmenu._enabled === true) {
-      return;
+        if (index > 0) {
+            this.leafletMap?.contextmenu?.removeItem(index);
+            this.leafletMap?.contextmenu?.insertItem(options, index);
+        }
     }
 
-    contextmenu.enable();
-  }
+    @action removeServiceAreaFromContextMenu(serviceArea) {
+        const index = this.currentContextMenuItems.findIndex((options) => options.text?.includes(`Focus Service Area: ${serviceArea.name}`));
 
-  @action toggleDrawControlContextMenuItem() {
-    const index = this.currentContextMenuItems.findIndex((options) =>
-      options.text?.includes('draw controls')
-    );
-    const options = this.currentContextMenuItems.objectAt(index);
-
-    set(
-      options,
-      'text',
-      this.isDrawControlsVisible
-        ? `Hide draw controls...`
-        : `Enable draw controls...`
-    );
-
-    if (index > 0) {
-      this.leafletMap?.contextmenu?.removeItem(index);
-      this.leafletMap?.contextmenu?.insertItem(options, index);
-    }
-  }
-
-  @action removeServiceAreaFromContextMenu(serviceArea) {
-    const index = this.currentContextMenuItems.findIndex((options) =>
-      options.text?.includes(`Focus Service Area: ${serviceArea.name}`)
-    );
-
-    if (index > 0) {
-      this.leafletMap?.contextmenu?.removeItem(index);
-    }
-  }
-
-  @action rebuildContextMenu() {
-    const map = this.leafletMap;
-
-    if (map) {
-      this.setupContextMenu(map);
-    }
-  }
-
-  @action setFn(actionName, callback) {
-    this[actionName] = callback;
-  }
-
-  /**
-   * ----------------------------------------------------------------------------
-   * TRACKED LAYER UTILITIES
-   * ----------------------------------------------------------------------------
-   *
-   * Functions provide utility for managing tracked editable layers.
-   */
-
-  @action pushEditableLayer(layer) {
-    if (!this.editableLayers.includes(layer)) {
-      this.editableLayers.pushObject(layer);
-    }
-  }
-
-  @action removeEditableLayerByRecordId(record) {
-    const index = this.editableLayers.findIndex(
-      (layer) => layer.record_id === record?.id ?? record
-    );
-    const layer = this.editableLayers.objectAt(index);
-
-    this.drawFeatureGroup?.addLayer(layer);
-    this.editableLayers.removeAt(index);
-  }
-
-  @action findEditableLayerByRecordId(record) {
-    return this.editableLayers.find(
-      (layer) => layer.record_id === record?.id ?? record
-    );
-  }
-
-  @action peekRecordForLayer(layer) {
-    if (layer.record_id && layer.record_type) {
-      return this.store.peekRecord(
-        dasherize(layer.record_type),
-        layer.record_id
-      );
+        if (index > 0) {
+            this.leafletMap?.contextmenu?.removeItem(index);
+        }
     }
 
-    return null;
-  }
+    @action rebuildContextMenu() {
+        const map = this.leafletMap;
 
-  /**
-   * ----------------------------------------------------------------------------
-   * LAYER EVENTS
-   * ----------------------------------------------------------------------------
-   *
-   * Functions that are only triggered from the `LiveMap` Leaflet Layer Component callbacks.
-   */
-
-  @action onAction(actionName, ...params) {
-    if (typeof this[actionName] === 'function') {
-      this[actionName](...params);
+        if (map) {
+            this.setupContextMenu(map);
+        }
     }
 
-    if (typeof this.args[actionName] === 'function') {
-      this.args[actionName](...params);
-    }
-  }
-
-  @action onDrawDrawstop(event, layer) {
-    this.serviceAreas.createGenericLayer(event, layer);
-  }
-
-  @action onDrawDeleted(event) {
-    /** @var {L.LayerGroup} layers  */
-    const { layers } = event;
-
-    const records = layers
-      .getLayers()
-      .map(this.peekRecordForLayer)
-      .filter(Boolean);
-    const requests = records.map((record) => {
-      this.blurServiceArea(record);
-      this.removeServiceAreaFromContextMenu(record);
-
-      return record.destroyRecord();
-    });
-
-    allSettled(requests).then(() => {
-      records.forEach((record) => this.serviceAreas.removeFromCache(record));
-    });
-  }
-
-  @action onDrawEdited(event) {
-    /** @var {L.LayerGroup} layers  */
-    const { layers } = event;
-
-    const requests = layers.getLayers().map((layer) => {
-      const record = this.peekRecordForLayer(layer);
-
-      let border;
-
-      if (layer.record_type === 'zone') {
-        border = this.serviceAreas.layerToTerraformerPrimitive(layer);
-      } else {
-        border = this.serviceAreas.layerToTerraformerMultiPolygon(layer);
-      }
-
-      record.set('border', border);
-
-      return record.save();
-    });
-
-    allSettled(requests);
-  }
-
-  @action onServiceAreaLayerAdded(serviceArea, event) {
-    const { target } = event;
-
-    set(target, 'record_id', serviceArea.id);
-    set(target, 'record_type', 'service-area');
-
-    // add to draw feature group
-    this.drawFeatureGroup?.addLayer(target);
-
-    // this.flyToBoundsOnly(target);
-    this.createContextMenuForServiceArea(serviceArea, target);
-    this.pushEditableLayer(target);
-  }
-
-  @action onZoneLayerAdd(zone, event) {
-    const { target } = event;
-
-    set(target, 'record_id', zone.id);
-    set(target, 'record_type', 'zone');
-
-    // add to draw feature group
-    this.drawFeatureGroup?.addLayer(target);
-
-    this.createContextMenuForZone(zone, target);
-    this.pushEditableLayer(target);
-  }
-
-  @action onDrawFeatureGroupCreated(drawFeatureGroup) {
-    this.drawFeatureGroup = drawFeatureGroup;
-  }
-
-  @action onDriverAdded(driver, event) {
-    const { target } = event;
-
-    this.createContextMenuForDriver(driver, target);
-  }
-
-  @action onDrawControlCreated(drawControl) {
-    this.drawControl = drawControl;
-  }
-
-  /**
-   * ----------------------------------------------------------------------------
-   * LEAFLET UTILITIES
-   * ----------------------------------------------------------------------------
-   *
-   * Functions are used to help or utilize on Leaflet Layers/ Controls.
-   *
-   */
-
-  @action removeDrawingControl() {
-    if (isEmpty(this.drawControl)) {
-      return;
+    @action setFn(actionName, callback) {
+        this[actionName] = callback;
     }
 
-    this.isDrawControlsVisible = false;
-    this.leafletMap?.removeControl(this.drawControl);
-    this.toggleDrawControlContextMenuItem();
-  }
+    /**
+     * ----------------------------------------------------------------------------
+     * TRACKED LAYER UTILITIES
+     * ----------------------------------------------------------------------------
+     *
+     * Functions provide utility for managing tracked editable layers.
+     */
 
-  // alias for `removeDrawingControl()`
-  @action hideDrawControls() {
-    this.removeDrawingControl();
-  }
-
-  @action enableDrawControls() {
-    this.isDrawControlsVisible = true;
-    this.leafletMap?.addControl(this.drawControl);
-    this.toggleDrawControlContextMenuItem();
-  }
-
-  @action focusLayerByRecord(record) {
-    const layer = this.findEditableLayerByRecordId(record);
-
-    if (layer) {
-      this.flyToBoundsOnly(layer);
-    }
-  }
-
-  @action flyToServiceArea(serviceArea) {
-    const layer = this.findEditableLayerByRecordId(serviceArea);
-
-    if (layer) {
-      this.flyToBoundsOnly(layer);
-    }
-  }
-
-  // alias for `flyToServiceArea()`
-  @action jumpToServiceArea(serviceArea) {
-    return this.flyToServiceArea(serviceArea);
-  }
-
-  @action focusServiceArea(serviceArea) {
-    this.activateServiceArea(serviceArea);
-
-    setTimeout(() => {
-      this.flyToServiceArea(serviceArea);
-    }, 100);
-  }
-
-  @action blurAllServiceAreas(except = []) {
-    if (!isArray(except)) {
-      except = [];
+    @action pushEditableLayer(layer) {
+        if (!this.editableLayers.includes(layer)) {
+            this.editableLayers.pushObject(layer);
+        }
     }
 
-    // map except into ids only
-    except = except
-      .filter(Boolean)
-      .filter((record) => !record?.id)
-      .map((record) => record.id);
+    @action removeEditableLayerByRecordId(record) {
+        const index = this.editableLayers.findIndex((layer) => layer.record_id === record?.id ?? record);
+        const layer = this.editableLayers.objectAt(index);
 
-    for (let i = 0; i < this.activeServiceAreas.length; i++) {
-      const serviceArea = this.activeServiceAreas.objectAt(i);
-
-      if (isArray(except) && except.includes(serviceArea.id)) {
-        continue;
-      }
-
-      this.blurServiceArea(serviceArea);
+        this.drawFeatureGroup?.addLayer(layer);
+        this.editableLayers.removeAt(index);
     }
 
-    for (let i = 0; i < this.editableLayers.length; i++) {
-      const layer = this.editableLayers.objectAt(i);
-
-      if (isArray(except) && except.includes(layer.record_id)) {
-        continue;
-      }
-
-      this.editableLayers.removeObject(layer);
-    }
-  }
-
-  @action focusAllServiceAreas(except = []) {
-    if (!isArray(except)) {
-      except = [];
+    @action findEditableLayerByRecordId(record) {
+        return this.editableLayers.find((layer) => layer.record_id === record?.id ?? record);
     }
 
-    // map except into ids only
-    except = except
-      .filter(Boolean)
-      .filter((record) => !record?.id)
-      .map((record) => record.id);
+    @action peekRecordForLayer(layer) {
+        if (layer.record_id && layer.record_type) {
+            return this.store.peekRecord(dasherize(layer.record_type), layer.record_id);
+        }
 
-    for (let i = 0; i < this.serviceAreaRecords.length; i++) {
-      const serviceArea = this.serviceAreaRecords.objectAt(i);
-
-      if (isArray(except) && except.includes(serviceArea.id)) {
-        continue;
-      }
-
-      this.activateServiceArea(serviceArea);
-    }
-  }
-
-  @action blurServiceArea(serviceArea) {
-    if (this.activeServiceAreas.includes(serviceArea)) {
-      this.activeServiceAreas.removeObject(serviceArea);
-    }
-  }
-
-  @action activateServiceArea(serviceArea) {
-    if (!this.activeServiceAreas.includes(serviceArea)) {
-      this.activeServiceAreas.pushObject(serviceArea);
-    }
-  }
-
-  @action hideDrivers() {
-    this.isDriversVisible = false;
-  }
-
-  @action showDrivers() {
-    this.isDriversVisible = true;
-  }
-
-  @action toggleDrivers() {
-    this.isDriversVisible = !this.isDriversVisible;
-  }
-
-  @action hideRoutes() {
-    this.isRoutesVisible = false;
-  }
-
-  @action showRoutes() {
-    this.isRoutesVisible = true;
-  }
-
-  @action toggleRoutes() {
-    this.isRoutesVisible = !this.isRoutesVisible;
-  }
-
-  @action showCoordinates(event) {
-    this.notifications.info(event.latlng);
-  }
-
-  @action centerMap(event) {
-    this.leafletMap?.panTo(event.latlng);
-  }
-
-  @action zoomIn() {
-    this.leafletMap?.zoomIn();
-  }
-
-  @action zoomOut() {
-    this.leafletMap?.zoomOut();
-  }
-
-  @action setMaxBoundsFromLayer(layer) {
-    const bounds = layer?.getBounds();
-
-    this.leafletMap?.flyToBounds(bounds);
-    this.leafletMap?.setMaxBounds(bounds);
-  }
-
-  @action flyToBoundsOnly(layer) {
-    const bounds = layer?.getBounds();
-
-    this.leafletMap?.flyToBounds(bounds);
-  }
-
-  /**
-   * ----------------------------------------------------------------------------
-   * CONTEXT MENU INITIALIZERS
-   * ----------------------------------------------------------------------------
-   *
-   * Functions that are used to build context menu for layers and controls on the map.
-   *
-   */
-
-  @action buildContextMenuItems() {
-    const contextmenuItems = [
-      {
-        text: 'Show coordinates...',
-        callback: this.showCoordinates,
-        index: 0,
-      },
-      {
-        text: 'Center map here...',
-        callback: this.centerMap,
-        index: 1,
-      },
-      {
-        text: 'Zoom in...',
-        callback: this.zoomIn,
-        index: 2,
-      },
-      {
-        text: 'Zoom out...',
-        callback: this.zoomOut,
-        index: 3,
-      },
-      {
-        text: this.isDrawControlsVisible
-          ? `Hide draw controls...`
-          : `Enable draw controls...`,
-        callback: () =>
-          this.isDrawControlsVisible
-            ? this.hideDrawControls()
-            : this.enableDrawControls(),
-        index: 4,
-      },
-      {
-        separator: true,
-      },
-      {
-        text: 'Create new Service Area...',
-        callback: this.serviceAreas.createServiceArea,
-        index: 5,
-      },
-    ];
-
-    // add service areas to context menu
-    const serviceAreas = this.serviceAreas.getFromCache() ?? [];
-
-    if (serviceAreas?.length > 0) {
-      contextmenuItems.pushObject({
-        separator: true,
-      });
+        return null;
     }
 
-    // add to context menu
-    for (let i = 0; i < serviceAreas?.length; i++) {
-      const serviceArea = serviceAreas.objectAt(i);
+    /**
+     * ----------------------------------------------------------------------------
+     * LAYER EVENTS
+     * ----------------------------------------------------------------------------
+     *
+     * Functions that are only triggered from the `LiveMap` Leaflet Layer Component callbacks.
+     */
 
-      contextmenuItems.pushObject({
-        text: `Focus Service Area: ${serviceArea.name}`,
-        callback: () => this.focusServiceArea(serviceArea),
-        index: (contextmenuItems.lastObject?.index ?? 0) + 1 + i,
-      });
+    @action onAction(actionName, ...params) {
+        if (typeof this[actionName] === 'function') {
+            this[actionName](...params);
+        }
+
+        if (typeof this.args[actionName] === 'function') {
+            this.args[actionName](...params);
+        }
     }
 
-    this.currentContextMenuItems = contextmenuItems;
-
-    return contextmenuItems;
-  }
-
-  @action createContextMenuForDriver(driver, layer) {
-    const contextmenuItems = [
-      {
-        separator: true,
-      },
-      {
-        text: `View Driver: ${driver.name}`,
-        // callback: () => this.editServiceAreaDetails(serviceArea)
-      },
-      {
-        text: `Edit Driver: ${driver.name}`,
-        // callback: () => this.editServiceAreaDetails(serviceArea)
-      },
-      {
-        text: `Delete Driver: ${driver.name}`,
-        // callback: () => this.deleteServiceArea(serviceArea)
-      },
-      {
-        text: `Assign Order to Driver: ${driver.name}`,
-        // callback: () => this.deleteServiceArea(serviceArea)
-      },
-      {
-        text: `View Vehicle for: ${driver.name}`,
-        // callback: () => this.deleteServiceArea(serviceArea)
-      },
-    ];
-
-    if (typeof layer?.bindContextMenu === 'function') {
-      layer.bindContextMenu({
-        contextmenu: true,
-        contextmenuItems,
-      });
+    @action onDrawDrawstop(event, layer) {
+        this.serviceAreas.createGenericLayer(event, layer);
     }
-  }
 
-  @action createContextMenuForZone(zone, layer) {
-    const contextmenuItems = [
-      {
-        separator: true,
-      },
-      {
-        text: `Edit Zone: ${zone.name}`,
-        callback: () => this.serviceAreas.editZone(zone),
-      },
-      {
-        text: `Delete Zone: ${zone.name}`,
-        callback: () =>
-          this.serviceAreas.deleteZone(zone, {
-            onFinish: () => {
-              this.removeEditableLayerByRecordId(zone);
-            },
-          }),
-      },
-      {
-        text: `Assign Fleet to Zone: (${zone.name})`,
-        callback: () => {},
-      },
-    ];
+    @action onDrawDeleted(event) {
+        /** @var {L.LayerGroup} layers  */
+        const { layers } = event;
 
-    if (typeof layer?.bindContextMenu === 'function') {
-      layer.bindContextMenu({
-        contextmenu: true,
-        contextmenuItems,
-      });
+        const records = layers.getLayers().map(this.peekRecordForLayer).filter(Boolean);
+        const requests = records.map((record) => {
+            this.blurServiceArea(record);
+            this.removeServiceAreaFromContextMenu(record);
+
+            return record.destroyRecord();
+        });
+
+        allSettled(requests).then(() => {
+            records.forEach((record) => this.serviceAreas.removeFromCache(record));
+        });
     }
-  }
 
-  @action createContextMenuForServiceArea(serviceArea, layer) {
-    const contextmenuItems = [
-      {
-        separator: true,
-      },
-      {
-        text: `Blur Service Area: ${serviceArea.name}`,
-        callback: () => this.blurServiceArea(serviceArea),
-      },
-      {
-        text: `Create Zone within: ${serviceArea.name}`,
-        callback: () => this.serviceAreas.createZone(serviceArea),
-      },
-      {
-        text: `Assign Fleet to Service Area: ${serviceArea.name}`,
-        callback: () => {},
-      },
-      {
-        text: `Edit Service Area: ${serviceArea.name}`,
-        callback: () => this.serviceAreas.editServiceAreaDetails(serviceArea),
-      },
-      {
-        text: `Delete Service Area: ${serviceArea.name}`,
-        callback: () =>
-          this.serviceAreas.deleteServiceArea(serviceArea, {
-            onFinish: () => {
-              console.log(
-                'Service Area deleted!',
-                serviceArea,
-                this.activeServiceAreas
-              );
-              this.rebuildContextMenu();
-              this.removeEditableLayerByRecordId(serviceArea);
-            },
-          }),
-      },
-    ];
+    @action onDrawEdited(event) {
+        /** @var {L.LayerGroup} layers  */
+        const { layers } = event;
 
-    if (typeof layer?.bindContextMenu === 'function') {
-      layer.bindContextMenu({
-        contextmenu: true,
-        contextmenuItems,
-      });
-    }
-  }
+        const requests = layers.getLayers().map((layer) => {
+            const record = this.peekRecordForLayer(layer);
 
-  /**
-   * ----------------------------------------------------------------------------
-   * Async/Socket Functions
-   * ----------------------------------------------------------------------------
-   *
-   * Functions are used to fetch date or handle socket callbacks/initializations.
-   *
-   */
+            let border;
 
-  @action watchDrivers(drivers = []) {
-    // setup socket
-    // const socket = socketClusterClient.create({
-    //   hostname: 'socket.fleetbase.io',
-    //   secure: true,
-    //   port: 8000,
-    // });
-    // for (let i = 0; i < drivers.length; i++) {
-    //   const driver = drivers.objectAt(i);
-    //   this.listenForDriver(driver, socket);
-    // }
-  }
-
-  @action async listenForDriver(driver, socket) {
-    // listen on company channel
-    const channelId = `driver.${driver.uuid}`;
-    const channel = socket.subscribe(channelId);
-
-    // debug
-    // console.log(`socket subscribed to ${channelId}`);
-
-    // track channel
-    this.channels.pushObject(channel);
-
-    // listen to channel for events
-    await channel.listener('subscribe').once();
-
-    // get incoming data and console out
-    for await (let output of channel) {
-      const { event, data } = output;
-
-      if (event === 'driver.location_changed') {
-        driver.location = data.location;
-        driver.altitude = data.altitude;
-        driver.heading = data.heading;
-        driver.speed = data.speed;
-      }
-    }
-  }
-
-  @action closeChannels() {
-    for (let i = 0; i < this.channels.length; i++) {
-      const channel = this.channels.objectAt(i);
-
-      channel.close();
-    }
-  }
-
-  @action getInitialCoordinates() {
-    const initialCoordinates = {
-      latitude: DEFAULT_LATITUDE,
-      longitude: DEFAULT_LONGITUDE,
-    };
-
-    const getCoordinateFromNavigator = () => {
-      return new Promise((resolve) => {
-        // eslint-disable-next-line no-undef
-        if (window.navigator && window.navigator.geolocation) {
-          // eslint-disable-next-line no-undef
-          return navigator.geolocation.getCurrentPosition(
-            ({ coords }) => {
-              const { latitude, longitude } = coords;
-
-              initialCoordinates.latitude = latitude;
-              initialCoordinates.longitude = longitude;
-
-              resolve(initialCoordinates);
-            },
-            () => {
-              // if failed use default user lat/lng
-              initialCoordinates.latitude = this.getLocalLatitude();
-              initialCoordinates.longitude = this.getLocalLongitude();
-
-              resolve(initialCoordinates);
+            if (layer.record_type === 'zone') {
+                border = this.serviceAreas.layerToTerraformerPrimitive(layer);
+            } else {
+                border = this.serviceAreas.layerToTerraformerMultiPolygon(layer);
             }
-          );
-        }
-      });
-    };
 
-    return new Promise((resolve) => {
-      // get location from active orders
-      this.fetch
-        .get('fleet-ops/live/coordinates')
-        .then((coordinates) => {
-          if (!coordinates) {
-            return getCoordinateFromNavigator().then((navigatorCoordinates) => {
-              resolve(navigatorCoordinates);
+            record.set('border', border);
+
+            return record.save();
+        });
+
+        allSettled(requests);
+    }
+
+    @action onServiceAreaLayerAdded(serviceArea, event) {
+        const { target } = event;
+
+        set(target, 'record_id', serviceArea.id);
+        set(target, 'record_type', 'service-area');
+
+        // add to draw feature group
+        this.drawFeatureGroup?.addLayer(target);
+
+        // this.flyToBoundsOnly(target);
+        this.createContextMenuForServiceArea(serviceArea, target);
+        this.pushEditableLayer(target);
+    }
+
+    @action onZoneLayerAdd(zone, event) {
+        const { target } = event;
+
+        set(target, 'record_id', zone.id);
+        set(target, 'record_type', 'zone');
+
+        // add to draw feature group
+        this.drawFeatureGroup?.addLayer(target);
+
+        this.createContextMenuForZone(zone, target);
+        this.pushEditableLayer(target);
+    }
+
+    @action onDrawFeatureGroupCreated(drawFeatureGroup) {
+        this.drawFeatureGroup = drawFeatureGroup;
+    }
+
+    @action onDriverAdded(driver, event) {
+        const { target } = event;
+
+        this.createContextMenuForDriver(driver, target);
+    }
+
+    @action onDrawControlCreated(drawControl) {
+        this.drawControl = drawControl;
+    }
+
+    /**
+     * ----------------------------------------------------------------------------
+     * LEAFLET UTILITIES
+     * ----------------------------------------------------------------------------
+     *
+     * Functions are used to help or utilize on Leaflet Layers/ Controls.
+     *
+     */
+
+    @action removeDrawingControl() {
+        if (isEmpty(this.drawControl)) {
+            return;
+        }
+
+        this.isDrawControlsVisible = false;
+        this.leafletMap?.removeControl(this.drawControl);
+        this.toggleDrawControlContextMenuItem();
+    }
+
+    // alias for `removeDrawingControl()`
+    @action hideDrawControls() {
+        this.removeDrawingControl();
+    }
+
+    @action enableDrawControls() {
+        this.isDrawControlsVisible = true;
+        this.leafletMap?.addControl(this.drawControl);
+        this.toggleDrawControlContextMenuItem();
+    }
+
+    @action focusLayerByRecord(record) {
+        const layer = this.findEditableLayerByRecordId(record);
+
+        if (layer) {
+            this.flyToBoundsOnly(layer);
+        }
+    }
+
+    @action flyToServiceArea(serviceArea) {
+        const layer = this.findEditableLayerByRecordId(serviceArea);
+
+        if (layer) {
+            this.flyToBoundsOnly(layer);
+        }
+    }
+
+    // alias for `flyToServiceArea()`
+    @action jumpToServiceArea(serviceArea) {
+        return this.flyToServiceArea(serviceArea);
+    }
+
+    @action focusServiceArea(serviceArea) {
+        this.activateServiceArea(serviceArea);
+
+        setTimeout(() => {
+            this.flyToServiceArea(serviceArea);
+        }, 100);
+    }
+
+    @action blurAllServiceAreas(except = []) {
+        if (!isArray(except)) {
+            except = [];
+        }
+
+        // map except into ids only
+        except = except
+            .filter(Boolean)
+            .filter((record) => !record?.id)
+            .map((record) => record.id);
+
+        for (let i = 0; i < this.activeServiceAreas.length; i++) {
+            const serviceArea = this.activeServiceAreas.objectAt(i);
+
+            if (isArray(except) && except.includes(serviceArea.id)) {
+                continue;
+            }
+
+            this.blurServiceArea(serviceArea);
+        }
+
+        for (let i = 0; i < this.editableLayers.length; i++) {
+            const layer = this.editableLayers.objectAt(i);
+
+            if (isArray(except) && except.includes(layer.record_id)) {
+                continue;
+            }
+
+            this.editableLayers.removeObject(layer);
+        }
+    }
+
+    @action focusAllServiceAreas(except = []) {
+        if (!isArray(except)) {
+            except = [];
+        }
+
+        // map except into ids only
+        except = except
+            .filter(Boolean)
+            .filter((record) => !record?.id)
+            .map((record) => record.id);
+
+        for (let i = 0; i < this.serviceAreaRecords.length; i++) {
+            const serviceArea = this.serviceAreaRecords.objectAt(i);
+
+            if (isArray(except) && except.includes(serviceArea.id)) {
+                continue;
+            }
+
+            this.activateServiceArea(serviceArea);
+        }
+    }
+
+    @action blurServiceArea(serviceArea) {
+        if (this.activeServiceAreas.includes(serviceArea)) {
+            this.activeServiceAreas.removeObject(serviceArea);
+        }
+    }
+
+    @action activateServiceArea(serviceArea) {
+        if (!this.activeServiceAreas.includes(serviceArea)) {
+            this.activeServiceAreas.pushObject(serviceArea);
+        }
+    }
+
+    @action hideDrivers() {
+        this.isDriversVisible = false;
+    }
+
+    @action showDrivers() {
+        this.isDriversVisible = true;
+    }
+
+    @action toggleDrivers() {
+        this.isDriversVisible = !this.isDriversVisible;
+    }
+
+    @action hideRoutes() {
+        this.isRoutesVisible = false;
+    }
+
+    @action showRoutes() {
+        this.isRoutesVisible = true;
+    }
+
+    @action toggleRoutes() {
+        this.isRoutesVisible = !this.isRoutesVisible;
+    }
+
+    @action showCoordinates(event) {
+        this.notifications.info(event.latlng);
+    }
+
+    @action centerMap(event) {
+        this.leafletMap?.panTo(event.latlng);
+    }
+
+    @action zoomIn() {
+        this.leafletMap?.zoomIn();
+    }
+
+    @action zoomOut() {
+        this.leafletMap?.zoomOut();
+    }
+
+    @action setMaxBoundsFromLayer(layer) {
+        const bounds = layer?.getBounds();
+
+        this.leafletMap?.flyToBounds(bounds);
+        this.leafletMap?.setMaxBounds(bounds);
+    }
+
+    @action flyToBoundsOnly(layer) {
+        const bounds = layer?.getBounds();
+
+        this.leafletMap?.flyToBounds(bounds);
+    }
+
+    /**
+     * ----------------------------------------------------------------------------
+     * CONTEXT MENU INITIALIZERS
+     * ----------------------------------------------------------------------------
+     *
+     * Functions that are used to build context menu for layers and controls on the map.
+     *
+     */
+
+    @action buildContextMenuItems() {
+        const contextmenuItems = [
+            {
+                text: 'Show coordinates...',
+                callback: this.showCoordinates,
+                index: 0,
+            },
+            {
+                text: 'Center map here...',
+                callback: this.centerMap,
+                index: 1,
+            },
+            {
+                text: 'Zoom in...',
+                callback: this.zoomIn,
+                index: 2,
+            },
+            {
+                text: 'Zoom out...',
+                callback: this.zoomOut,
+                index: 3,
+            },
+            {
+                text: this.isDrawControlsVisible ? `Hide draw controls...` : `Enable draw controls...`,
+                callback: () => (this.isDrawControlsVisible ? this.hideDrawControls() : this.enableDrawControls()),
+                index: 4,
+            },
+            {
+                separator: true,
+            },
+            {
+                text: 'Create new Service Area...',
+                callback: this.serviceAreas.createServiceArea,
+                index: 5,
+            },
+        ];
+
+        // add service areas to context menu
+        const serviceAreas = this.serviceAreas.getFromCache() ?? [];
+
+        if (serviceAreas?.length > 0) {
+            contextmenuItems.pushObject({
+                separator: true,
             });
-          }
-
-          // from the `get-active-order-coordinates` the responded coordinates will always be [longitude, latitude]
-          // const [latitude, longitude] = extractCoordinates(coordinates.firstObject.coordinates);
-          const [longitude, latitude] = coordinates.filter(
-            (point) => point.cordinates[0] !== 0
-          ).firstObject?.coordinates;
-
-          initialCoordinates.latitude = latitude;
-          initialCoordinates.longitude = longitude;
-
-          resolve(initialCoordinates);
-        })
-        .catch(() => {
-          getCoordinateFromNavigator().then(resolve);
-        });
-    });
-  }
-
-  @action fetchActiveRoutes() {
-    this.isLoading = true;
-
-    return new Promise((resolve) => {
-      this.fetch.get('fleet-ops/live/routes').then((routes) => {
-        this.isLoading = false;
-
-        if (typeof this.args.onRoutesLoaded === 'function') {
-          this.args.onRoutesLoaded(routes);
         }
 
-        resolve(routes);
-      });
-    });
-  }
+        // add to context menu
+        for (let i = 0; i < serviceAreas?.length; i++) {
+            const serviceArea = serviceAreas.objectAt(i);
 
-  @action fetchActiveDrivers() {
-    this.isLoading = true;
+            contextmenuItems.pushObject({
+                text: `Focus Service Area: ${serviceArea.name}`,
+                callback: () => this.focusServiceArea(serviceArea),
+                index: (contextmenuItems.lastObject?.index ?? 0) + 1 + i,
+            });
+        }
 
-    return new Promise((resolve) => {
-      this.fetch
-        .get(
-          'fleet-ops/live/drivers',
-          {},
-          { normalizeToEmberData: true, normalizeModelType: 'driver' }
-        )
-        .then((drivers) => {
-          this.isLoading = false;
+        this.currentContextMenuItems = contextmenuItems;
 
-          if (typeof this.args.onDriversLoaded === 'function') {
-            this.args.onDriversLoaded(drivers);
-          }
+        return contextmenuItems;
+    }
 
-          resolve(drivers);
+    @action createContextMenuForDriver(driver, layer) {
+        const contextmenuItems = [
+            {
+                separator: true,
+            },
+            {
+                text: `View Driver: ${driver.name}`,
+                // callback: () => this.editServiceAreaDetails(serviceArea)
+            },
+            {
+                text: `Edit Driver: ${driver.name}`,
+                // callback: () => this.editServiceAreaDetails(serviceArea)
+            },
+            {
+                text: `Delete Driver: ${driver.name}`,
+                // callback: () => this.deleteServiceArea(serviceArea)
+            },
+            {
+                text: `Assign Order to Driver: ${driver.name}`,
+                // callback: () => this.deleteServiceArea(serviceArea)
+            },
+            {
+                text: `View Vehicle for: ${driver.name}`,
+                // callback: () => this.deleteServiceArea(serviceArea)
+            },
+        ];
+
+        if (typeof layer?.bindContextMenu === 'function') {
+            layer.bindContextMenu({
+                contextmenu: true,
+                contextmenuItems,
+            });
+        }
+    }
+
+    @action createContextMenuForZone(zone, layer) {
+        const contextmenuItems = [
+            {
+                separator: true,
+            },
+            {
+                text: `Edit Zone: ${zone.name}`,
+                callback: () => this.serviceAreas.editZone(zone),
+            },
+            {
+                text: `Delete Zone: ${zone.name}`,
+                callback: () =>
+                    this.serviceAreas.deleteZone(zone, {
+                        onFinish: () => {
+                            this.removeEditableLayerByRecordId(zone);
+                        },
+                    }),
+            },
+            {
+                text: `Assign Fleet to Zone: (${zone.name})`,
+                callback: () => {},
+            },
+        ];
+
+        if (typeof layer?.bindContextMenu === 'function') {
+            layer.bindContextMenu({
+                contextmenu: true,
+                contextmenuItems,
+            });
+        }
+    }
+
+    @action createContextMenuForServiceArea(serviceArea, layer) {
+        const contextmenuItems = [
+            {
+                separator: true,
+            },
+            {
+                text: `Blur Service Area: ${serviceArea.name}`,
+                callback: () => this.blurServiceArea(serviceArea),
+            },
+            {
+                text: `Create Zone within: ${serviceArea.name}`,
+                callback: () => this.serviceAreas.createZone(serviceArea),
+            },
+            {
+                text: `Assign Fleet to Service Area: ${serviceArea.name}`,
+                callback: () => {},
+            },
+            {
+                text: `Edit Service Area: ${serviceArea.name}`,
+                callback: () => this.serviceAreas.editServiceAreaDetails(serviceArea),
+            },
+            {
+                text: `Delete Service Area: ${serviceArea.name}`,
+                callback: () =>
+                    this.serviceAreas.deleteServiceArea(serviceArea, {
+                        onFinish: () => {
+                            console.log('Service Area deleted!', serviceArea, this.activeServiceAreas);
+                            this.rebuildContextMenu();
+                            this.removeEditableLayerByRecordId(serviceArea);
+                        },
+                    }),
+            },
+        ];
+
+        if (typeof layer?.bindContextMenu === 'function') {
+            layer.bindContextMenu({
+                contextmenu: true,
+                contextmenuItems,
+            });
+        }
+    }
+
+    /**
+     * ----------------------------------------------------------------------------
+     * Async/Socket Functions
+     * ----------------------------------------------------------------------------
+     *
+     * Functions are used to fetch date or handle socket callbacks/initializations.
+     *
+     */
+
+    @action watchDrivers(drivers = []) {
+        // setup socket
+        // const socket = socketClusterClient.create({
+        //   hostname: 'socket.fleetbase.io',
+        //   secure: true,
+        //   port: 8000,
+        // });
+        // for (let i = 0; i < drivers.length; i++) {
+        //   const driver = drivers.objectAt(i);
+        //   this.listenForDriver(driver, socket);
+        // }
+    }
+
+    @action async listenForDriver(driver, socket) {
+        // listen on company channel
+        const channelId = `driver.${driver.uuid}`;
+        const channel = socket.subscribe(channelId);
+
+        // debug
+        // console.log(`socket subscribed to ${channelId}`);
+
+        // track channel
+        this.channels.pushObject(channel);
+
+        // listen to channel for events
+        await channel.listener('subscribe').once();
+
+        // get incoming data and console out
+        for await (let output of channel) {
+            const { event, data } = output;
+
+            if (event === 'driver.location_changed') {
+                driver.location = data.location;
+                driver.altitude = data.altitude;
+                driver.heading = data.heading;
+                driver.speed = data.speed;
+            }
+        }
+    }
+
+    @action closeChannels() {
+        for (let i = 0; i < this.channels.length; i++) {
+            const channel = this.channels.objectAt(i);
+
+            channel.close();
+        }
+    }
+
+    @action getInitialCoordinates() {
+        const initialCoordinates = {
+            latitude: DEFAULT_LATITUDE,
+            longitude: DEFAULT_LONGITUDE,
+        };
+
+        const getCoordinateFromNavigator = () => {
+            return new Promise((resolve) => {
+                // eslint-disable-next-line no-undef
+                if (window.navigator && window.navigator.geolocation) {
+                    // eslint-disable-next-line no-undef
+                    return navigator.geolocation.getCurrentPosition(
+                        ({ coords }) => {
+                            const { latitude, longitude } = coords;
+
+                            initialCoordinates.latitude = latitude;
+                            initialCoordinates.longitude = longitude;
+
+                            resolve(initialCoordinates);
+                        },
+                        () => {
+                            // if failed use default user lat/lng
+                            initialCoordinates.latitude = this.getLocalLatitude();
+                            initialCoordinates.longitude = this.getLocalLongitude();
+
+                            resolve(initialCoordinates);
+                        }
+                    );
+                }
+            });
+        };
+
+        return new Promise((resolve) => {
+            // get location from active orders
+            this.fetch
+                .get('fleet-ops/live/coordinates')
+                .then((coordinates) => {
+                    if (!coordinates) {
+                        return getCoordinateFromNavigator().then((navigatorCoordinates) => {
+                            resolve(navigatorCoordinates);
+                        });
+                    }
+
+                    // from the `get-active-order-coordinates` the responded coordinates will always be [longitude, latitude]
+                    // const [latitude, longitude] = extractCoordinates(coordinates.firstObject.coordinates);
+                    const [longitude, latitude] = coordinates.filter((point) => point.cordinates[0] !== 0).firstObject?.coordinates;
+
+                    initialCoordinates.latitude = latitude;
+                    initialCoordinates.longitude = longitude;
+
+                    resolve(initialCoordinates);
+                })
+                .catch(() => {
+                    getCoordinateFromNavigator().then(resolve);
+                });
         });
-    });
-  }
+    }
 
-  @action fetchServiceAreas() {
-    this.isLoading = true;
+    @action fetchActiveRoutes() {
+        this.isLoading = true;
 
-    return new Promise((resolve) => {
-      const cachedRecords = this.serviceAreas?.getFromCache(
-        'serviceAreas',
-        'service-area'
-      );
+        return new Promise((resolve) => {
+            this.fetch.get('fleet-ops/live/routes').then((routes) => {
+                this.isLoading = false;
 
-      if (cachedRecords) {
-        resolve(cachedRecords);
-      }
+                if (typeof this.args.onRoutesLoaded === 'function') {
+                    this.args.onRoutesLoaded(routes);
+                }
 
-      return this.store
-        .query('service-area', { with: ['zones'] })
-        .then((serviceAreaRecords) => {
-          this.appCache.setEmberData('serviceAreas', serviceAreaRecords);
-          resolve(serviceAreaRecords);
-        })
-        .finally(() => {
-          this.isLoading = false;
+                resolve(routes);
+            });
         });
-    });
-  }
+    }
 
-  @action getLocalLatitude() {
-    const whois = this.currentUser.getOption('whois');
-    const latitude = this.appCache.get('map_latitude');
+    @action fetchActiveDrivers() {
+        this.isLoading = true;
 
-    return latitude || whois?.latitude || DEFAULT_LATITUDE;
-  }
+        return new Promise((resolve) => {
+            this.fetch.get('fleet-ops/live/drivers', {}, { normalizeToEmberData: true, normalizeModelType: 'driver' }).then((drivers) => {
+                this.isLoading = false;
 
-  @action getLocalLongitude() {
-    const whois = this.currentUser.getOption('whois');
-    const longitude = this.appCache.get('map_longitude');
+                if (typeof this.args.onDriversLoaded === 'function') {
+                    this.args.onDriversLoaded(drivers);
+                }
 
-    return longitude || whois?.longitude || DEFAULT_LONGITUDE;
-  }
+                resolve(drivers);
+            });
+        });
+    }
+
+    @action fetchServiceAreas() {
+        this.isLoading = true;
+
+        return new Promise((resolve) => {
+            const cachedRecords = this.serviceAreas?.getFromCache('serviceAreas', 'service-area');
+
+            if (cachedRecords) {
+                resolve(cachedRecords);
+            }
+
+            return this.store
+                .query('service-area', { with: ['zones'] })
+                .then((serviceAreaRecords) => {
+                    this.appCache.setEmberData('serviceAreas', serviceAreaRecords);
+                    resolve(serviceAreaRecords);
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        });
+    }
+
+    @action getLocalLatitude() {
+        const whois = this.currentUser.getOption('whois');
+        const latitude = this.appCache.get('map_latitude');
+
+        return latitude || whois?.latitude || DEFAULT_LATITUDE;
+    }
+
+    @action getLocalLongitude() {
+        const whois = this.currentUser.getOption('whois');
+        const longitude = this.appCache.get('map_longitude');
+
+        return longitude || whois?.longitude || DEFAULT_LONGITUDE;
+    }
 }

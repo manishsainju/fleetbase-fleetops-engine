@@ -1,4 +1,1 @@
-export {
-  default,
-  calculatePercentage,
-} from '@fleetbase/ember-core/utils/calculate-percentage';
+export { default, calculatePercentage } from '@fleetbase/ember-core/utils/calculate-percentage';
