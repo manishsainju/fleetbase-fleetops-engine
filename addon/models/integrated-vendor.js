@@ -1,7 +1,7 @@
 import FacilitatorModel from './facilitator';
 import { attr } from '@ember-data/model';
 import { computed } from '@ember/object';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format as formatDate, isValid as isValidDate, formatDistanceToNow } from 'date-fns';
 
 export default class IntegratedVendorModel extends FacilitatorModel {
     /** @ids */
@@ -40,7 +40,7 @@ export default class IntegratedVendorModel extends FacilitatorModel {
     }
 
     @computed('updated_at') get updatedAt() {
-        return format(this.updated_at, 'PPP');
+        return formatDate(this.updated_at, 'PPP');
     }
 
     @computed('created_at') get createdAgo() {
@@ -52,6 +52,6 @@ export default class IntegratedVendorModel extends FacilitatorModel {
             return null;
         }
 
-        return format(this.created_at, 'PPP p');
+        return formatDate(this.created_at, 'PPP p');
     }
 }

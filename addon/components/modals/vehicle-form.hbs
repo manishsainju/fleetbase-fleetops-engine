@@ -54,7 +54,7 @@
                             <label>
                                 Driver Assigned
                             </label>
-                            <ModelSelect @modelName="driver" @selectedModel={{@options.vehicle.driver_uuid}} @placeholder="Select Driver" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @onChange={{fn (mut @options.vehicle.driver)}} as |model|>
+                            <ModelSelect @modelName="driver" @selectedModel={{@options.vehicle.driver}} @placeholder="Select Driver" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @onChange={{fn (mut @options.vehicle.driver)}} as |model|>
                                 {{model.name}}
                             </ModelSelect>
                         </div>

@@ -2,7 +2,7 @@ import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
 import { computed } from '@ember/object';
 import { getOwner } from '@ember/application';
 import { isArray } from '@ember/array';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format as formatDate, isValid as isValidDate, formatDistanceToNow } from 'date-fns';
 import isModel from '@fleetbase/ember-core/utils/is-model';
 
 export default class ServiceRate extends Model {
@@ -53,11 +53,11 @@ export default class ServiceRate extends Model {
     }
 
     @computed('updated_at') get updatedAt() {
-        return format(this.updated_at, 'PPP p');
+        return formatDate(this.updated_at, 'PPP p');
     }
 
     @computed('updated_at') get updatedAtShort() {
-        return format(this.updated_at, 'PP');
+        return formatDate(this.updated_at, 'PP');
     }
 
     @computed('created_at') get createdAgo() {
@@ -65,11 +65,11 @@ export default class ServiceRate extends Model {
     }
 
     @computed('created_at') get createdAt() {
-        return this.created_at ? format(this.created_at, 'PPP p') : null;
+        return this.created_at ? formatDate(this.created_at, 'PPP p') : null;
     }
 
     @computed('created_at') get createdAtShort() {
-        return this.created_at ? format(this.created_at, 'PP') : null;
+        return this.created_at ? formatDate(this.created_at, 'PP') : null;
     }
 
     @computed('rate_calculation_method') get isFixedMeter() {

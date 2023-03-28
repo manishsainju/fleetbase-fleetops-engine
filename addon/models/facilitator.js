@@ -1,7 +1,7 @@
 import Model, { attr } from '@ember-data/model';
 import { computed } from '@ember/object';
 import { equal } from '@ember/object/computed';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format as formatDate, isValid as isValidDate, formatDistanceToNow } from 'date-fns';
 
 export default class FacilitatorModel extends Model {
     /** @ids */
@@ -21,26 +21,44 @@ export default class FacilitatorModel extends Model {
     @equal('facilitator_type', 'contact') isContact;
 
     @computed('updated_at') get updatedAgo() {
+        if (!isValidDate(this.updated_at)) {
+            return null;
+        }
         return formatDistanceToNow(this.updated_at);
     }
 
     @computed('updated_at') get updatedAt() {
-        return format(this.updated_at, 'PPP p');
+        if (!isValidDate(this.updated_at)) {
+            return null;
+        }
+        return formatDate(this.updated_at, 'PPP p');
     }
 
     @computed('updated_at') get updatedAtShort() {
-        return format(this.updated_at, 'PP');
+        if (!isValidDate(this.updated_at)) {
+            return null;
+        }
+        return formatDate(this.updated_at, 'PP');
     }
 
     @computed('created_at') get createdAgo() {
+        if (!isValidDate(this.created_at)) {
+            return null;
+        }
         return formatDistanceToNow(this.created_at);
     }
 
     @computed('created_at') get createdAt() {
-        return format(this.created_at, 'PPP p');
+        if (!isValidDate(this.created_at)) {
+            return null;
+        }
+        return formatDate(this.created_at, 'PPP p');
     }
 
     @computed('created_at') get createdAtShort() {
-        return format(this.created_at, 'PP');
+        if (!isValidDate(this.created_at)) {
+            return null;
+        }
+        return formatDate(this.created_at, 'PP');
     }
 }

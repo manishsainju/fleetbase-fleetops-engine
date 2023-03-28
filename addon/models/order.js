@@ -5,7 +5,7 @@ import { notEmpty, not, bool, alias, equal } from '@ember/object/computed';
 import { isArray } from '@ember/array';
 import { getOwner } from '@ember/application';
 import { capitalize, camelize } from '@ember/string';
-import { format, formatDistanceToNow, isValid as isValidDate } from 'date-fns';
+import { format as formatDate, formatDistanceToNow, isValid as isValidDate } from 'date-fns';
 import groupBy from '@fleetbase/ember-core/utils/macros/group-by';
 import isRelationMissing from '@fleetbase/ember-core/utils/is-relation-missing';
 import isNotModel from '@fleetbase/ember-core/utils/is-not-model';
@@ -160,7 +160,7 @@ export default class OrderModel extends Model {
             return null;
         }
 
-        return format(this.updated_at, 'PP HH:mm');
+        return formatDate(this.updated_at, 'PP HH:mm');
     }
 
     @computed('updated_at') get updatedAtShort() {
@@ -168,7 +168,7 @@ export default class OrderModel extends Model {
             return null;
         }
 
-        return format(this.updated_at, 'PP');
+        return formatDate(this.updated_at, 'PP');
     }
 
     @computed('created_at') get createdAgo() {
@@ -184,7 +184,7 @@ export default class OrderModel extends Model {
             return null;
         }
 
-        return format(this.created_at, 'PP HH:mm');
+        return formatDate(this.created_at, 'PP HH:mm');
     }
 
     @computed('created_at') get createdAtShort() {
@@ -192,7 +192,7 @@ export default class OrderModel extends Model {
             return null;
         }
 
-        return format(this.created_at, 'PP');
+        return formatDate(this.created_at, 'PP');
     }
 
     @computed('dispatched_at') get dispatchedAgo() {
@@ -208,7 +208,7 @@ export default class OrderModel extends Model {
             return 'N/A';
         }
 
-        return format(this.dispatched_at, 'PP  HH:mm');
+        return formatDate(this.dispatched_at, 'PP  HH:mm');
     }
 
     @computed('dispatched_at') get dispatchedAtShort() {
@@ -216,7 +216,7 @@ export default class OrderModel extends Model {
             return 'N/A';
         }
 
-        return format(this.dispatched_at, 'PP');
+        return formatDate(this.dispatched_at, 'PP');
     }
 
     @computed('started_at') get startedAgo() {
@@ -232,7 +232,7 @@ export default class OrderModel extends Model {
             return 'N/A';
         }
 
-        return format(this.started_at, 'PP HH:mm');
+        return formatDate(this.started_at, 'PP HH:mm');
     }
 
     @computed('started_at') get startedAtShort() {
@@ -240,7 +240,7 @@ export default class OrderModel extends Model {
             return 'N/A';
         }
 
-        return format(this.started_at, 'PP');
+        return formatDate(this.started_at, 'PP');
     }
 
     @computed('scheduled_at') get scheduledAt() {
@@ -248,7 +248,7 @@ export default class OrderModel extends Model {
             return 'N/A';
         }
 
-        return format(this.scheduled_at, 'PP HH:mm');
+        return formatDate(this.scheduled_at, 'PP HH:mm');
     }
 
     @computed('scheduled_at') get scheduledAtTime() {
@@ -256,15 +256,15 @@ export default class OrderModel extends Model {
             return 'N/A';
         }
 
-        return format(this.scheduled_at, 'HH:mm');
+        return formatDate(this.scheduled_at, 'HH:mm');
     }
 
     @computed('created_at') get createdAtWithTime() {
-        return format(this.created_at, 'PP HH:mm');
+        return formatDate(this.created_at, 'PP HH:mm');
     }
 
     @computed('created_at') get createdAtDetailed() {
-        return format(this.created_at, 'PP HH:mm');
+        return formatDate(this.created_at, 'PP HH:mm');
     }
 
     // eslint-disable-next-line ember/use-brace-expansion
