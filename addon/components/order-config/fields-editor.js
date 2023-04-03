@@ -5,7 +5,7 @@ import { action, setProperties } from '@ember/object';
 import { isArray } from '@ember/array';
 import { classify, underscore } from '@ember/string';
 import groupBy from '@fleetbase/ember-core/utils/macros/group-by';
-import { v4 } from 'ember-uuid';
+import generateUuid from '@fleetbase/ember-core/utils/generate-uuid';
 
 export default class OrderConfigFieldsEditorComponent extends Component {
     constructor() {
@@ -115,7 +115,7 @@ export default class OrderConfigFieldsEditorComponent extends Component {
         const { fields } = this;
 
         fields.pushObject({
-            id: v4(),
+            id: generateUuid(),
             label: null,
             key: null,
             type: 'text',
@@ -152,7 +152,7 @@ export default class OrderConfigFieldsEditorComponent extends Component {
 
     @action addMetaFieldOption(metaField) {
         const options = metaField.options || [];
-        const option = { id: v4(), value: '' };
+        const option = { id: generateUuid(), value: '' };
 
         if (metaField.kvOptions) {
             option['key'] = '';

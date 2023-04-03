@@ -4,7 +4,7 @@ import { inject as service } from '@ember/service';
 import { action, computed, set, get } from '@ember/object';
 import { isArray } from '@ember/array';
 import { underscore } from '@ember/string';
-import { v4 } from 'ember-uuid';
+import generateUuid from '@fleetbase/ember-core/utils/generate-uuid';
 import getWeightUnits from '@fleetbase/ember-core/utils/get-weight-units';
 import getLengthUnits from '@fleetbase/ember-core/utils/get-length-units';
 
@@ -31,7 +31,7 @@ export default class OrderConfigEntitiesEditorComponent extends Component {
     @action newEntity() {
         const { orderConfig } = this;
         const entity = {
-            id: v4(),
+            id: generateUuid(),
             name: null,
             type: null,
             description: null,
