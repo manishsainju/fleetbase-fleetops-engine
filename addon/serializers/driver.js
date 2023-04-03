@@ -1,5 +1,7 @@
 import ApplicationSerializer from '@fleetbase/ember-core/serializers/application';
 import { EmbeddedRecordsMixin } from '@ember-data/serializer/rest';
+import { get } from '@ember/object';
+import { isArray } from '@ember/array';
 
 export default class DriverSerializer extends ApplicationSerializer.extend(EmbeddedRecordsMixin) {
     /**
@@ -18,13 +20,23 @@ export default class DriverSerializer extends ApplicationSerializer.extend(Embed
         };
     }
 
+    serializeBelongsTo(snapshot, json, relationship) {
+        let key = relationship.key;
+
+        if (key === 'vehicle' && isArray(json[key])) {
+            json[key] = get(json[key], 'uuid');
+        }
+
+        super.serializeBelongsTo(...arguments);
+    }
+
     serializeHasMany(snapshot, json, relationship) {
         let key = relationship.key;
 
         if (key === 'jobs' || key === 'orders') {
             return;
-        } else {
-            super.serializeHasMany(...arguments);
         }
+
+        super.serializeHasMany(...arguments);
     }
 }

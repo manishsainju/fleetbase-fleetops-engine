@@ -5,7 +5,7 @@ import { action, computed, set, setProperties } from '@ember/object';
 import { isArray } from '@ember/array';
 import { equal } from '@ember/object/computed';
 import { underscore } from '@ember/string';
-import { v4 } from 'ember-uuid';
+import generateUuid from '@fleetbase/ember-core/utils/generate-uuid';
 
 export default class OrderConfigActivityFlowEditorComponent extends Component {
     constructor() {
@@ -187,7 +187,7 @@ export default class OrderConfigActivityFlowEditorComponent extends Component {
 
         // insert status
         set(flow, status, {
-            id: v4(),
+            id: generateUuid(),
             sequence: Object.keys(flow).length + 1,
             events: [],
         });
@@ -265,7 +265,7 @@ export default class OrderConfigActivityFlowEditorComponent extends Component {
         }
 
         const event = {
-            id: v4(),
+            id: generateUuid(),
             stauts: null,
             code: null,
             details: null,
