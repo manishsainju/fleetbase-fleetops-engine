@@ -3,14 +3,12 @@ import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { equal } from '@ember/object/computed';
-import { A, isArray } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
-import isModel from '@fleetbase/ember-core/utils/is-model';
 import extractCoordinates from '@fleetbase/ember-core/utils/extract-coordinates';
 import leafletIcon from '@fleetbase/ember-core/utils/leaflet-icon';
 import generateSlug from '@fleetbase/ember-core/utils/generate-slug';
 
-export default class ManagementDriversIndexController extends Controller {3
+export default class ManagementDriversIndexController extends Controller {
+    3;
     /**
      * Inject the `management.vendors.index` controller
      *
@@ -167,7 +165,7 @@ export default class ManagementDriversIndexController extends Controller {3
 
     /**
      * If all rows are toggled.
-     * 
+     *
      * @var {Boolean}
      */
     @tracked allToggled = false;
@@ -182,7 +180,7 @@ export default class ManagementDriversIndexController extends Controller {3
      *
      * @var {Array}
      */
-    @tracked columns = A([
+    @tracked columns = [
         {
             label: 'Name',
             valuePath: 'name',
@@ -226,7 +224,7 @@ export default class ManagementDriversIndexController extends Controller {3
             filterComponent: 'filter/model',
             filterComponentPlaceholder: 'Select vendor to filter by',
             filterParam: 'vendor',
-            model: 'vendor'
+            model: 'vendor',
         },
         {
             label: 'Vehicle',
@@ -239,7 +237,7 @@ export default class ManagementDriversIndexController extends Controller {3
             filterComponent: 'filter/model',
             filterComponentPlaceholder: 'Select vehicle to filter by',
             filterParam: 'vehicle',
-            model: 'vehicle'
+            model: 'vehicle',
         },
         {
             label: 'Fleets',
@@ -252,7 +250,7 @@ export default class ManagementDriversIndexController extends Controller {3
             filterComponent: 'filter/model',
             filterComponentPlaceholder: 'Select fleet to filter by',
             filterParam: 'fleet',
-            model: 'fleet'
+            model: 'fleet',
         },
         {
             label: 'License',
@@ -340,11 +338,11 @@ export default class ManagementDriversIndexController extends Controller {3
                     fn: this.editDriver,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Assign order to driver...',
-                    fn: this.assignOrder
+                    fn: this.assignOrder,
                 },
                 {
                     label: 'Assign vehicle to driver...',
@@ -355,7 +353,7 @@ export default class ManagementDriversIndexController extends Controller {3
                     fn: this.viewOnMap,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete driver...',
@@ -367,7 +365,31 @@ export default class ManagementDriversIndexController extends Controller {3
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
+
+    /**
+     * The search task.
+     *
+     * @void
+     */
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
+            this.query = null;
+            return;
+        }
+
+        // timeout for typing
+        yield timeout(250);
+
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
+        }
+
+        // update the query param
+        this.query = value;
+    }
 
     /**
      * Switch layout view.
@@ -379,126 +401,46 @@ export default class ManagementDriversIndexController extends Controller {3
         this.layout = layout;
     }
 
-     /**
+    /**
      * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
+     *
      * @void
      */
-     @action sendDropdownAction(dd, sentAction, ...params) { 
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
- 
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
+    @action sendDropdownAction(dd, sentAction, ...params) {
+        if (typeof dd?.actions?.close === 'function') {
+            dd.actions.close();
+        }
 
-     /**
+        if (typeof this[sentAction] === 'function') {
+            this[sentAction](...params);
+        }
+    }
+
+    /**
      * Bulk deletes selected `driver` via confirm prompt
      *
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeleteDrivers() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeleteDrivers() {
+        const selected = this.table.selectedRows.map(({ content }) => content);
 
-         this.crud.bulkDelete(selected, {
-             modelNamePath: `name`,
-             acceptButtonText: 'Delete Drivers',
-             onConfirm: (deletedDrivers) => {
-                 this.allToggled = false;
-                 
-                 deletedDrivers.forEach(place => {
-                     this.table.removeRow(place);
-                 });
- 
+        this.crud.bulkDelete(selected, {
+            modelNamePath: `name`,
+            acceptButtonText: 'Delete Drivers',
+            onConfirm: (deletedDrivers) => {
+                this.allToggled = false;
+
+                deletedDrivers.forEach((place) => {
+                    this.table.removeRow(place);
+                });
+
                 this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
-    }
-
-    /**
-     * The actual search task
-     * 
-     * @void
-     */
-    @task(function* (query) {
-        if(!query) {
-            this.query = null;
-            return;
-        }
-
-        yield timeout(250);
-
-        if (this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
-        }
-
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action applyFilters(columns) {
-        columns.forEach((column) => {
-            // if value is a model only filter by id
-            if (isModel(column.filterValue)) {
-                column.filterValue = column.filterValue.id;
-            }
-            // if value is an array of models map to ids
-            if (isArray(column.filterValue) && column.filterValue.every((v) => isModel(v))) {
-                column.filterValue = column.filterValue.map((v) => v.id);
-            }
-            // only if filter is active continue
-            if (column.isFilterActive && column.filterValue) {
-                this[column.filterParam || column.valuePath] = column.filterValue;
-            } else {
-                this[column.filterParam || column.valuePath] = undefined;
-                column.isFilterActive = false;
-                column.filterValue = undefined;
-            }
+            },
         });
-        this.columns = columns;
     }
 
     /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action setFilterOptions(valuePath, options) {
-        const updatedColumns = this.columns.map((column) => {
-            if (column.valuePath === valuePath) {
-                column.filterOptions = options;
-            }
-            return column;
-        });
-        this.columns = updatedColumns;
-    }
 
     /**
      * Toggles dialog to export `drivers`
@@ -560,7 +502,7 @@ export default class ManagementDriversIndexController extends Controller {3
                             },
                         },
                         {
-                            separator: true
+                            separator: true,
                         },
                         {
                             title: 'Assign Order to Driver',
@@ -594,7 +536,7 @@ export default class ManagementDriversIndexController extends Controller {3
                             action: viewDriverOnMap,
                         },
                         {
-                            separator: true
+                            separator: true,
                         },
                         {
                             title: 'Listen to socket channel',
@@ -606,7 +548,7 @@ export default class ManagementDriversIndexController extends Controller {3
                             },
                         },
                         {
-                            separator: true
+                            separator: true,
                         },
                         {
                             title: 'Delete Driver',
@@ -624,19 +566,21 @@ export default class ManagementDriversIndexController extends Controller {3
                     ],
                 },
             ],
-            viewVendor: () => this.viewDriverVendor(driver, {
-                onFinish: () => {
-                    this.viewDriver(driver);
-                },
-            }),
-            viewVehicle: () => this.viewDriverVehicle(driver, {
-                onFinish: () => {
-                    this.viewDriver(driver);
-                },
-            }),
+            viewVendor: () =>
+                this.viewDriverVendor(driver, {
+                    onFinish: () => {
+                        this.viewDriver(driver);
+                    },
+                }),
+            viewVehicle: () =>
+                this.viewDriverVehicle(driver, {
+                    onFinish: () => {
+                        this.viewDriver(driver);
+                    },
+                }),
             viewDriverOnMap,
             driver,
-            ...options
+            ...options,
         });
     }
 
@@ -649,7 +593,7 @@ export default class ManagementDriversIndexController extends Controller {3
     @action createDriver() {
         const driver = this.store.createRecord('driver', {
             status: `active`,
-            slug: generateSlug()
+            slug: generateSlug(),
         });
 
         return this.editDriver(driver, {
@@ -664,7 +608,7 @@ export default class ManagementDriversIndexController extends Controller {3
                 }
 
                 this.table.addRow(driver);
-            }
+            },
         });
     }
 
@@ -687,13 +631,14 @@ export default class ManagementDriversIndexController extends Controller {3
             declineButtonIconPrefix: 'fas',
             driver,
             uploadNewPhoto: (file) => {
-                this.fetch.uploadFile.perform(file, 
+                this.fetch.uploadFile.perform(
+                    file,
                     {
                         path: `uploads/${this.currentUser.companyId}/drivers/${driver.slug}`,
                         key_uuid: driver.id,
                         key_type: `driver`,
-                        type: `driver_photo`
-                    }, 
+                        type: `driver_photo`,
+                    },
                     (uploadedFile) => {
                         console.log('uploadedFile', uploadedFile);
                         driver.setProperties({
@@ -706,21 +651,24 @@ export default class ManagementDriversIndexController extends Controller {3
             },
             confirm: (modal, done) => {
                 modal.startLoading();
-                
-                driver.save().then((driver) => {
-                    if (typeof options.successNotification === 'function') {
-                        this.notifications.success(options.successNotification(driver));
-                    } else {
-                        this.notifications.success(options.successNotification || `${driver.name} details updated.`);
-                    }
 
-                    done();
-                }).catch((error) => {
-                    console.log(error);
-                    // driver.rollbackAttributes();
-                    modal.stopLoading();
-                    this.notifications.serverError(error);
-                });
+                driver
+                    .save()
+                    .then((driver) => {
+                        if (typeof options.successNotification === 'function') {
+                            this.notifications.success(options.successNotification(driver));
+                        } else {
+                            this.notifications.success(options.successNotification || `${driver.name} details updated.`);
+                        }
+
+                        done();
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        // driver.rollbackAttributes();
+                        modal.stopLoading();
+                        this.notifications.serverError(error);
+                    });
             },
             ...options,
         });
@@ -774,16 +722,19 @@ export default class ManagementDriversIndexController extends Controller {3
                 }
 
                 modal.startLoading();
-                
+
                 driver.set('current_job_uuid', selectedOrder.id);
 
-                return driver.save().then(() => {
-                    this.notifications.success(`${driver.name} assigned to order.`);
-                }).catch((error) => {
-                    driver.rollbackAttributes();
-                    modal.stopLoading();
-                    this.notifications.serverError(error);
-                });
+                return driver
+                    .save()
+                    .then(() => {
+                        this.notifications.success(`${driver.name} assigned to order.`);
+                    })
+                    .catch((error) => {
+                        driver.rollbackAttributes();
+                        modal.stopLoading();
+                        this.notifications.serverError(error);
+                    });
             },
             ...options,
         });
@@ -807,13 +758,16 @@ export default class ManagementDriversIndexController extends Controller {3
             confirm: (modal) => {
                 modal.startLoading();
 
-                return driver.save().then((driver) => {
-                    this.notifications.success(`${driver.name} assigned to vehicle.`);
-                }).catch((error) => {
-                    driver.rollbackAttributes();
-                    modal.stopLoading();
-                    this.notifications.serverError(error);
-                });
+                return driver
+                    .save()
+                    .then((driver) => {
+                        this.notifications.success(`${driver.name} assigned to vehicle.`);
+                    })
+                    .catch((error) => {
+                        driver.rollbackAttributes();
+                        modal.stopLoading();
+                        this.notifications.serverError(error);
+                    });
             },
             ...options,
         });
@@ -827,7 +781,7 @@ export default class ManagementDriversIndexController extends Controller {3
      */
     @action viewOnMap(driver, options = {}) {
         const { location } = driver;
-        const [ latitude, longitude ] = extractCoordinates(location.coordinates);
+        const [latitude, longitude] = extractCoordinates(location.coordinates);
 
         this.modalsManager.show('modals/point-map', {
             title: `Location of ${driver.name}`,
@@ -842,7 +796,7 @@ export default class ManagementDriversIndexController extends Controller {3
             popupText: `${driver.name} (${driver.public_id})`,
             icon: leafletIcon({
                 iconUrl: driver?.vehicle_avatar,
-                iconSize: [40, 40]
+                iconSize: [40, 40],
             }),
             ...options,
         });
@@ -857,7 +811,7 @@ export default class ManagementDriversIndexController extends Controller {3
      */
     @action async viewDriverVehicle(driver, options = {}) {
         this.modalsManager.displayLoader();
-        
+
         const vehicle = await this.store.findRecord('vehicle', driver.vehicle_uuid);
 
         this.modalsManager.done().then(() => {

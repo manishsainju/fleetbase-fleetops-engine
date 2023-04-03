@@ -3,11 +3,8 @@ import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, get } from '@ember/object';
 import { A, isArray } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
-import isModel from '@fleetbase/ember-core/utils/is-model';
 
 export default class ManagementContactsIndexController extends Controller {
-
     /**
      * Inject the `operations.zones.index` controller
      *
@@ -125,7 +122,7 @@ export default class ManagementContactsIndexController extends Controller {
      *
      * @var {Array}
      */
-    @tracked columns = A([
+    @tracked columns = [
         {
             label: 'Name',
             valuePath: 'name',
@@ -228,7 +225,7 @@ export default class ManagementContactsIndexController extends Controller {
                     fn: this.editContact,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete Contact',
@@ -240,129 +237,69 @@ export default class ManagementContactsIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
-     /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
+    /**
+     * The search task.
+     *
      * @void
      */
-     @action sendDropdownAction(dd, sentAction, ...params) { 
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
- 
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
+            this.query = null;
+            return;
+        }
 
-     /**
+        // timeout for typing
+        yield timeout(250);
+
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
+        }
+
+        // update the query param
+        this.query = value;
+    }
+
+    /**
+     * Sends up a dropdown action, closes the dropdown then executes the action
+     *
+     * @void
+     */
+    @action sendDropdownAction(dd, sentAction, ...params) {
+        if (typeof dd?.actions?.close === 'function') {
+            dd.actions.close();
+        }
+
+        if (typeof this[sentAction] === 'function') {
+            this[sentAction](...params);
+        }
+    }
+
+    /**
      * Bulk deletes selected `driver` via confirm prompt
      *
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeleteContacts() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeleteContacts() {
+        const selected = this.table.selectedRows.map(({ content }) => content);
 
-         this.crud.bulkDelete(selected, {
-             modelNamePath: `name`,
-             acceptButtonText: 'Delete Contacts',
-             onConfirm: (deletedContacts) => {
-                 this.allToggled = false;
-                 
-                 deletedContacts.forEach(place => {
-                     this.table.removeRow(place);
-                 });
- 
+        this.crud.bulkDelete(selected, {
+            modelNamePath: `name`,
+            acceptButtonText: 'Delete Contacts',
+            onConfirm: (deletedContacts) => {
+                this.allToggled = false;
+
+                deletedContacts.forEach((place) => {
+                    this.table.removeRow(place);
+                });
+
                 this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
-
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action
-    search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
-    }
-
-    /**
-     * The actual search task
-     * 
-     * @void
-     */
-    @task(function* (query) {
-        if(!query) {
-            this.query = null;
-            return;
-        }
-
-        yield timeout(250);
-
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
-        }
-
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action applyFilters(columns) {
-        columns.forEach((column) => {
-            // if value is a model only filter by id
-            if (isModel(column.filterValue)) {
-                column.filterValue = column.filterValue.id;
-            }
-            // if value is an array of models map to ids
-            if (isArray(column.filterValue) && column.filterValue.every((v) => isModel(v))) {
-                column.filterValue = column.filterValue.map((v) => v.id);
-            }
-            // only if filter is active continue
-            if (column.isFilterActive && column.filterValue) {
-                this[column.filterParam || column.valuePath] = column.filterValue;
-            } else {
-                this[column.filterParam || column.valuePath] = undefined;
-                column.isFilterActive = false;
-                column.filterValue = undefined;
-            }
+            },
         });
-        this.columns = columns;
-    }
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action setFilterOptions(valuePath, options) {
-        const updatedColumns = this.columns.map((column) => {
-            if (column.valuePath === valuePath) {
-                column.filterOptions = options;
-            }
-            return column;
-        });
-        this.columns = updatedColumns;
     }
 
     /**
@@ -437,7 +374,7 @@ export default class ManagementContactsIndexController extends Controller {
      */
     @action createContact() {
         const contact = this.store.createRecord('contact', {
-            photo_url: `/images/no-avatar.png`
+            photo_url: `/images/no-avatar.png`,
         });
 
         return this.editContact(contact, {
@@ -452,7 +389,7 @@ export default class ManagementContactsIndexController extends Controller {
                 }
 
                 this.table.addRow(contact);
-            }
+            },
         });
     }
 
@@ -473,13 +410,14 @@ export default class ManagementContactsIndexController extends Controller {
             contactTypes: this.contactTypes,
             contact,
             uploadNewPhoto: (file) => {
-                this.fetch.uploadFile.perform(file, 
+                this.fetch.uploadFile.perform(
+                    file,
                     {
                         path: `uploads/${contact.company_uuid}/contacts/${contact.slug}`,
                         key_uuid: contact.id,
                         key_type: `contact`,
-                        type: `contact_photo`
-                    }, 
+                        type: `contact_photo`,
+                    },
                     (uploadedFile) => {
                         contact.setProperties({
                             photo_uuid: uploadedFile.id,
@@ -492,19 +430,22 @@ export default class ManagementContactsIndexController extends Controller {
             confirm: (modal, done) => {
                 modal.startLoading();
 
-                contact.save().then((contact) => {
-                    if (typeof options.successNotification === 'function') {
-                        this.notifications.success(options.successNotification(contact));
-                    } else {
-                        this.notifications.success(options.successNotification || `${contact.name} details updated.`);
-                    }
+                contact
+                    .save()
+                    .then((contact) => {
+                        if (typeof options.successNotification === 'function') {
+                            this.notifications.success(options.successNotification(contact));
+                        } else {
+                            this.notifications.success(options.successNotification || `${contact.name} details updated.`);
+                        }
 
-                    done();
-                }).catch((error) => {
-                    // driver.rollbackAttributes();
-                    modal.stopLoading();
-                    this.notifications.serverError(error);
-                });
+                        done();
+                    })
+                    .catch((error) => {
+                        // driver.rollbackAttributes();
+                        modal.stopLoading();
+                        this.notifications.serverError(error);
+                    });
             },
             ...options,
         });

@@ -2,14 +2,10 @@ import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, get } from '@ember/object';
-import { A, isArray } from '@ember/array';
 import { capitalize } from '@ember/string';
-import { task, timeout } from 'ember-concurrency';
-import isModel from '@fleetbase/ember-core/utils/is-model';
 import apiUrl from '@fleetbase/ember-core/utils/api-url';
 
 export default class ManagementVendorsIndexController extends Controller {
-
     /**
      * Inject the `operations.zones.index` controller
      *
@@ -120,16 +116,16 @@ export default class ManagementVendorsIndexController extends Controller {
      *
      * @var {Array}
      */
-    @tracked columns = A([
-        { 
-            label: '', 
-            valuePath: 'selected', 
-            width: '40px', 
-            cellComponent: 'table/cell/checkbox', 
+    @tracked columns = [
+        {
+            label: '',
+            valuePath: 'selected',
+            width: '40px',
+            cellComponent: 'table/cell/checkbox',
             resizable: false,
             searchable: false,
-            filterable: false, 
-            sortable: false 
+            filterable: false,
+            sortable: false,
         },
         {
             label: 'Name',
@@ -270,7 +266,7 @@ export default class ManagementVendorsIndexController extends Controller {
                     fn: this.editVendor,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete Vendor',
@@ -282,128 +278,69 @@ export default class ManagementVendorsIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
-     /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
+    /**
+     * The search task.
+     *
      * @void
      */
-     @action sendDropdownAction(dd, sentAction, ...params) { 
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
- 
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
+            this.query = null;
+            return;
+        }
 
-     /**
+        // timeout for typing
+        yield timeout(250);
+
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
+        }
+
+        // update the query param
+        this.query = value;
+    }
+
+    /**
+     * Sends up a dropdown action, closes the dropdown then executes the action
+     *
+     * @void
+     */
+    @action sendDropdownAction(dd, sentAction, ...params) {
+        if (typeof dd?.actions?.close === 'function') {
+            dd.actions.close();
+        }
+
+        if (typeof this[sentAction] === 'function') {
+            this[sentAction](...params);
+        }
+    }
+
+    /**
      * Bulk deletes selected `driver` via confirm prompt
      *
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeleteVendors() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeleteVendors() {
+        const selected = this.table.selectedRows.map(({ content }) => content);
 
-         this.crud.bulkDelete(selected, {
-             modelNamePath: `name`,
-             acceptButtonText: 'Delete Vendors',
-             onConfirm: (deletedVendors) => {
-                 this.allToggled = false;
-                 
-                 deletedVendors.forEach(place => {
-                     this.table.removeRow(place);
-                 });
- 
+        this.crud.bulkDelete(selected, {
+            modelNamePath: `name`,
+            acceptButtonText: 'Delete Vendors',
+            onConfirm: (deletedVendors) => {
+                this.allToggled = false;
+
+                deletedVendors.forEach((place) => {
+                    this.table.removeRow(place);
+                });
+
                 this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
-    }
-
-    /**
-     * The actual search task
-     * 
-     * @void
-     */
-    @task(function* (query) {
-        if(!query) {
-            this.query = null;
-            return;
-        }
-
-        yield timeout(250);
-
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
-        }
-
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
-
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action applyFilters(columns) {
-        columns.forEach((column) => {
-            // if value is a model only filter by id
-            if (isModel(column.filterValue)) {
-                column.filterValue = column.filterValue.id;
-            }
-            // if value is an array of models map to ids
-            if (isArray(column.filterValue) && column.filterValue.every((v) => isModel(v))) {
-                column.filterValue = column.filterValue.map((v) => v.id);
-            }
-            // only if filter is active continue
-            if (column.isFilterActive && column.filterValue) {
-                this[column.filterParam || column.valuePath] = column.filterValue;
-            } else {
-                this[column.filterParam || column.valuePath] = undefined;
-                column.isFilterActive = false;
-                column.filterValue = undefined;
-            }
+            },
         });
-        this.columns = columns;
-    }
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action setFilterOptions(valuePath, options) {
-        const updatedColumns = this.columns.map((column) => {
-            if (column.valuePath === valuePath) {
-                column.filterOptions = options;
-            }
-            return column;
-        });
-        this.columns = updatedColumns;
     }
 
     /**
@@ -478,10 +415,14 @@ export default class ManagementVendorsIndexController extends Controller {
      */
     @action async createVendor() {
         const vendor = this.store.createRecord('vendor', { status: 'active' });
-        const supportedIntegratedVendors = await this.fetch.cachedGet('integrated-vendors/supported', {}, {
-            expirationInterval: 60,
-            expirationIntervalUnit: 'minutes'
-        });
+        const supportedIntegratedVendors = await this.fetch.cachedGet(
+            'integrated-vendors/supported',
+            {},
+            {
+                expirationInterval: 60,
+                expirationIntervalUnit: 'minutes',
+            }
+        );
 
         return this.editVendor(vendor, {
             title: 'New Vendor',
@@ -494,7 +435,7 @@ export default class ManagementVendorsIndexController extends Controller {
             integratedVendor: null,
             selectIntegratedVendor: (integratedVendor) => {
                 this.modalsManager.setOption('selectedIntegratedVendor', integratedVendor);
-                
+
                 // create credentials object
                 const credentials = {};
                 for (let i = 0; i < integratedVendor.params.length; i++) {
@@ -505,7 +446,7 @@ export default class ManagementVendorsIndexController extends Controller {
                 const vendor = this.store.createRecord('integrated-vendor', {
                     provider: integratedVendor.code,
                     webhook_url: apiUrl(`listeners/${integratedVendor.code}`),
-                    credentials
+                    credentials,
                 });
 
                 this.modalsManager.setOption('integratedVendor', vendor);
@@ -517,7 +458,7 @@ export default class ManagementVendorsIndexController extends Controller {
                 }
 
                 this.table.addRow(vendor);
-            }
+            },
         });
     }
 
@@ -588,31 +529,39 @@ export default class ManagementVendorsIndexController extends Controller {
                 if (isAddingIntegratedVendor) {
                     const integratedVendor = modal.getOption('integratedVendor');
 
-                    return integratedVendor.save().then((integratedVendor) => {
-                        this.notifications.success(`Successfully added ${capitalize(integratedVendor.provider)} new integrated vendor`);
-                        this.table.addRow(integratedVendor);
-                    }).catch((error) => {
-                        this.notifications.serverError(error, {
-                            clearDuration: 600 * 6
+                    return integratedVendor
+                        .save()
+                        .then((integratedVendor) => {
+                            this.notifications.success(`Successfully added ${capitalize(integratedVendor.provider)} new integrated vendor`);
+                            this.table.addRow(integratedVendor);
+                        })
+                        .catch((error) => {
+                            this.notifications.serverError(error, {
+                                clearDuration: 600 * 6,
+                            });
+                        })
+                        .finally(() => {
+                            modal.stopLoading();
                         });
-                    }).finally(() => {
-                        modal.stopLoading();
-                    });
                 }
 
-                vendor.save().then((vendor) => {
-                    if (typeof options.successNotification === 'function') {
-                        this.notifications.success(options.successNotification(vendor));
-                    } else {
-                        this.notifications.success(options.successNotification || `${vendor.name} details updated.`);
-                    }
+                vendor
+                    .save()
+                    .then((vendor) => {
+                        if (typeof options.successNotification === 'function') {
+                            this.notifications.success(options.successNotification(vendor));
+                        } else {
+                            this.notifications.success(options.successNotification || `${vendor.name} details updated.`);
+                        }
 
-                    return done();
-                }).catch((error) => {
-                    this.notifications.serverError(error);
-                }).finally(() => {
-                    modal.stopLoading();
-                });
+                        return done();
+                    })
+                    .catch((error) => {
+                        this.notifications.serverError(error);
+                    })
+                    .finally(() => {
+                        modal.stopLoading();
+                    });
             },
             ...options,
         });

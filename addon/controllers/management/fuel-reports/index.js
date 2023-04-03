@@ -2,9 +2,6 @@ import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { A, isArray } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
-import isModel from '@fleetbase/ember-core/utils/is-model';
 
 export default class ManagementFuelReportsIndexController extends Controller {
     /**
@@ -98,14 +95,14 @@ export default class ManagementFuelReportsIndexController extends Controller {
      */
     @tracked statusOptions = [];
 
-        @tracked allToggled = false;
+    @tracked allToggled = false;
 
     /**
      * All columns applicable for orders
      *
      * @var {Array}
      */
-    @tracked columns = A([
+    @tracked columns = [
         {
             label: 'Name',
             valuePath: 'name',
@@ -235,7 +232,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
                     fn: this.editFuelReport,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete Fuel Report',
@@ -247,128 +244,69 @@ export default class ManagementFuelReportsIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
-     /**
+    /**
      * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
+     *
      * @void
      */
-     @action sendDropdownAction(dd, sentAction, ...params) { 
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
- 
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
+    @action sendDropdownAction(dd, sentAction, ...params) {
+        if (typeof dd?.actions?.close === 'function') {
+            dd.actions.close();
+        }
 
-     /**
+        if (typeof this[sentAction] === 'function') {
+            this[sentAction](...params);
+        }
+    }
+
+    /**
      * Bulk deletes selected `driver` via confirm prompt
      *
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeleteFuelReports() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeleteFuelReports() {
+        const selected = this.table.selectedRows.map(({ content }) => content);
 
-         this.crud.bulkFuelReports(selected, {
-             modelNamePath: `name`,
-             acceptButtonText: 'Delete Fuel Reports',
-             onConfirm: (deletedFuelReports) => {
-                 this.allToggled = false;
-                 
-                 deletedFuelReports.forEach(place => {
-                     this.table.removeRow(place);
-                 });
- 
+        this.crud.bulkFuelReports(selected, {
+            modelNamePath: `name`,
+            acceptButtonText: 'Delete Fuel Reports',
+            onConfirm: (deletedFuelReports) => {
+                this.allToggled = false;
+
+                deletedFuelReports.forEach((place) => {
+                    this.table.removeRow(place);
+                });
+
                 this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
-
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
+            },
+        });
     }
 
     /**
-     * The actual search task
-     * 
+     * The search task.
+     *
      * @void
      */
-    @task(function* (query) {
-        if(!query) {
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
             this.query = null;
             return;
         }
 
+        // timeout for typing
         yield timeout(250);
 
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
         }
 
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action applyFilters(columns) {
-        columns.forEach((column) => {
-            // if value is a model only filter by id
-            if (isModel(column.filterValue)) {
-                column.filterValue = column.filterValue.id;
-            }
-            // if value is an array of models map to ids
-            if (isArray(column.filterValue) && column.filterValue.every((v) => isModel(v))) {
-                column.filterValue = column.filterValue.map((v) => v.id);
-            }
-            // only if filter is active continue
-            if (column.isFilterActive && column.filterValue) {
-                this[column.filterParam || column.valuePath] = column.filterValue;
-            } else {
-                this[column.filterParam || column.valuePath] = undefined;
-                column.isFilterActive = false;
-                column.filterValue = undefined;
-            }
-        });
-        this.columns = columns;
-    }
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action setFilterOptions(valuePath, options) {
-        const updatedColumns = this.columns.map((column) => {
-            if (column.valuePath === valuePath) {
-                column.filterOptions = options;
-            }
-            return column;
-        });
-        this.columns = updatedColumns;
+        // update the query param
+        this.query = value;
     }
 
     /**
@@ -415,7 +353,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
                 }
 
                 this.table.addRow(fuelReport);
-            }
+            },
         });
     }
 
@@ -434,17 +372,20 @@ export default class ManagementFuelReportsIndexController extends Controller {
             confirm: (modal, done) => {
                 modal.startLoading();
 
-                fuelReport.save().then((fuelReport) => {
-                    if (typeof options.successNotification === 'function') {
-                        this.notifications.success(options.successNotification(fuelReport));
-                    } else {
-                        this.notifications.success(options.successNotification || `${fuelReport.name} details updated.`);
-                    }
-                    return done();
-                }).catch((error) => {
-                    this.notifications.serverError(error);
-                    modal.stopLoading();
-                });
+                fuelReport
+                    .save()
+                    .then((fuelReport) => {
+                        if (typeof options.successNotification === 'function') {
+                            this.notifications.success(options.successNotification(fuelReport));
+                        } else {
+                            this.notifications.success(options.successNotification || `${fuelReport.name} details updated.`);
+                        }
+                        return done();
+                    })
+                    .catch((error) => {
+                        this.notifications.serverError(error);
+                        modal.stopLoading();
+                    });
             },
             ...options,
         });

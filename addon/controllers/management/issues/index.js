@@ -2,12 +2,10 @@ import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { action, computed } from '@ember/object';
 import { A, isArray } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
 import isModel from '@fleetbase/ember-core/utils/is-model';
 // import Table from 'ember-light-table';
 
 export default class ManagementIssuesIndexController extends Controller {
-
     /**
      * After column is resized save the column state to user options
      *
@@ -245,7 +243,7 @@ export default class ManagementIssuesIndexController extends Controller {
      */
     @tracked statusOptions = [];
 
-        @tracked allToggled = false;
+    @tracked allToggled = false;
 
     /**
      * Actions that can be triggered from the table interactions
@@ -262,7 +260,7 @@ export default class ManagementIssuesIndexController extends Controller {
      *
      * @var {Array}
      */
-    @tracked columns = A([
+    @tracked columns = [
         {
             label: 'Name',
             valuePath: 'name',
@@ -392,7 +390,7 @@ export default class ManagementIssuesIndexController extends Controller {
                     fn: this.editFuelReport,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete Issue',
@@ -404,84 +402,70 @@ export default class ManagementIssuesIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
-     /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
+    /**
+     * The search task.
+     *
      * @void
      */
-     @action sendDropdownAction(dd, sentAction, ...params) { 
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
- 
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
+            this.query = null;
+            return;
+        }
 
-     /**
+        // timeout for typing
+        yield timeout(250);
+
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
+        }
+
+        // update the query param
+        this.query = value;
+    }
+
+    /**
+     * Sends up a dropdown action, closes the dropdown then executes the action
+     *
+     * @void
+     */
+    @action sendDropdownAction(dd, sentAction, ...params) {
+        if (typeof dd?.actions?.close === 'function') {
+            dd.actions.close();
+        }
+
+        if (typeof this[sentAction] === 'function') {
+            this[sentAction](...params);
+        }
+    }
+
+    /**
      * Bulk deletes selected `driver` via confirm prompt
      *
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeleteIssues() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeleteIssues() {
+        const selected = this.table.selectedRows.map(({ content }) => content);
 
-         this.crud.bulkDelete(selected, {
-             modelNamePath: `name`,
-             acceptButtonText: 'Delete Issues',
-             onConfirm: (deletedIssues) => {
-                 this.allToggled = false;
-                 
-                 deletedIssues.forEach(place => {
-                     this.table.removeRow(place);
-                 });
- 
+        this.crud.bulkDelete(selected, {
+            modelNamePath: `name`,
+            acceptButtonText: 'Delete Issues',
+            onConfirm: (deletedIssues) => {
+                this.allToggled = false;
+
+                deletedIssues.forEach((place) => {
+                    this.table.removeRow(place);
+                });
+
                 this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
-
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action
-    search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
+            },
+        });
     }
-
-    /**
-     * The actual search task
-     * 
-     * @void
-     */
-    @task(function* (query) {
-        if(!query) {
-            this.query = null;
-            return;
-        }
-
-        yield timeout(250);
-
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
-        }
-
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
 
     /**
      * Toggles dialog to export `issue`
