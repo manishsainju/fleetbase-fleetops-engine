@@ -4,7 +4,6 @@ import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
 
 export default class OperationsOrdersIndexRoute extends Route {
-    @service fetch;
     @service store;
 
     @tracked queryParams = {
@@ -32,13 +31,5 @@ export default class OperationsOrdersIndexRoute extends Route {
 
     model(params) {
         return this.store.query('order', params);
-    }
-
-    async setupController(controller, model) {
-        super.setupController(controller, model);
-
-        // load all order status options
-        const statuses = await this.fetch.cachedGet('orders/statuses');
-        controller.setFilterOptions('status', statuses);
     }
 }

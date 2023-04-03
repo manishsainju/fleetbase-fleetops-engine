@@ -106,15 +106,15 @@ export default class OrderModel extends Model {
     get pickupName() {
         const { payload, meta } = this;
 
-        if (payload.pickup) {
+        if (payload?.pickup) {
             return payload.pickup.name ?? payload.pickup.street1;
         }
 
-        if (payload.currentWaypoint) {
+        if (payload?.currentWaypoint) {
             return payload.currentWaypoint.name ?? payload.currentWaypoint.street1;
         }
 
-        if (payload.waypoints.firstObject) {
+        if (payload?.waypoints.firstObject) {
             return payload.waypoints.firstObject.name ?? payload.waypoints.firstObject.street1;
         }
 
@@ -128,11 +128,11 @@ export default class OrderModel extends Model {
     get dropoffName() {
         const { payload, meta } = this;
 
-        if (payload.dropoff) {
+        if (payload?.dropoff) {
             return payload.dropoff.name ?? payload.dropoff.street1;
         }
 
-        if (payload.waypoints.lastObject) {
+        if (payload?.waypoints.lastObject) {
             return payload.waypoints.lastObject.name ?? payload.waypoints.lastObject.street1;
         }
 

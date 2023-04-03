@@ -3,7 +3,7 @@
     <Button @icon="table" @prefix="fas" @onClick={{fn this.changeLayout "table"}} @disabled={{this.isTableLayout}} class="mr-2" />
     <FiltersPicker @columns={{this.columns}} @onChange={{this.applyFilters}} class="mr-2" />
     <VisibleColumnPicker @columns={{this.columns}} @activeParams={{this.activeParams}} @onChange={{this.updateColumns}} class="mr-2" />
-    {{#if this.table.selectedRows}}
+   {{#if (safe-has this.table "selectedRows")}}
         <DropdownButton @icon="layer-group" @text="Bulk Action" @type="magic" @size="sm" @buttonWrapperClass="mr-2" @contentClass="dropdown-menu" as |dd|>
             <div class="next-dd-menu mt-2 mx-0">
                 <div class="px-1">

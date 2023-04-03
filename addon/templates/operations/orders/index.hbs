@@ -24,7 +24,7 @@
         <Button @icon="cogs" @text="Config" class="mr-2" @onClick={{fn this.sendTransition "operations.orders.index.config"}} />
         <FiltersPicker @columns={{this.columns}} @onChange={{this.applyFilters}} class="mr-2" />
         <VisibleColumnPicker @columns={{this.columns}} @activeParams={{this.activeParams}} @onChange={{this.updateColumns}} class="mr-2" />
-        {{#if this.table.selectedRows}}
+       {{#if (safe-has this.table "selectedRows")}}
             <DropdownButton @icon="layer-group" @type="magic" @text="Bulk Action" @size="sm" @buttonWrapperClass="mr-2" as |dd|>
                 <div class="next-dd-menu mt-2 mx-0">
                     <div class="px-1">
