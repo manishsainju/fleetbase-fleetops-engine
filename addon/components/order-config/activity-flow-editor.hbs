@@ -26,8 +26,8 @@
             {{#if @orderConfig.meta.flow}}
                 <div class="px-5">
                     {{#if this.flow}}
-                        <EmberDragula @onDrop={{this.moveStatus}} @onReady={{this.setDragulaInstance}} as |d|>
-                            <d.Container class="activity-flow-connector">
+                        <Dragula @onDrop={{this.moveStatus}} @onReady={{this.setDragulaInstance}} as |Container|>
+                            <Container class="activity-flow-connector">
                                 {{#each-in this.activeFlow as |status activity|}}
                                     <div data-status={{status}} class="activity-flow-sub-connector {{dasherize (flow-raw-status status)}}-flow pb-6">
                                         <div class="activity-status relative cursor-move flex items-center justify-center mb-6">
@@ -98,8 +98,8 @@
                                         </div>
                                     </div>
                                 {{/each-in}}
-                            </d.Container>
-                        </EmberDragula>
+                            </Container>
+                        </Dragula>
                     {{/if}}
                 </div>
             {{/if}}
