@@ -46,6 +46,13 @@ export default class ManagementVehiclesIndexController extends ManagementControl
     @service crud;
 
     /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
+
+    /**
      * Inject the `currentUser` service
      *
      * @var {Service}
@@ -111,9 +118,72 @@ export default class ManagementVehiclesIndexController extends ManagementControl
     /**
      * The filterable param `status`.
      *
-     * @var {Array}
+     * @var {String|Array}
      */
     @tracked status;
+
+    /**
+     * The filterable param `make`.
+     *
+     * @var {String}
+     */
+    @tracked name;
+
+    /**
+     * The filterable param `plate_number`.
+     *
+     * @var {String}
+     */
+    @tracked plate_number;
+
+    /**
+     * The filterable param `vehicle_make`.
+     *
+     * @var {String}
+     */
+    @tracked vehicle_make;
+
+    /**
+     * The filterable param `vehicle_model`.
+     *
+     * @var {String}
+     */
+    @tracked vehicle_model;
+
+    /**
+     * The filterable param `year`.
+     *
+     * @var {String}
+     */
+    @tracked year;
+
+    /**
+     * The filterable param `country`.
+     *
+     * @var {String}
+     */
+    @tracked country;
+
+    /**
+     * The filterable param `fleet`.
+     *
+     * @var {String}
+     */
+    @tracked fleet;
+
+    /**
+     * The filterable param `vendor`.
+     *
+     * @var {String}
+     */
+    @tracked vendor;
+
+    /**
+     * The filterable param `driver`.
+     *
+     * @var {String}
+     */
+    @tracked driver;
 
     /**
      * TableComponent instance.

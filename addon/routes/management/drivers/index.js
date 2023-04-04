@@ -5,11 +5,6 @@ export default class ManagementDriversIndexRoute extends Route {
     @service store;
     @service fetch;
 
-    /**
-     * Queryable parameters
-     *
-     * @var {Object}
-     */
     queryParams = {
         page: { refreshModel: true },
         limit: { refreshModel: true },
