@@ -71,7 +71,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
      *
      * @var {Array}
      */
-    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'status', 'created_at', 'updated_at', 'created_by', 'updated_by'];
+    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'status', 'created_at', 'updated_at', 'created_by', 'updated_by'];
 
     /**
      * The search query.
@@ -107,13 +107,6 @@ export default class ManagementVehiclesIndexController extends ManagementControl
      * @var {String}
      */
     @tracked public_id;
-
-    /**
-     * The filterable param `internal_id`.
-     *
-     * @var {String}
-     */
-    @tracked internal_id;
 
     /**
      * The filterable param `status`.
@@ -223,7 +216,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             sortable: true,
             filterable: true,
             filterComponent: 'filter/string',
-            filterParam: 'query',
+            filterParam: 'name',
         },
         {
             label: 'Plate Number',
@@ -264,17 +257,6 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             filterComponent: 'filter/string',
         },
         {
-            label: 'Internal ID',
-            valuePath: 'internal_id',
-            cellComponent: 'click-to-copy',
-            width: '120px',
-            hidden: true,
-            resizable: true,
-            sortable: true,
-            filterable: true,
-            filterComponent: 'filter/string',
-        },
-        {
             label: 'Make',
             valuePath: 'make',
             cellComponent: 'table/cell/base',
@@ -283,6 +265,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             sortable: true,
             hidden: true,
             filterable: true,
+            filterParam: 'vehicle_make',
             filterComponent: 'filter/string',
         },
         {
@@ -294,11 +277,12 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             sortable: true,
             hidden: true,
             filterable: true,
+            filterParam: 'vehicle_model',
             filterComponent: 'filter/string',
         },
         {
             label: 'Year',
-            valuePath: 'model',
+            valuePath: 'year',
             cellComponent: 'table/cell/base',
             width: '80px',
             resizable: true,
@@ -334,7 +318,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             sortable: true,
             filterable: true,
             filterComponent: 'filter/multi-option',
-            filterOptions: this.statusOptions,
+            filterFetchOptions: 'vehicles/statuses',
         },
         {
             label: 'Created At',
@@ -344,6 +328,8 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             resizable: true,
             sortable: true,
             filterable: true,
+            filterParam: 'created_at',
+            filterLabel: 'Created Between',
             filterComponent: 'filter/date',
         },
         {
@@ -354,6 +340,8 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             resizable: true,
             sortable: true,
             hidden: true,
+            filterParam: 'updated_at',
+            filterLabel: 'Last Updated Between',
             filterable: true,
             filterComponent: 'filter/date',
         },

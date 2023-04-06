@@ -1,6 +1,6 @@
 <Layout::Section::Header @title="Vehicles" @searchQuery={{this.query}} @onSearch={{perform this.search}}>
-    <FiltersPicker @columns={{this.columns}} @onApply={{fn this.filters.apply this}} @onClear={{fn this.filters.reset this}} @onChange={{fn this.filters.set}} class="mr-2" />
-    <VisibleColumnPicker @columns={{this.columns}} @activeParams={{this.activeParams}} @onChange={{this.updateColumns}} class="mr-2" />
+    <FiltersPicker @columns={{this.columns}} @onApply={{fn this.filters.apply this}} @onClear={{fn this.filters.reset this}} @onFilterClear={{fn this.filters.clear}} @onChange={{fn this.filters.set}} @buttonWrapperClass="mr-2" />
+    <VisibleColumnPicker @columns={{this.columns}} @onChange={{fn (mut this.columns)}} class="mr-2" />
     {{#if (safe-has this.table "selectedRows")}}
         <DropdownButton @icon="layer-group" @text="Bulk Action" @type="magic" @size="sm" @buttonWrapperClass="mr-2" @contentClass="dropdown-menu" as |dd|>
             <div class="next-dd-menu mt-2 mx-0">
