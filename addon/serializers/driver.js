@@ -12,6 +12,7 @@ export default class DriverSerializer extends ApplicationSerializer.extend(Embed
     get attrs() {
         return {
             user: { embedded: 'always' },
+            fleets: { embedded: 'always' },
             vendor: { embedded: 'always' },
             vehicle: { embedded: 'always' },
             devices: { serialize: 'records' },

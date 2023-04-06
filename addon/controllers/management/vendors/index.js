@@ -3,6 +3,7 @@ import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, get } from '@ember/object';
 import { capitalize } from '@ember/string';
+import { task } from 'ember-concurrency-decorators';
 import apiUrl from '@fleetbase/ember-core/utils/api-url';
 
 export default class ManagementVendorsIndexController extends Controller {

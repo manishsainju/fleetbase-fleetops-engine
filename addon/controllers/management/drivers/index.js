@@ -25,6 +25,13 @@ export default class ManagementDriversIndexController extends Controller {
     @controller('management.vehicles.index') vehicles;
 
     /**
+     * Inject the `management.fleets.index` controller
+     *
+     * @var {Controller}
+     */
+    @controller('management.fleets.index') fleets;
+
+    /**
      * Inject the `notifications` service
      *
      * @var {Service}
@@ -67,6 +74,13 @@ export default class ManagementDriversIndexController extends Controller {
     @service hostRouter;
 
     /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
+
+    /**
      * Inject the `currentUser` service
      *
      * @var {Service}
@@ -78,7 +92,7 @@ export default class ManagementDriversIndexController extends Controller {
      *
      * @var {Array}
      */
-    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_by', 'updated_by', 'status'];
+    queryParams = ['page', 'limit', 'sort', 'query', 'name', 'drivers_license_number', 'vehicle', 'fleet', 'vendor', 'phone', 'country', 'public_id', 'internal_id', 'created_at', 'updated_at', 'status'];
 
     /**
      * True if route is loading data
@@ -123,6 +137,20 @@ export default class ManagementDriversIndexController extends Controller {
     @tracked internal_id;
 
     /**
+     * The filterable param `drivers_license_number`
+     *
+     * @var {String}
+     */
+    @tracked drivers_license_number;
+
+    /**
+     * The filterable param `name`
+     *
+     * @var {String}
+     */
+    @tracked name;
+
+    /**
      * The filterable param `vehicle`
      *
      * @var {String}
@@ -153,24 +181,29 @@ export default class ManagementDriversIndexController extends Controller {
     /**
      * The filterable param `status`
      *
-     * @var {Array}
+     * @var {Array|String}
      */
     @tracked status;
 
     /**
-     * All possible order status options
+     * The filterable param `created_at`
      *
      * @var {String}
      */
-    @tracked statusOptions = [];
+    @tracked created_at;
 
     /**
-     * If all rows are toggled.
+     * The filterable param `updated_at`
      *
-     * @var {Boolean}
+     * @var {String}
      */
-    @tracked allToggled = false;
+    @tracked updated_at;
 
+    /**
+     * The current layout.
+     *
+     * @memberof ManagementDriversIndexController
+     */
     @tracked layout = 'table';
 
     @equal('layout', 'grid') isGridLayout;
@@ -218,7 +251,8 @@ export default class ManagementDriversIndexController extends Controller {
             label: 'Vendor',
             cellComponent: 'table/cell/anchor',
             action: this.viewDriverVendor,
-            valuePath: 'vendor_name',
+            valuePath: 'vendor.name',
+            modelNamePath: 'name',
             width: '180px',
             resizable: true,
             filterable: true,
@@ -231,7 +265,8 @@ export default class ManagementDriversIndexController extends Controller {
             label: 'Vehicle',
             cellComponent: 'table/cell/anchor',
             action: this.viewDriverVehicle,
-            valuePath: 'vehicle_name',
+            valuePath: 'vehicle.display_name',
+            modelNamePath: 'display_name',
             resizable: true,
             width: '180px',
             filterable: true,
@@ -243,6 +278,10 @@ export default class ManagementDriversIndexController extends Controller {
         {
             label: 'Fleets',
             cellComponent: 'table/cell/link-list',
+            cellComponentLabelPath: 'name',
+            action: (fleet) => {
+                this.fleets.viewFleet(fleet);
+            },
             valuePath: 'fleets',
             width: '180px',
             resizable: true,
@@ -277,7 +316,7 @@ export default class ManagementDriversIndexController extends Controller {
         {
             label: 'Country',
             valuePath: 'country',
-            cellComponent: 'cell/country',
+            cellComponent: 'table/cell/country',
             cellClassNames: 'uppercase',
             width: '120px',
             resizable: true,
@@ -285,23 +324,29 @@ export default class ManagementDriversIndexController extends Controller {
             sortable: true,
             filterable: true,
             filterParam: 'country',
-            filterComponent: 'filter/string',
+            filterComponent: 'filter/multi-option',
+            filterFetchOptions: 'lookup/countries',
+            filterOptionLabel: 'name',
+            filterOptionValue: 'cca2',
+            multiOptionSearchEnabled: true,
+            multiOptionSearchPlaceholder: 'Search countries...'
         },
         {
             label: 'Status',
             valuePath: 'status',
             cellComponent: 'table/cell/status',
-            width: '130px',
+            width: '10%',
             resizable: true,
             sortable: true,
             filterable: true,
             filterComponent: 'filter/multi-option',
-            filterOptions: this.statusOptions,
+            filterFetchOptions: 'drivers/statuses',
         },
         {
             label: 'Created At',
             valuePath: 'createdAt',
             sortParam: 'created_at',
+            filterParam: 'created_at',
             width: '130px',
             resizable: true,
             sortable: true,
@@ -312,6 +357,7 @@ export default class ManagementDriversIndexController extends Controller {
             label: 'Updated At',
             valuePath: 'updatedAt',
             sortParam: 'updated_at',
+            filterParam: 'updated_at',
             width: '130px',
             resizable: true,
             sortable: true,
