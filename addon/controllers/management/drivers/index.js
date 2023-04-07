@@ -470,7 +470,7 @@ export default class ManagementDriversIndexController extends Controller {
      * @void
      */
     @action bulkDeleteDrivers() {
-        const selected = this.table.selectedRows.map(({ content }) => content);
+        const selected = this.table.selectedRows;
 
         this.crud.bulkDelete(selected, {
             modelNamePath: `name`,
