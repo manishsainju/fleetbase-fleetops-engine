@@ -1,7 +1,7 @@
 <Layout::Section::Header @title="Drivers" @searchQuery={{this.query}} @onSearch={{perform this.search}}>
     <Button @icon="grip-horizontal" @prefix="fas" @onClick={{fn this.changeLayout "grid"}} @disabled={{this.isGridLayout}} class="mr-2" />
     <Button @icon="table" @prefix="fas" @onClick={{fn this.changeLayout "table"}} @disabled={{this.isTableLayout}} class="mr-2" />
-    <FiltersPicker @columns={{this.columns}} @onApply={{fn this.filters.apply this}} @onClear={{fn this.filters.reset this}} @onFilterClear={{fn this.filters.clear}} @onChange={{fn this.filters.set}} @buttonWrapperClass="mr-2" />
+    <FiltersPicker @columns={{this.columns}} @onApply={{fn this.filters.apply this}} @onClear={{fn this.filters.reset this}} @onFilterClear={{this.filters.clear}} @onChange={{this.filters.set}} @buttonWrapperClass="mr-2" />
     <VisibleColumnPicker @columns={{this.columns}} @onChange={{fn (mut this.columns)}} class="mr-2" />
    {{#if (safe-has this.table "selectedRows")}}
         <DropdownButton @icon="layer-group" @text="Bulk Action" @type="magic" @size="sm" @buttonWrapperClass="mr-2" @contentClass="dropdown-menu" as |dd|>

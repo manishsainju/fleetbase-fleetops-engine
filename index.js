@@ -4,13 +4,10 @@ const { name } = require('./package');
 
 module.exports = buildEngine({
     name,
-
     lazyLoading: {
         enabled: true,
     },
-
     _concatStyles: () => {},
-
     included: function (app) {
         this._super.included.apply(this, arguments);
 
@@ -31,7 +28,6 @@ module.exports = buildEngine({
         });
         this.import('node_modules/leaflet-draw/dist/leaflet.draw.css');
     },
-
     isDevelopingAddon() {
         return true;
     },

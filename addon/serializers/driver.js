@@ -25,7 +25,7 @@ export default class DriverSerializer extends ApplicationSerializer.extend(Embed
         let key = relationship.key;
 
         if (key === 'vehicle' && isArray(json[key])) {
-            json[key] = get(json[key], 'uuid');
+            json[key] = json[key].uuid;
         }
 
         super.serializeBelongsTo(...arguments);

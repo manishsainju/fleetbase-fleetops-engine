@@ -92,7 +92,24 @@ export default class ManagementDriversIndexController extends Controller {
      *
      * @var {Array}
      */
-    queryParams = ['page', 'limit', 'sort', 'query', 'name', 'drivers_license_number', 'vehicle', 'fleet', 'vendor', 'phone', 'country', 'public_id', 'internal_id', 'created_at', 'updated_at', 'status'];
+    queryParams = [
+        'page',
+        'limit',
+        'sort',
+        'query',
+        'name',
+        'drivers_license_number',
+        'vehicle',
+        'fleet',
+        'vendor',
+        'phone',
+        'country',
+        'public_id',
+        'internal_id',
+        'created_at',
+        'updated_at',
+        'status',
+    ];
 
     /**
      * True if route is loading data
@@ -329,7 +346,7 @@ export default class ManagementDriversIndexController extends Controller {
             filterOptionLabel: 'name',
             filterOptionValue: 'cca2',
             multiOptionSearchEnabled: true,
-            multiOptionSearchPlaceholder: 'Search countries...'
+            multiOptionSearchPlaceholder: 'Search countries...',
         },
         {
             label: 'Status',
