@@ -42,13 +42,6 @@ export default class ManagementFuelReportsIndexController extends Controller {
     queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_by', 'updated_by', 'status'];
 
     /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
-
-    /**
      * The current page of data being viewed
      *
      * @var {Integer}
@@ -89,13 +82,6 @@ export default class ManagementFuelReportsIndexController extends Controller {
      * @var {Array}
      */
     @tracked status;
-
-    /**
-     * All possible order status options
-     *
-     * @var {String}
-     */
-    @tracked statusOptions = [];
 
     @tracked allToggled = false;
 
@@ -247,21 +233,6 @@ export default class ManagementFuelReportsIndexController extends Controller {
             searchable: false,
         },
     ];
-
-    /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     *
-     * @void
-     */
-    @action sendDropdownAction(dd, sentAction, ...params) {
-        if (typeof dd?.actions?.close === 'function') {
-            dd.actions.close();
-        }
-
-        if (typeof this[sentAction] === 'function') {
-            this[sentAction](...params);
-        }
-    }
 
     /**
      * Bulk deletes selected `driver` via confirm prompt

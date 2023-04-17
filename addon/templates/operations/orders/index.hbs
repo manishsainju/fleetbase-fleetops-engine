@@ -28,10 +28,10 @@
             <DropdownButton @icon="layer-group" @type="magic" @text="Bulk Action" @size="sm" @buttonWrapperClass="mr-2" as |dd|>
                 <div class="next-dd-menu mt-2 mx-0">
                     <div class="px-1">
-                        <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.sendDropdownAction dd "bulkCancelOrders")}}>
+                        <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.bulkCancelOrders)}}>
                             Cancel Orders
                         </a>
-                        <a href="javascript:;" class="text-red-500 next-dd-item" {{on "click" (fn this.sendDropdownAction dd "bulkDeleteOrders")}}>
+                        <a href="javascript:;" class="text-red-500 next-dd-item" {{on "click" (dropdown-fn dd this.bulkDeleteOrders)}}>
                             Delete Orders
                         </a>
                     </div>

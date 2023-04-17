@@ -2,6 +2,7 @@ import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { isBlank } from '@ember/utils';
 import { equal } from '@ember/object/computed';
 import { timeout } from 'ember-concurrency';
 import { task } from 'ember-concurrency-decorators';
@@ -110,13 +111,6 @@ export default class ManagementDriversIndexController extends Controller {
         'updated_at',
         'status',
     ];
-
-    /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
 
     /**
      * The current page of data being viewed
@@ -466,21 +460,6 @@ export default class ManagementDriversIndexController extends Controller {
     }
 
     /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     *
-     * @void
-     */
-    @action sendDropdownAction(dd, sentAction, ...params) {
-        if (typeof dd?.actions?.close === 'function') {
-            dd.actions.close();
-        }
-
-        if (typeof this[sentAction] === 'function') {
-            this[sentAction](...params);
-        }
-    }
-
-    /**
      * Bulk deletes selected `driver` via confirm prompt
      *
      * @param {Array} selected an array of selected models
@@ -699,8 +678,8 @@ export default class ManagementDriversIndexController extends Controller {
                     file,
                     {
                         path: `uploads/${this.currentUser.companyId}/drivers/${driver.slug}`,
-                        key_uuid: driver.id,
-                        key_type: `driver`,
+                        subject_uuid: driver.id,
+                        subject_type: `driver`,
                         type: `driver_photo`,
                     },
                     (uploadedFile) => {

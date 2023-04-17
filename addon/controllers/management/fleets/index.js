@@ -63,13 +63,6 @@ export default class ManagementFleetsIndexController extends Controller {
     queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_by', 'updated_by', 'status'];
 
     /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
-
-    /**
      * The current page of data being viewed
      *
      * @var {Integer}
@@ -302,21 +295,6 @@ export default class ManagementFleetsIndexController extends Controller {
 
         // update the query param
         this.query = value;
-    }
-
-    /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     *
-     * @void
-     */
-    @action sendDropdownAction(dd, sentAction, ...params) {
-        if (typeof dd?.actions?.close === 'function') {
-            dd.actions.close();
-        }
-
-        if (typeof this[sentAction] === 'function') {
-            this[sentAction](...params);
-        }
     }
 
     /**

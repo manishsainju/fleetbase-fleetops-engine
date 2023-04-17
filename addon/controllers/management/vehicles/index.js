@@ -561,8 +561,8 @@ export default class ManagementVehiclesIndexController extends ManagementControl
                     file,
                     {
                         path: `uploads/${this.currentUser.companyId}/vehicles/${vehicle.slug}`,
-                        key_uuid: vehicle.id,
-                        key_type: `vehicle`,
+                        subject_uuid: vehicle.id,
+                        subject_type: `vehicle`,
                         type: `vehicle_photo`,
                     },
                     (uploadedFile) => {

@@ -773,8 +773,8 @@ export default class OperationsOrdersIndexViewController extends Controller {
                     file,
                     {
                         path: `uploads/${this.currentUser.companyId}/entities/${entity.id}`,
-                        key_uuid: entity.id,
-                        key_type: `entity`,
+                        subject_uuid: entity.id,
+                        subject_type: `entity`,
                         type: `entity_photo`,
                     },
                     (uploadedFile) => {

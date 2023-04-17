@@ -127,13 +127,6 @@ export default class ManagementIssuesIndexController extends Controller {
     ];
 
     /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
-
-    /**
      * The current page of data being viewed
      *
      * @var {Integer}
@@ -237,13 +230,6 @@ export default class ManagementIssuesIndexController extends Controller {
      * @var {Array}
      */
     @tracked status;
-
-    /**
-     * All possible order status options
-     *
-     * @var {String}
-     */
-    @tracked statusOptions = [];
 
     @tracked allToggled = false;
 
@@ -428,21 +414,6 @@ export default class ManagementIssuesIndexController extends Controller {
 
         // update the query param
         this.query = value;
-    }
-
-    /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     *
-     * @void
-     */
-    @action sendDropdownAction(dd, sentAction, ...params) {
-        if (typeof dd?.actions?.close === 'function') {
-            dd.actions.close();
-        }
-
-        if (typeof this[sentAction] === 'function') {
-            this[sentAction](...params);
-        }
     }
 
     /**

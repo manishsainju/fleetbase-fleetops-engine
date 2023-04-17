@@ -57,13 +57,6 @@ export default class ManagementVendorsIndexController extends Controller {
     queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_by', 'updated_by', 'status'];
 
     /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
-
-    /**
      * The current page of data being viewed
      *
      * @var {Integer}
@@ -104,13 +97,6 @@ export default class ManagementVendorsIndexController extends Controller {
      * @var {Array}
      */
     @tracked status;
-
-    /**
-     * All possible order status options
-     *
-     * @var {String}
-     */
-    @tracked statusOptions = [];
 
     /**
      * All columns applicable for orders
@@ -303,21 +289,6 @@ export default class ManagementVendorsIndexController extends Controller {
 
         // update the query param
         this.query = value;
-    }
-
-    /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     *
-     * @void
-     */
-    @action sendDropdownAction(dd, sentAction, ...params) {
-        if (typeof dd?.actions?.close === 'function') {
-            dd.actions.close();
-        }
-
-        if (typeof this[sentAction] === 'function') {
-            this[sentAction](...params);
-        }
     }
 
     /**

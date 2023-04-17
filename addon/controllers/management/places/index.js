@@ -5,7 +5,7 @@ import { action, computed } from '@ember/object';
 import { A, isArray } from '@ember/array';
 import { task, timeout } from 'ember-concurrency';
 import isModel from '@fleetbase/ember-core/utils/is-model';
-import Point from '@fleetbase/fleetops-engine/utils/geojson/point';
+import Point from '@fleetbase/fleetops-data/utils/geojson/point';
 
 export default class ManagementPlacesIndexController extends Controller {
     /**
@@ -56,13 +56,6 @@ export default class ManagementPlacesIndexController extends Controller {
      * @var {Array}
      */
     queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_at', 'updated_at'];
-
-    /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
 
     /**
      * The current page of data being viewed

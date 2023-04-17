@@ -2,10 +2,9 @@ import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import GeoJson from '@fleetbase/fleetops-engine/utils/geojson/geo-json';
-import FeatureCollection from '@fleetbase/fleetops-engine/utils/geojson/feature-collection';
+import GeoJson from '@fleetbase/fleetops-data/utils/geojson/geo-json';
+import FeatureCollection from '@fleetbase/fleetops-data/utils/geojson/feature-collection';
 import last from '@fleetbase/ember-core/utils/last';
-import refreshRoute from '@fleetbase/ember-core/utils/refresh-route';
 
 export default class OperationsZonesIndexController extends Controller {
     /**
@@ -35,6 +34,13 @@ export default class OperationsZonesIndexController extends Controller {
      * @var {Service}
      */
     @service notifications;
+
+    /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
 
     /**
      * Inject the `crud` service
@@ -357,7 +363,7 @@ export default class OperationsZonesIndexController extends Controller {
             acceptButtonText: 'Confirm & Create',
             successNotification: (serviceArea) => `New service area (${serviceArea.name}) created.`,
             onConfirm: () => {
-                refreshRoute(this);
+                this.hostRouter.refresh();
             },
         });
     }

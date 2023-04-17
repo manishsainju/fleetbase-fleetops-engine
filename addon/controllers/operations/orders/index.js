@@ -10,13 +10,11 @@ import isModel from '@fleetbase/ember-core/utils/is-model';
 export default class OperationsOrdersIndexController extends Controller {
     @controller('management.drivers.index') driversController;
     @controller('management.fleets.index') fleetController;
-    // @controller('management.drivers.index') serviceAreasController;
 
     @service currentUser;
     @service fetch;
     @service notifications;
     @service modalsManager;
-    // @service loader;
     @service crud;
 
     queryParams = [
@@ -38,7 +36,6 @@ export default class OperationsOrdersIndexController extends Controller {
         'status',
     ];
 
-    @tracked allToggled = false;
     @tracked page = 1;
     @tracked limit;
     @tracked sort = '-created_at';
@@ -54,7 +51,6 @@ export default class OperationsOrdersIndexController extends Controller {
     @tracked updated_by;
     @tracked created_by;
     @tracked status;
-    @tracked statusOptions = [];
     @tracked isSearchVisible = false;
     @tracked isOrdersPanelVisible = false;
     @tracked activeOrdersCount = 0;
