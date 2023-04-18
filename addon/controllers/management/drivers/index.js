@@ -230,7 +230,7 @@ export default class ManagementDriversIndexController extends Controller {
             label: 'Name',
             valuePath: 'name',
             width: '200px',
-            cellComponent: 'cell/driver-name',
+            cellComponent: 'table/cell/driver-name',
             action: this.viewDriver,
             resizable: true,
             sortable: true,
