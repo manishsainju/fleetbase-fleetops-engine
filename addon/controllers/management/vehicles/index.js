@@ -210,7 +210,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             valuePath: 'display_name',
             photoPath: 'avatar_url',
             width: '200px',
-            cellComponent: 'table/cell/media-name',
+            cellComponent: 'table/cell/vehicle-name',
             action: this.viewVehicle,
             resizable: true,
             sortable: true,

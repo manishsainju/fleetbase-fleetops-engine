@@ -49,6 +49,13 @@ export default class ManagementFleetsIndexController extends Controller {
     @service fetch;
 
     /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
+
+    /**
      * Inject the `serviceAreas` service
      *
      * @var {Service}
