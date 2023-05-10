@@ -4,11 +4,11 @@
 
         {{#if this.isDriversVisible}}
             {{#each this.drivers as |driver|}}
-                <LeafletRotatedMarker @icon={{icon iconUrl=driver.vehicle_avatar iconSize=(array 40 40)}} @location={{point-to-coordinates driver.location}} @onAdd={{fn this.onAction "onDriverAdded" driver}}>
+                <layers.rotated-marker @icon={{icon iconUrl=driver.vehicle_avatar iconSize=(array 40 40)}} @location={{point-to-coordinates driver.location}} @onAdd={{fn this.onAction "onDriverAdded" driver}}>
                     {{!-- <marker.popup @maxWidth="500" @minWidth="225">
                         <DriverCard @driver={{driver}} @showCoordinates={{true}} @textClass="text-gray-900 dark:text-gray-100" />
                     </marker.popup> --}}
-                </LeafletRotatedMarker>
+                </layers.rotated-marker>
             {{/each}}
         {{/if}}
 
@@ -44,7 +44,7 @@
             {{/each}}
         {{/if}} --}}
 
-        <LeafletDrawControl @position="topright" @draw={{hash marker=false circlemarker=false circle=false polyline=false}} @onDrawDrawstop={{fn this.onAction "onDrawDrawstop"}} @onDrawDeleted={{fn this.onAction "onDrawDeleted"}} @onDrawEdited={{fn this.onAction "onDrawEdited"}} @onDrawDeletestart={{fn this.onAction "onDrawDeletestart"}} @onDrawEditstop={{fn this.onAction "onDrawEditstop"}} @onDrawControlCreated={{fn this.onAction "onDrawControlCreated"}} @onDrawFeatureGroupCreated={{fn this.onAction "onDrawFeatureGroupCreated"}} />
+        <layers.draw-control @position="topright" @draw={{hash marker=false circlemarker=false circle=false polyline=false}} @onDrawDrawstop={{fn this.onAction "onDrawDrawstop"}} @onDrawDeleted={{fn this.onAction "onDrawDeleted"}} @onDrawEdited={{fn this.onAction "onDrawEdited"}} @onDrawDeletestart={{fn this.onAction "onDrawDeletestart"}} @onDrawEditstop={{fn this.onAction "onDrawEditstop"}} @onDrawControlCreated={{fn this.onAction "onDrawControlCreated"}} @onDrawFeatureGroupCreated={{fn this.onAction "onDrawFeatureGroupCreated"}} />
 
         {{#each this.activeServiceAreas as |serviceArea|}}
             <layers.polygon @id={{serviceArea.id}} @record={{serviceArea}} @locations={{serviceArea.bounds}} @fillColor={{serviceArea.color}} @color={{serviceArea.stroke_color}} @onAdd={{fn this.onAction "onServiceAreaLayerAdded" serviceArea}} as |polygon|>

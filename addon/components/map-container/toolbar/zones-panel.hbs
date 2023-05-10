@@ -26,7 +26,6 @@
                         <div class="next-dd-menu-seperator"></div>
                         <div class="px-1">
                             <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.liveMapAction "focusServiceArea" dd serviceArea)}}>Focus {{serviceArea.name}}...</a>
-                            {{!-- <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.serviceAreaAction "focusServiceArea" dd serviceArea)}}>Focus {{serviceArea.name}}...</a> --}}
                             {{#if (eq serviceArea this.activeServiceArea)}}
                                 <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.liveMapAction "blurServiceArea" dd serviceArea)}}>Blur service area...</a>
                             {{/if}}

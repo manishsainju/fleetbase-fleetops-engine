@@ -4,9 +4,12 @@ import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
 import { isArray } from '@ember/array';
 import { dasherize } from '@ember/string';
-// import GeoJson from '../utils/geojson/geo-json';
-import MultiPolygon from '../utils/geojson/multi-polygon';
-import FeatureCollection from '../utils/geojson/feature-collection';
+import { later } from '@ember/runloop';
+import first from '@fleetbase/ember-core/utils/first';
+import GeoJson from '@fleetbase/fleetops-data/utils/geojson/geo-json';
+import MultiPolygon from '@fleetbase/fleetops-data/utils/geojson/multi-polygon';
+import Polygon from '@fleetbase/fleetops-data/utils/geojson/polygon';
+import FeatureCollection from '@fleetbase/fleetops-data/utils/geojson/feature-collection';
 
 export default class ServiceAreasService extends Service {
     @service store;
@@ -72,10 +75,26 @@ export default class ServiceAreasService extends Service {
         }
 
         coordinates = feature?.geometry?.coordinates ?? [];
-
         const multipolygon = new MultiPolygon([coordinates]);
 
         return multipolygon;
+    }
+
+    @action layerToTerraformerPolygon(layer) {
+        const leafletLayerGeoJson = layer.toGeoJSON();
+        let featureCollection, feature, coordinates;
+
+        if (leafletLayerGeoJson.type === 'FeatureCollection') {
+            featureCollection = new FeatureCollection(leafletLayerGeoJson);
+            feature = featureCollection.features.lastObject;
+        } else if (leafletLayerGeoJson.type === 'Feature') {
+            feature = leafletLayerGeoJson;
+        }
+
+        coordinates = feature?.geometry?.coordinates ?? [];
+        const polygon = new Polygon(coordinates);
+
+        return polygon;
     }
 
     @action clearLayerCreationContext() {
@@ -271,7 +290,7 @@ export default class ServiceAreasService extends Service {
 
     @action saveZone(event, layer) {
         const { _map } = layer;
-        const border = this.layerToTerraformerPrimitive(layer);
+        const border = this.layerToTerraformerPolygon(layer);
         const serviceArea = this.getZoneServiceAreaContext();
 
         const zone = this.store.createRecord('zone', {
@@ -308,9 +327,13 @@ export default class ServiceAreasService extends Service {
                     this.sendToLiveMap('hideDrawControls');
                     this.sendToLiveMap('blurAllServiceAreas');
 
-                    setTimeout(() => {
-                        this.sendToLiveMap('focusServiceArea', serviceArea);
-                    }, 300);
+                    later(
+                        this,
+                        () => {
+                            this.sendToLiveMap('focusServiceArea', serviceArea);
+                        },
+                        300
+                    );
                     // this.sendToLiveMap('rebuildContextMenu');
                 });
             },

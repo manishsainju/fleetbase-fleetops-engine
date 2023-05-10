@@ -3,20 +3,73 @@ import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { equal } from '@ember/object/computed';
-import { A, isArray } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
+import { isArray } from '@ember/array';
+import { timeout } from 'ember-concurrency';
+import { task } from 'ember-concurrency-decorators';
 import isModel from '@fleetbase/ember-core/utils/is-model';
 
 export default class OperationsOrdersIndexController extends Controller {
+    /**
+     * Injection of the `ManagementDriversIndexController` controller
+     *
+     * @memberof OperationsOrdersIndexController
+     */
     @controller('management.drivers.index') driversController;
+
+    /**
+     * Injection of the `ManagementFleetIndexController` controller
+     *
+     * @memberof OperationsOrdersIndexController
+     */
     @controller('management.fleets.index') fleetController;
 
+    /**
+     * Inject the `currentUser` service
+     *
+     * @var {Service}
+     */
     @service currentUser;
+
+    /**
+     * Inject the `fetch` service
+     *
+     * @var {Service}
+     */
     @service fetch;
+
+    /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
+
+    /**
+     * Inject the `notifications` service
+     *
+     * @var {Service}
+     */
     @service notifications;
+
+    /**
+     * Inject the `modalsManager` service
+     *
+     * @var {Service}
+     */
     @service modalsManager;
+
+    /**
+     * Inject the `crud` service
+     *
+     * @var {Service}
+     */
     @service crud;
 
+    /**
+     * Queryable parameters for this controller's model
+     *
+     * @var {Array}
+     */
     queryParams = [
         'page',
         'limit',
@@ -36,21 +89,111 @@ export default class OperationsOrdersIndexController extends Controller {
         'status',
     ];
 
+    /**
+     * The current page of data being viewed
+     *
+     * @var {Integer}
+     */
     @tracked page = 1;
+
+    /**
+     * The maximum number of items to show per page
+     *
+     * @var {Integer}
+     */
     @tracked limit;
+
+    /**
+     * The param to sort the data on, the param with prepended `-` is descending
+     *
+     * @var {String}
+     */
     @tracked sort = '-created_at';
+
+    /**
+     * The filterable param `public_id`
+     *
+     * @var {String}
+     */
     @tracked public_id;
+
+    /**
+     * The filterable param `internal_id`
+     *
+     * @var {String}
+     */
     @tracked internal_id;
+
+    /**
+     * The filterable param `tracking`
+     *
+     * @var {String}
+     */
     @tracked tracking;
+
+    /**
+     * The filterable param `facilitator`
+     *
+     * @var {String}
+     */
     @tracked facilitator;
+
+    /**
+     * The filterable param `customer`
+     *
+     * @var {String}
+     */
     @tracked customer;
+
+    /**
+     * The filterable param `driver`
+     *
+     * @var {String}
+     */
     @tracked driver;
+
+    /**
+     * The filterable param `payload`
+     *
+     * @var {String}
+     */
     @tracked payload;
+
+    /**
+     * The filterable param `pickup`
+     *
+     * @var {String}
+     */
     @tracked pickup;
+
+    /**
+     * The filterable param `dropoff`
+     *
+     * @var {String}
+     */
     @tracked dropoff;
+
+    /**
+     * The filterable param `updated_by`
+     *
+     * @var {String}
+     */
     @tracked updated_by;
+
+    /**
+     * The filterable param `created_by`
+     *
+     * @var {String}
+     */
     @tracked created_by;
+
+    /**
+     * The filterable param `status`
+     *
+     * @var {String}
+     */
     @tracked status;
+
     @tracked isSearchVisible = false;
     @tracked isOrdersPanelVisible = false;
     @tracked activeOrdersCount = 0;
@@ -60,7 +203,12 @@ export default class OperationsOrdersIndexController extends Controller {
     @equal('layout', 'table') isTableLayout;
     @equal('layout', 'analytics') isAnalyticsLayout;
 
-    @tracked columns = A([
+    /**
+     * All columns applicable for orders
+     *
+     * @var {Array}
+     */
+    @tracked columns = [
         {
             label: 'ID',
             valuePath: 'public_id',
@@ -80,7 +228,7 @@ export default class OperationsOrdersIndexController extends Controller {
             resizable: true,
             sortable: true,
             filterable: true,
-            filterComponent: 'filter/string'
+            filterComponent: 'filter/string',
         },
         {
             label: 'Payload',
@@ -164,7 +312,7 @@ export default class OperationsOrdersIndexController extends Controller {
             valuePath: 'item_count',
             resizable: true,
             hidden: true,
-            width: '50px'
+            width: '50px',
         },
         {
             label: 'Transaction Total',
@@ -173,7 +321,7 @@ export default class OperationsOrdersIndexController extends Controller {
             width: '50px',
             resizable: true,
             hidden: true,
-            sortable: true
+            sortable: true,
         },
         {
             label: 'Tracking Number',
@@ -187,7 +335,7 @@ export default class OperationsOrdersIndexController extends Controller {
         },
         {
             label: 'Driver Assigned',
-            cellComponent: 'cell/driver-name',
+            cellComponent: 'table/cell/driver-name',
             valuePath: 'driver_assigned',
             modelPath: 'driver_assigned',
             width: '170px',
@@ -201,12 +349,11 @@ export default class OperationsOrdersIndexController extends Controller {
         },
         {
             label: 'Type',
-            cellComponent: 'cell/humanize',
             valuePath: 'type',
             width: '100px',
             resizable: true,
             hidden: true,
-            sortable: true
+            sortable: true,
         },
         {
             label: 'Status',
@@ -288,7 +435,7 @@ export default class OperationsOrdersIndexController extends Controller {
                     fn: this.cancelOrder,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete Order',
@@ -301,7 +448,31 @@ export default class OperationsOrdersIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
+
+    /**
+     * The search task.
+     *
+     * @void
+     */
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
+            this.query = null;
+            return;
+        }
+
+        // timeout for typing
+        yield timeout(250);
+
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
+        }
+
+        // update the query param
+        this.query = value;
+    }
 
     @action resetView() {
         const { leafletMap } = this;
@@ -343,55 +514,8 @@ export default class OperationsOrdersIndexController extends Controller {
         }
     }
 
-    @action sendDropdownAction(dd, sentAction, ...params) {
-        if (typeof dd.actions.close === 'function') {
-            dd.actions.close();
-        }
-
-        if (typeof this[sentAction] === 'function') {
-            this[sentAction](...params);
-        }
-    }
-
-    @action sendDropdownTransition(dd, route) {
-        if (typeof dd.actions.close === 'function') {
-            dd.actions.close();
-        }
-
-        this.transitionToRoute(route);
-    }
-
-    @action sendTransition(route) {
-        this.transitionToRoute(route);
-    }
-
-    @action search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
-    }
-
-    @task(function* (query) {
-        if (!query) {
-            this.query = null;
-            return;
-        }
-
-        yield timeout(250);
-
-        if (this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
-        }
-
-        this.set('query', query);
-    }).restartable()
-    searchTask;
-
-    @action setMapReference(event) {
-        this.leafletMap = event?.target;
+    @action setMapReference({ target }) {
+        this.leafletMap = target;
     }
 
     @action exportOrders() {
@@ -420,7 +544,7 @@ export default class OperationsOrdersIndexController extends Controller {
                     this.notifications.success(`Order ${order.public_id} has been canceled.`);
                 });
             },
-            ...options
+            ...options,
         });
     }
 
@@ -436,15 +560,18 @@ export default class OperationsOrdersIndexController extends Controller {
             confirm: (modal) => {
                 modal.startLoading();
 
-                return this.fetch.patch(`orders/dispatch`, { order: order.id }).then(() => {
-                    order.set('status', 'dispatched');
-                    this.notifications.success(`Order ${order.public_id} has been dispatched.`);
-                }).catch((error) => {
-                    modal.stopLoading();
-                    this.notifications.serverError(error);
-                });
+                return this.fetch
+                    .patch(`orders/dispatch`, { order: order.id })
+                    .then(() => {
+                        order.set('status', 'dispatched');
+                        this.notifications.success(`Order ${order.public_id} has been dispatched.`);
+                    })
+                    .catch((error) => {
+                        modal.stopLoading();
+                        this.notifications.serverError(error);
+                    });
             },
-            ...options
+            ...options,
         });
     }
 
@@ -455,7 +582,7 @@ export default class OperationsOrdersIndexController extends Controller {
                     this.table.removeRow(order);
                 }
             },
-            ...options
+            ...options,
         });
     }
 
@@ -468,12 +595,12 @@ export default class OperationsOrdersIndexController extends Controller {
             onConfirm: (deletedOrders) => {
                 this.allToggled = false;
 
-                deletedOrders.forEach(order => {
+                deletedOrders.forEach((order) => {
                     this.table.removeRow(order);
                 });
 
                 this.target?.targetState?.router?.refresh();
-            }
+            },
         });
     }
 
@@ -493,7 +620,7 @@ export default class OperationsOrdersIndexController extends Controller {
             actionPath: `orders/bulk-cancel`,
             actionMethod: `PATCH`,
             onConfirm: (canceledOrders) => {
-                canceledOrders.forEach(order => {
+                canceledOrders.forEach((order) => {
                     order.set('status', 'canceled');
                 });
             },
@@ -542,7 +669,7 @@ export default class OperationsOrdersIndexController extends Controller {
 
     @action fetchActiveOrdersCount() {
         this.fetch.get('fleet-ops/metrics/all', { discover: ['orders_in_progress'] }).then((response) => {
-            this.activeOrdersCount = response.ordersInProgress;
+            this.activeOrdersCount = response.orders_in_progress;
         });
     }
 }

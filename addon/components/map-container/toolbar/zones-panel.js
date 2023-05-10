@@ -30,9 +30,8 @@ export default class MapContainerToolbarZonesPanelComponent extends Component {
         const position = calculateInPlacePosition(...arguments);
         const rect = trigger.getBoundingClientRect();
 
-        position.style.top = 0;
-        position.style.left = `${rect.width + 15}px`;
-        position.style.marginTop = `-${rect.height / 2}px`;
+        position.style.top = '-0.5rem';
+        position.style.left = `calc(${rect.width}px + 0.75rem)`;
 
         return position;
     }

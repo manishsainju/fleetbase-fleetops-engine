@@ -121,7 +121,7 @@
                     <div class="field-name">Customer</div>
                     <div class="flex flex-row">
                         <div>
-                            <img src={{avatar-url @model.customer.photo_url}} class="w-8 h-8 rounded-md shadow-sm mr-2" alt={{@model.customer.name}} />
+                            <Image src={{avatar-url @model.customer.photo_url}} @fallbackSrc={{config "defaultValues.contactImage"}} class="w-8 h-8 rounded-md shadow-sm mr-2" alt={{@model.customer.name}} />
                         </div>
                         <div>
                             <div class="field-value">{{n-a @model.customer.name "No Customer"}}</div>
@@ -136,7 +136,7 @@
                     {{#if @model.facilitator.isIntegratedVendor}}
                         <div class="flex flex-row">
                             <div>
-                                <img src={{avatar-url @model.facilitator.photo_url}} class="w-8 h-8 rounded-md border border-gray-200 dark:border-gray-900 shadow-sm mr-2" alt={{@model.facilitator.name}} />
+                                <Image src={{avatar-url @model.facilitator.photo_url}} @fallbackSrc={{config "defaultValues.contactImage"}} class="w-8 h-8 rounded-md border border-gray-200 dark:border-gray-900 shadow-sm mr-2" alt={{@model.facilitator.name}} />
                             </div>
                             <div>
                                 <div class="field-value">{{n-a @model.facilitator.name}}</div>
@@ -153,7 +153,7 @@
                     <div>
                         <div class="flex flex-row">
                             <div>
-                                <img src={{avatar-url @model.driver_assigned.photo_url}} width="32" height="32" class="w-8 h-8 rounded-md shadow-sm mr-3 lg:mr-2" alt={{@model.driver_assigned.name}} />
+                                <Image src={{avatar-url @model.driver_assigned.photo_url}} @fallbackSrc={{config "defaultValues.driverImage"}} width="32" height="32" class="w-8 h-8 rounded-md shadow-sm mr-3 lg:mr-2" alt={{@model.driver_assigned.name}} />
                             </div>
                             <div class="field-value">
                                 <div>{{n-a @model.driver_assigned.name "No Driver"}}</div>

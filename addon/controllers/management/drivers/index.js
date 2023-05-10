@@ -131,7 +131,7 @@ export default class ManagementDriversIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -471,14 +471,14 @@ export default class ManagementDriversIndexController extends Controller {
         this.crud.bulkDelete(selected, {
             modelNamePath: `name`,
             acceptButtonText: 'Delete Drivers',
-            onConfirm: (deletedDrivers) => {
+            onConfirm: (deletedRecords) => {
                 this.allToggled = false;
 
-                deletedDrivers.forEach((place) => {
-                    this.table.removeRow(place);
+                deletedRecords.forEach((record) => {
+                    this.table.removeRow(record);
                 });
 
-                this.target?.targetState?.router?.refresh();
+                this.hostRouter.refresh();
             },
         });
     }

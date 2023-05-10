@@ -1,6 +1,3 @@
-/* eslint-disable ember/no-get */
-/* eslint-disable ember/avoid-leaking-state-in-ember-objects */
-/* eslint-disable no-undef */
 import 'leaflet-contextmenu';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
@@ -11,9 +8,10 @@ import { isEmpty } from '@ember/utils';
 import { dasherize } from '@ember/string';
 import { alias } from '@ember/object/computed';
 import { guidFor } from '@ember/object/internals';
+import { later } from '@ember/runloop';
 import { allSettled } from 'rsvp';
 import extractCoordinates from '@fleetbase/ember-core/utils/extract-coordinates';
-// import socketClusterClient from 'socketcluster';
+import config from 'ember-get-config';
 
 const L = window.L;
 const DEFAULT_LATITUDE = 1.369;
@@ -368,9 +366,13 @@ export default class LiveMapComponent extends Component {
     @action focusServiceArea(serviceArea) {
         this.activateServiceArea(serviceArea);
 
-        setTimeout(() => {
-            this.flyToServiceArea(serviceArea);
-        }, 100);
+        later(
+            this,
+            () => {
+                this.flyToServiceArea(serviceArea);
+            },
+            100
+        );
     }
 
     @action blurAllServiceAreas(except = []) {
@@ -656,7 +658,6 @@ export default class LiveMapComponent extends Component {
                 callback: () =>
                     this.serviceAreas.deleteServiceArea(serviceArea, {
                         onFinish: () => {
-                            console.log('Service Area deleted!', serviceArea, this.activeServiceAreas);
                             this.rebuildContextMenu();
                             this.removeEditableLayerByRecordId(serviceArea);
                         },
@@ -683,15 +684,13 @@ export default class LiveMapComponent extends Component {
 
     @action watchDrivers(drivers = []) {
         // setup socket
-        // const socket = socketClusterClient.create({
-        //   hostname: 'socket.fleetbase.io',
-        //   secure: true,
-        //   port: 8000,
-        // });
-        // for (let i = 0; i < drivers.length; i++) {
-        //   const driver = drivers.objectAt(i);
-        //   this.listenForDriver(driver, socket);
-        // }
+        const socket = socketClusterClient.create(config.socket);
+
+        // listen for stivers
+        for (let i = 0; i < drivers.length; i++) {
+            const driver = drivers.objectAt(i);
+            this.listenForDriver(driver, socket);
+        }
     }
 
     @action async listenForDriver(driver, socket) {

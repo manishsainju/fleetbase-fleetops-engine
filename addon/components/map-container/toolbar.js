@@ -24,12 +24,6 @@ export default class MapContainerToolbarComponent extends Component {
         }
     }
 
-    @action onDropdownAction(actionName, dd, ...params) {
-        dd?.actions?.close();
-
-        this.onAction(actionName, ...params);
-    }
-
     @action onZoomOut() {
         this.args.map?.zoomOut();
     }

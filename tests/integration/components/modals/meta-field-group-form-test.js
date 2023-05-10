@@ -3,22 +3,22 @@ import { setupRenderingTest } from 'dummy/tests/helpers';
 import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
-module('Integration | Component | modals/bulk-action-model', function (hooks) {
+module('Integration | Component | modals/meta-field-group-form', function (hooks) {
     setupRenderingTest(hooks);
 
     test('it renders', async function (assert) {
         // Set any properties with this.set('myProperty', 'value');
         // Handle any actions with this.set('myAction', function(val) { ... });
 
-        await render(hbs`<Modals::BulkActionModel />`);
+        await render(hbs`<Modals::MetaFieldGroupForm />`);
 
         assert.dom(this.element).hasText('');
 
         // Template block usage:
         await render(hbs`
-      <Modals::BulkActionModel>
+      <Modals::MetaFieldGroupForm>
         template block text
-      </Modals::BulkActionModel>
+      </Modals::MetaFieldGroupForm>
     `);
 
         assert.dom(this.element).hasText('template block text');

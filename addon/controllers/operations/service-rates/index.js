@@ -2,7 +2,6 @@ import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, computed } from '@ember/object';
-import { A } from '@ember/array';
 import { task, timeout } from 'ember-concurrency';
 
 export default class OperationsServiceRatesIndexController extends Controller {
@@ -99,22 +98,12 @@ export default class OperationsServiceRatesIndexController extends Controller {
      *
      * @var {Array}
      */
-    @tracked columns = A([
-        { 
-            label: '', 
-            valuePath: 'selected', 
-            width: '40px', 
-            cellComponent: 'table/cell/checkbox', 
-            resizable: false,
-            searchable: false,
-            filterable: false, 
-            sortable: false 
-        },
+    @tracked columns = [
         {
             label: 'ID',
             valuePath: 'public_id',
             width: '150px',
-            cellComponent: 'cell/link-to',
+            cellComponent: 'table/cell/link-to',
             onLinkClick: this.editServiceRate,
             resizable: true,
             sortable: true,
@@ -193,7 +182,7 @@ export default class OperationsServiceRatesIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
     /**
      * Toggles dialog to export `service-rate`

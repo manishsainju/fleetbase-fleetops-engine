@@ -1,19 +1,13 @@
-/* global L */
-/* eslint-disable ember/no-get */
-/* eslint-disable ember/avoid-leaking-state-in-ember-objects */
-/* eslint-disable no-undef */
 import 'leaflet-draw-src';
 import BaseLayer from 'ember-leaflet/components/base-layer';
+import { getProperties, computed } from '@ember/object';
 import { run } from '@ember/runloop';
-import { get, getProperties, computed } from '@ember/object';
-import { camelize, classify } from '@ember/string';
 import { assign } from '@ember/polyfills';
+import { scheduleOnce } from '@ember/runloop';
+import { classify, camelize } from '@ember/string';
+import getWithDefault from '@fleetbase/ember-core/utils/get-with-default';
 
 export default class LeafletDrawControl extends BaseLayer {
-    enableDeleting = true; // Default value
-    enableEditing = true; // Default value
-    showDrawingLayer = true; // Default value
-
     leafletEvents = [
         L.Draw.Event.CREATED,
         L.Draw.Event.EDITED,
@@ -30,123 +24,124 @@ export default class LeafletDrawControl extends BaseLayer {
         L.Draw.Event.DRAWVERTEX,
     ];
 
-    leafletOptions = ['draw', 'edit', 'enableEditing', 'position', 'showDrawingLayer'];
+    leafletOptions = ['draw', 'edit', 'remove', 'poly', 'position'];
 
-    @computed('leafletEvents') get usedLeafletEvents() {
-        return get(this, 'leafletEvents').filter((eventName) => {
+    @computed('args', 'leaflefEvents.[]', 'leafletEvents') get usedLeafletEvents() {
+        return this.leafletEvents.filter((eventName) => {
             eventName = camelize(eventName.replace(':', ' '));
-            const methodName = '_' + eventName;
-            const actionName = 'on' + classify(eventName);
-            return get(this, methodName) !== undefined || get(this, actionName) !== undefined;
+            let methodName = `_${eventName}`;
+            let actionName = `on${classify(eventName)}`;
+
+            return this[methodName] !== undefined || this.args[actionName] !== undefined;
         });
+    }
+
+    @computed('args.draw', 'args.edit', 'args.remove', 'args.poly', 'args.position') get options() {
+        return {
+            position: getWithDefault(this.args, 'position', 'topright'),
+            draw: getWithDefault(this.args, 'draw', { marker: false, circlemarker: false, circle: false, polyline: false }),
+            edit: getWithDefault(this.args, 'edit', {}),
+            remove: getWithDefault(this.args, 'remove', {}),
+            poly: getWithDefault(this.args, 'poly', null),
+        };
+    }
+
+    @computed('args.parent._layer') get map() {
+        return this.args.parent._layer;
     }
 
     addToContainer() {
         if (this._layer) {
-            get(this, 'parentComponent')._layer.addLayer(this._layer);
+            this.map.addLayer(this._layer);
         }
     }
 
     createLayer() {
-        let drawingLayerGroup;
-        if (get(this, 'showDrawingLayer')) {
-            drawingLayerGroup = new this.L.FeatureGroup();
-            const map = get(this, 'parentComponent._layer');
+        const { onDrawFeatureGroupCreated } = this.args;
+        const drawingLayerGroup = new this.L.FeatureGroup();
+        const showDrawingLayer = getWithDefault(this.args, 'showDrawingLayer', true);
 
-            if (typeof this.onDrawFeatureGroupCreated === 'function') {
-                this.onDrawFeatureGroupCreated(drawingLayerGroup, map);
+        if (showDrawingLayer) {
+            if (typeof onDrawFeatureGroupCreated === 'function') {
+                onDrawFeatureGroupCreated(drawingLayerGroup, this.map);
             }
 
-            drawingLayerGroup.addTo(map);
+            drawingLayerGroup.addTo(this.map);
         }
+
         return drawingLayerGroup;
     }
 
     didCreateLayer() {
-        const map = get(this, 'parentComponent._layer');
-        if (map) {
-            let options = getProperties(this, 'position', 'draw', 'edit');
-            if (!options.position) {
-                options.position = 'topleft';
+        const { onDrawControlCreated, onDrawControlAddedToMap } = this.args;
+        const showDrawingLayer = getWithDefault(this.args, 'showDrawingLayer', true);
+
+        if (this.map && this._layer) {
+            this.options.edit = assign({ featureGroup: this._layer }, this.options.edit);
+            this.options.draw = assign({}, this.L.drawLocal.draw, this.options.draw);
+
+            // create draw control
+            const drawControl = new this.L.Control.Draw(this.options);
+
+            // trigger action/event draw control created
+            if (typeof onDrawControlCreated === 'function') {
+                onDrawControlCreated(drawControl, this.map);
             }
 
-            if (this._layer) {
-                options.edit = assign({ featureGroup: this._layer }, options?.edit);
+            // Add the draw control to the map
+            this.map.addControl(drawControl);
 
-                if (!get(this, 'enableEditing') && !options?.edit?.edit) {
-                    options.edit.edit = false;
-                }
+            // trigger action/event draw control added to map
+            if (typeof onDrawControlAddedToMap === 'function') {
+                onDrawControlAddedToMap(drawControl, this.map);
+            }
 
-                if (!get(this, 'enableDeleting') && !options?.edit?.remove) {
-                    options.edit.remove = false;
-                }
-
-                if (options.draw !== false) {
-                    // Extend the default draw object with options overrides
-                    options.draw = assign({}, this.L.drawLocal.draw, options?.draw);
-                }
-
-                // create draw control
-                const drawControl = new this.L.Control.Draw(options);
-
-                // trigger action/event draw control created
-                if (typeof this.onDrawControlCreated === 'function') {
-                    this.onDrawControlCreated(drawControl, map);
-                }
-
-                // Add the draw control to the map
-                map.addControl(drawControl);
-
-                // trigger action/event draw control added to map
-                if (typeof this.onDrawControlAddedToMap === 'function') {
-                    this.onDrawControlAddedToMap(drawControl, map);
-                }
-
-                // If showDrawingLayer, add new layer to the layerGroup
-                if (get(this, 'showDrawingLayer')) {
-                    map.on(this.L.Draw.Event.CREATED, (e) => {
-                        const layer = e.layer;
-                        this._layer.addLayer(layer);
-                    });
-                }
+            // If showDrawingLayer, add new layer to the layerGroup
+            if (showDrawingLayer) {
+                this.map.on(this.L.Draw.Event.CREATED, ({ layer }) => {
+                    this._layer.addLayer(layer);
+                });
             }
         }
     }
 
     _addEventListeners() {
         this._eventHandlers = {};
-        get(this, 'usedLeafletEvents').forEach((eventName) => {
+
+        for (let eventName of this.usedLeafletEvents) {
             const originalEventName = eventName;
-            const map = get(this, 'parentComponent._layer');
-            // Cleanup the Leaflet Draw event names that have colons, ex:'draw:created'
+            // fix event name
             eventName = camelize(eventName.replace(':', ' '));
-            const actionName = 'on' + classify(eventName);
-            const methodName = '_' + eventName;
-            // Create an event handler that runs the function inside an event loop.
+            const actionName = `on${classify(eventName)}`;
+            const methodName = `_${eventName}`;
+
+            // create an event handler that runs the function inside an event loop.
             this._eventHandlers[originalEventName] = function (e) {
-                run(() => {
-                    // Try to invoke/send an action for this event
-                    this.invokeAction(actionName, e, this._layer, map);
-                    // Allow classes to add custom logic on events as well
-                    if (typeof this[methodName] === 'function') {
-                        run(this, this[methodName], e, this._layer, map);
+                let fn = () => {
+                    // try to invoke/send an action for this event
+                    if (typeof this.args[actionName] === 'function') {
+                        this.args[actionName](e, this._layer, this.map);
                     }
-                });
+
+                    // allow classes to add custom logic on events as well
+                    if (typeof this[methodName] === 'function') {
+                        this[methodName](e, this._layer, this.map);
+                    }
+                };
+
+                scheduleOnce('actions', this, fn);
             };
 
-            // The events for Leaflet Draw are on the map object, not the layer
-            map.addEventListener(originalEventName, this._eventHandlers[originalEventName], this);
-        });
+            this.map.addEventListener(originalEventName, this._eventHandlers[originalEventName], this);
+        }
     }
 
     _removeEventListeners() {
         if (this._eventHandlers) {
-            get(this, 'usedLeafletEvents').forEach((eventName) => {
-                const map = get(this, 'parentComponent._layer');
-                // The events for Leaflet Draw are on the map object, not the layer
-                map.removeEventListener(eventName, this._eventHandlers[eventName], this);
+            for (let eventName of this.usedLeafletEvents) {
+                this.map.removeEventListener(eventName, this._eventHandlers[eventName], this);
                 delete this._eventHandlers[eventName];
-            });
+            }
         }
     }
 }

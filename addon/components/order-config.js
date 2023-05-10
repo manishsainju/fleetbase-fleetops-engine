@@ -3,8 +3,8 @@ import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import { action, computed, set } from '@ember/object';
 import { equal } from '@ember/object/computed';
-import socketClusterClient from 'socketcluster';
 import isModel from '@fleetbase/ember-core/utils/is-model';
+import config from 'ember-get-config';
 
 export default class OrderConfigComponent extends Component {
     @service modalsManager;
@@ -259,11 +259,7 @@ export default class OrderConfigComponent extends Component {
         const channelId = `${extension.id}:${this.currentUser.id}`;
 
         // setup socket
-        const socket = socketClusterClient.create({
-            hostname: 'socket.fleetbase.io',
-            secure: true,
-            port: 8000,
-        });
+        const socket = socketClusterClient.create(config.socket);
 
         // get channel
         const channel = socket.subscribe(channelId);

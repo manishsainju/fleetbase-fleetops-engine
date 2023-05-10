@@ -105,16 +105,6 @@ export default class ManagementVendorsIndexController extends Controller {
      */
     @tracked columns = [
         {
-            label: '',
-            valuePath: 'selected',
-            width: '40px',
-            cellComponent: 'table/cell/checkbox',
-            resizable: false,
-            searchable: false,
-            filterable: false,
-            sortable: false,
-        },
-        {
             label: 'Name',
             valuePath: 'name',
             width: '200px',

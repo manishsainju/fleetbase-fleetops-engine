@@ -98,7 +98,7 @@ export default class OrderConfigFieldsEditorComponent extends Component {
             confirm: (modal) => {
                 const groupName = modal.getOption('groupName');
 
-                if (!groupName) {
+                if (typeof groupName !== 'string') {
                     return this.notifications.warning('No group name entered.');
                 }
 
@@ -111,10 +111,8 @@ export default class OrderConfigFieldsEditorComponent extends Component {
         });
     }
 
-    @action addField(group = '_') {
-        const { fields } = this;
-
-        fields.pushObject({
+    @action addField(group = '_untitled') {
+        this.fields.pushObject({
             id: generateUuid(),
             label: null,
             key: null,
@@ -124,7 +122,7 @@ export default class OrderConfigFieldsEditorComponent extends Component {
         });
 
         if (typeof this.args.onFieldsChanged === 'function') {
-            this.args.onFieldsChanged(fields);
+            this.args.onFieldsChanged(this.fields);
         }
     }
 

@@ -1,12 +1,11 @@
 <MapContainer::Topbar class="next-topbar-{{this.layout}}">
     <MapContainer::ViewSwitch>
-        <FaIcon @icon="bring-forward" class="mr-2 text-gray-400 dark:text-gray-600" />
+        <FaIcon @icon="layer-group" class="mr-2 text-gray-400 dark:text-gray-600" />
         <button type="button" class="{{if this.isMapLayout 'active'}}" {{on "click" (fn this.setLayoutMode "map")}}>Map</button>
         <button type="button" class="{{if this.isTableLayout 'active'}} flex flex-row items-center relative" {{on "click" (fn this.setLayoutMode "table")}}>
             <div class="mr-1.5">Table</div>
             <Badge class="flex items-center justify-center -mr-4" @spanClass="rounded-full px-1 py-0i" @hideStatusDot={{true}} @status="info">{{@model.meta.total}}</Badge>
         </button>
-        {{!-- <button type="button" class="{{if this.isAnalyticsLayout 'active'}}" {{on "click" (fn this.setLayoutMode "analytics")}}>Analytics</button> --}}
     </MapContainer::ViewSwitch>
 </MapContainer::Topbar>
 
@@ -20,11 +19,11 @@
 {{/if}}
 
 {{#if this.isTableLayout}}
-    <Layout::Section::Header @title="Orders" @onSearch={{this.search}}>
-        <Button @icon="cogs" @text="Config" class="mr-2" @onClick={{fn this.sendTransition "operations.orders.index.config"}} />
-        <FiltersPicker @columns={{this.columns}} @onChange={{this.applyFilters}} class="mr-2" />
-        <VisibleColumnPicker @columns={{this.columns}} @activeParams={{this.activeParams}} @onChange={{this.updateColumns}} class="mr-2" />
-       {{#if (safe-has this.table "selectedRows")}}
+    <Layout::Section::Header @title="Orders" @onSearch={{perform this.search}}>
+        <Button @icon="cogs" @text="Config" class="mr-2" @onClick={{fn (transition-to "operations.orders.index.config")}} />
+        <FiltersPicker @columns={{this.columns}} @onApply={{fn this.filters.apply this}} @onClear={{fn this.filters.reset this}} @onFilterClear={{this.filters.clear}} @onChange={{this.filters.set}} @buttonWrapperClass="mr-2" />
+        <VisibleColumnPicker @columns={{this.columns}} @onChange={{fn (mut this.columns)}} class="mr-2" />
+        {{#if (safe-has this.table "selectedRows")}}
             <DropdownButton @icon="layer-group" @type="magic" @text="Bulk Action" @size="sm" @buttonWrapperClass="mr-2" as |dd|>
                 <div class="next-dd-menu mt-2 mx-0">
                     <div class="px-1">
@@ -38,7 +37,7 @@
                 </div>
             </DropdownButton>
         {{/if}}
-        <Button @type="primary" @icon="plus" @iconPrefix="fas" @text="New" @wrapperClass="mr-2" @onClick={{fn this.sendTransition "operations.orders.index.new"}} />
+        <Button @type="primary" @icon="plus" @iconPrefix="fas" @text="New" @wrapperClass="mr-2" @onClick={{fn (transition-to "operations.orders.index.new")}} />
         <Button @icon="long-arrow-up" @iconClass="rotate-icon-45" @text="Export" @onClick={{this.exportOrders}} />
     </Layout::Section::Header>
     <Layout::Section::Body>
