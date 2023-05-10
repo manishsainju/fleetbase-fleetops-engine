@@ -21,14 +21,14 @@
                     {{#unless @model.isIntegratedVendorOrder}}
                         <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "createNewActivity" dd @model)}}>
                             <div class="w-6">
-                                <FaIcon @icon="signal-stream" />
+                                <FaIcon @icon="signal" />
                             </div>
                             <span>Update Activity</span>
                         </a>
                         {{#if @model.driver_assigned_uuid}}
                             <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "unassignDriver" dd @model)}}>
                                 <div class="w-6">
-                                    <FaIcon @icon="user-times" />
+                                    <FaIcon @icon="user-xmark" />
                                 </div>
                                 <span>Unassign Driver</span>
                             </a>
