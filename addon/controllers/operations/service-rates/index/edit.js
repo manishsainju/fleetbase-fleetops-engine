@@ -20,7 +20,6 @@ export default class OperationsServiceRatesIndexEditController extends Operation
      * @void
      */
     @action updateServiceRate() {
-        const loader = this.loader.showLoader('.overlay-inner-content', 'Updating service rate...');
         const { serviceRate, rateFees, perDropRateFees, parcelFees } = this;
 
         if (serviceRate.isFixedMeter) {
@@ -36,6 +35,7 @@ export default class OperationsServiceRatesIndexEditController extends Operation
         }
 
         this.isUpdatingServiceRate = true;
+        this.loader.showLoader('.overlay-inner-content', 'Updating service rate...');
 
         try {
             return serviceRate
@@ -49,11 +49,11 @@ export default class OperationsServiceRatesIndexEditController extends Operation
                 .catch(this.notifications.serverError)
                 .finally(() => {
                     this.isUpdatingServiceRate = false;
-                    this.loader.removeLoader(loader);
+                    this.loader.removeLoader();
                 });
         } catch (error) {
             this.isUpdatingServiceRate = false;
-            this.loader.removeLoader(loader);
+            this.loader.removeLoader();
         }
     }
 }

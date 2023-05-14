@@ -471,14 +471,8 @@ export default class ManagementDriversIndexController extends Controller {
         this.crud.bulkDelete(selected, {
             modelNamePath: `name`,
             acceptButtonText: 'Delete Drivers',
-            onConfirm: (deletedRecords) => {
-                this.allToggled = false;
-
-                deletedRecords.forEach((record) => {
-                    this.table.removeRow(record);
-                });
-
-                this.hostRouter.refresh();
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
         });
     }
@@ -521,7 +515,6 @@ export default class ManagementDriversIndexController extends Controller {
             hideDeclineButton: true,
             declineButtonIcon: 'times',
             declineButtonIconPrefix: 'fas',
-            args: ['driver'],
             headerStatus: driver.status,
             headerButtons: [
                 {
@@ -646,11 +639,7 @@ export default class ManagementDriversIndexController extends Controller {
             acceptButtonIconPrefix: 'fas',
             successNotification: (driver) => `New driver (${driver.name}) created.`,
             onConfirm: () => {
-                if (driver.get('isNew')) {
-                    return;
-                }
-
-                this.table.addRow(driver);
+                return this.hostRouter.refresh();
             },
         });
     }
@@ -726,10 +715,8 @@ export default class ManagementDriversIndexController extends Controller {
      */
     @action deleteDriver(driver, options = {}) {
         this.crud.delete(driver, {
-            onConfirm: (driver) => {
-                if (driver.get('isDeleted')) {
-                    this.table.removeRow(driver);
-                }
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
             ...options,
         });

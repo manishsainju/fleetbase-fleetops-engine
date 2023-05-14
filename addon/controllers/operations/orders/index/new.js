@@ -5,6 +5,7 @@ import { action, computed, setProperties, set, get } from '@ember/object';
 import { not, equal, alias } from '@ember/object/computed';
 import { isArray } from '@ember/array';
 import { dasherize } from '@ember/string';
+import { later } from '@ember/runloop';
 import { OSRMv1, Control as RoutingControl } from '@fleetbase/leaflet-routing-machine';
 import polyline from '@fleetbase/ember-core/utils/polyline';
 import findClosestWaypoint from '@fleetbase/ember-core/utils/find-closest-waypoint';
@@ -34,6 +35,7 @@ export default class OperationsOrdersIndexNewController extends Controller {
     @service notifications;
     @service loader;
     @service currentUser;
+    @service hostRouter;
     @service fileQueue;
     @service fetch;
     @service store;
@@ -196,8 +198,7 @@ export default class OperationsOrdersIndexNewController extends Controller {
         }
 
         this.previewRoute(false);
-
-        const loader = this.loader.showLoader('body', 'Creating Order...');
+        this.loader.showLoader('body', 'Creating Order...');
 
         const { order, groupedMetaFields, payload, entities, waypoints, isMultipleDropoffOrder } = this;
         const route = this.leafletOptimizedRoute ? this.getOptimizedRoute() : this.getRoute();
@@ -218,8 +219,7 @@ export default class OperationsOrdersIndexNewController extends Controller {
                 .setEntities(entities);
         } catch (error) {
             this.notifications.serverError(error);
-            this.loader.removeLoader(loader);
-
+            this.loader.removeLoader();
             return;
         }
 
@@ -230,21 +230,26 @@ export default class OperationsOrdersIndexNewController extends Controller {
                 .save()
                 .then((order) => {
                     return this.transitionToRoute('operations.orders.index.view', order).then(() => {
-                        this.ordersController.table.addRow(order);
                         this.notifications.success(`New Order ${order.public_id} Created`);
-                        this.loader.removeLoader(loader);
+                        this.loader.removeLoader();
                         this.resetForm();
+                        later(
+                            this,
+                            () => {
+                                this.hostRouter.refresh();
+                            },
+                            100
+                        );
                     });
                 })
                 .catch((error) => {
-                    console.log(error);
                     this.isCreatingOrder = false;
                     this.notifications.serverError(error);
-                    this.loader.removeLoader(loader);
+                    this.loader.removeLoader();
                 });
         } catch (error) {
             this.notifications.error(error.message);
-            this.loader.removeLoader(loader);
+            this.loader.removeLoader();
         }
     }
 

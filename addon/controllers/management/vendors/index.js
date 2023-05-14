@@ -2,18 +2,13 @@ import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, get } from '@ember/object';
+import { isBlank } from '@ember/utils';
+import { isArray } from '@ember/array';
 import { capitalize } from '@ember/string';
 import { task } from 'ember-concurrency-decorators';
 import apiUrl from '@fleetbase/ember-core/utils/api-url';
 
 export default class ManagementVendorsIndexController extends Controller {
-    /**
-     * Inject the `operations.zones.index` controller
-     *
-     * @var {Controller}
-     */
-    @controller('operations.zones.index') zones;
-
     /**
      * Inject the `management.places.index` controller
      *
@@ -41,6 +36,27 @@ export default class ManagementVendorsIndexController extends Controller {
      * @var {Service}
      */
     @service crud;
+
+    /**
+     * Inject the `store` service
+     *
+     * @var {Service}
+     */
+    @service store;
+
+    /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
+
+    /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
 
     /**
      * Inject the `fetch` service
@@ -75,7 +91,7 @@ export default class ManagementVendorsIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -99,7 +115,14 @@ export default class ManagementVendorsIndexController extends Controller {
     @tracked status;
 
     /**
-     * All columns applicable for orders
+     * Rows for the table
+     *
+     * @var {Array}
+     */
+    @tracked rows = [];
+
+    /**
+     * All columns for the table
      *
      * @var {Array}
      */
@@ -107,7 +130,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Name',
             valuePath: 'name',
-            width: '200px',
+            width: '180px',
             cellComponent: 'table/cell/media-name',
             action: this.viewVendor,
             resizable: true,
@@ -119,7 +142,7 @@ export default class ManagementVendorsIndexController extends Controller {
             label: 'ID',
             valuePath: 'public_id',
             cellComponent: 'click-to-copy',
-            width: '120px',
+            width: '110px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -129,7 +152,7 @@ export default class ManagementVendorsIndexController extends Controller {
             label: 'Internal ID',
             valuePath: 'internal_id',
             cellComponent: 'click-to-copy',
-            width: '120px',
+            width: '100px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -138,7 +161,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Email',
             valuePath: 'email',
-            cellComponent: 'table/cell/base',
+            cellComponent: 'click-to-copy',
             width: '80px',
             resizable: true,
             sortable: true,
@@ -149,7 +172,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Phone',
             valuePath: 'phone',
-            cellComponent: 'table/cell/base',
+            cellComponent: 'click-to-copy',
             width: '80px',
             resizable: true,
             sortable: true,
@@ -159,7 +182,7 @@ export default class ManagementVendorsIndexController extends Controller {
         },
         {
             label: 'Address',
-            valuePath: 'address_street',
+            valuePath: 'address',
             cellComponent: 'table/cell/anchor',
             action: this.viewVendorPlace,
             width: '150px',
@@ -172,8 +195,8 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Type',
             valuePath: 'type',
-            cellComponent: 'table/cell/base',
-            width: '140px',
+            cellComponent: 'table/cell/status',
+            width: '120px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -195,7 +218,7 @@ export default class ManagementVendorsIndexController extends Controller {
             label: 'Created At',
             valuePath: 'createdAt',
             sortParam: 'created_at',
-            width: '130px',
+            width: '150px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -232,7 +255,7 @@ export default class ManagementVendorsIndexController extends Controller {
             ddMenuLabel: 'Vendor Actions',
             cellClassNames: 'overflow-visible',
             wrapperClass: 'flex items-center justify-end mx-2',
-            width: '10%',
+            width: '7%',
             actions: [
                 {
                     label: 'View Vendor Details',
@@ -288,19 +311,13 @@ export default class ManagementVendorsIndexController extends Controller {
      * @void
      */
     @action bulkDeleteVendors() {
-        const selected = this.table.selectedRows.map(({ content }) => content);
+        const selected = this.table.selectedRows;
 
         this.crud.bulkDelete(selected, {
             modelNamePath: `name`,
             acceptButtonText: 'Delete Vendors',
-            onConfirm: (deletedVendors) => {
-                this.allToggled = false;
-
-                deletedVendors.forEach((place) => {
-                    this.table.removeRow(place);
-                });
-
-                this.target?.targetState?.router?.refresh();
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
         });
     }
@@ -328,7 +345,7 @@ export default class ManagementVendorsIndexController extends Controller {
             title: vendor.name,
             titleComponent: 'modal/title-with-buttons',
             acceptButtonText: 'Done',
-            args: ['vendor'],
+            hideDeclineButton: true,
             headerButtons: [
                 {
                     icon: 'cog',
@@ -377,14 +394,7 @@ export default class ManagementVendorsIndexController extends Controller {
      */
     @action async createVendor() {
         const vendor = this.store.createRecord('vendor', { status: 'active' });
-        const supportedIntegratedVendors = await this.fetch.cachedGet(
-            'integrated-vendors/supported',
-            {},
-            {
-                expirationInterval: 60,
-                expirationIntervalUnit: 'minutes',
-            }
-        );
+        const supportedIntegratedVendors = await this.fetch.get('integrated-vendors/supported');
 
         return this.editVendor(vendor, {
             title: 'New Vendor',
@@ -398,29 +408,38 @@ export default class ManagementVendorsIndexController extends Controller {
             selectIntegratedVendor: (integratedVendor) => {
                 this.modalsManager.setOption('selectedIntegratedVendor', integratedVendor);
 
+                const { credential_params, option_params } = integratedVendor;
+
                 // create credentials object
                 const credentials = {};
-                for (let i = 0; i < integratedVendor.params.length; i++) {
-                    const param = integratedVendor.params.objectAt(i);
-                    credentials[param] = null;
+                if (isArray(integratedVendor.credential_params)) {
+                    for (let i = 0; i < integratedVendor.credential_params.length; i++) {
+                        const param = integratedVendor.credential_params.objectAt(i);
+                        credentials[param] = null;
+                    }
+                }
+
+                // create options object
+                const options = {};
+                if (isArray(integratedVendor.option_params)) {
+                    for (let i = 0; i < integratedVendor.option_params.length; i++) {
+                        const param = integratedVendor.option_params.objectAt(i);
+                        options[param.key] = null;
+                    }
                 }
 
                 const vendor = this.store.createRecord('integrated-vendor', {
                     provider: integratedVendor.code,
                     webhook_url: apiUrl(`listeners/${integratedVendor.code}`),
-                    credentials,
+                    credentials: {},
+                    options: {},
+                    credential_params,
+                    option_params
                 });
 
                 this.modalsManager.setOption('integratedVendor', vendor);
             },
             successNotification: (vendor) => `New vendor '${vendor.name}' successfully created.`,
-            onConfirm: () => {
-                if (vendor.get('isNew')) {
-                    return;
-                }
-
-                this.table.addRow(vendor);
-            },
         });
     }
 
@@ -463,6 +482,13 @@ export default class ManagementVendorsIndexController extends Controller {
                     this.modalsManager.setOption('showAdvancedOptions', true);
                 }
             },
+            selectAddress: (place) => {
+                vendor.setProperties({
+                    place_uuid: place.id,
+                    place: place,
+                    country: place.country,
+                });
+            },
             editAddress: () => {
                 return this.editVendorPlace(vendor, {
                     onFinish: () => {
@@ -495,7 +521,8 @@ export default class ManagementVendorsIndexController extends Controller {
                         .save()
                         .then((integratedVendor) => {
                             this.notifications.success(`Successfully added ${capitalize(integratedVendor.provider)} new integrated vendor`);
-                            this.table.addRow(integratedVendor);
+
+                            return this.hostRouter.refresh();
                         })
                         .catch((error) => {
                             this.notifications.serverError(error, {
@@ -507,7 +534,7 @@ export default class ManagementVendorsIndexController extends Controller {
                         });
                 }
 
-                vendor
+                return vendor
                     .save()
                     .then((vendor) => {
                         if (typeof options.successNotification === 'function') {
@@ -516,7 +543,7 @@ export default class ManagementVendorsIndexController extends Controller {
                             this.notifications.success(options.successNotification || `${vendor.name} details updated.`);
                         }
 
-                        return done();
+                        return this.hostRouter.refresh();
                     })
                     .catch((error) => {
                         this.notifications.serverError(error);
@@ -539,10 +566,8 @@ export default class ManagementVendorsIndexController extends Controller {
     @action deleteVendor(vendor, options = {}) {
         this.crud.delete(vendor, {
             acceptButtonIcon: 'trash',
-            onConfirm: (vendor) => {
-                if (vendor.get('isDeleted')) {
-                    this.table.removeRow(vendor);
-                }
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
             ...options,
         });

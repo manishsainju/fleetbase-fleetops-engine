@@ -21,4 +21,14 @@ export default class ManagementVendorsIndexRoute extends Route {
     model(params) {
         return this.store.query('vendor', { ...params });
     }
+
+    async setupController(controller, model) {
+        super.setupController(...arguments);
+
+        // load integrated vendors
+        const integratedVendors = await this.store.findAll('integrated-vendor');
+
+        // append integrated vendors
+        controller.rows = [...model.toArray(), ...integratedVendors.toArray()];
+    }
 }

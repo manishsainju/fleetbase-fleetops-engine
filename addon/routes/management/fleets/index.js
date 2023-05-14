@@ -15,6 +15,10 @@ export default class ManagementFleetsIndexRoute extends Route {
         sort: { refreshModel: true },
         query: { refreshModel: true },
         status: { refreshModel: true },
+        internal_id: { refreshModel: true },
+        zone: { refreshModel: true },
+        service_area: { refreshModel: true },
+        task: { refreshModel: true },
     };
 
     model(params) {

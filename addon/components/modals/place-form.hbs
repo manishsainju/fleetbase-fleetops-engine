@@ -2,11 +2,6 @@
     <div class="modal-body-container">
         <div class="grid grid-cols-3 gap-1 text-xs dark:text-gray-100">
             <InputGroup @name="Name" @autocomplete="nope" @value={{@options.place.name}} @wrapperClass="col-span-3" />
-            {{!-- <InputGroup @name="Name" @value={{@options.place.name}} @wrapperClass="col-span-3">
-                <AutocompleteInput @value={{@options.place.name}} @fetchUrl="places/lookup" @onSelect={{fn @options.autocomplete}} placeholder="Street 1" class="w-full" as |result|>
-                    {{result.address}}
-                </AutocompleteInput>
-            </InputGroup> --}}
             <InputGroup @name="Street 1" @value={{@options.place.street1}} @wrapperClass="col-span-3">
                 <AutocompleteInput @value={{@options.place.street1}} @fetchUrl="places/lookup" @onSelect={{@options.autocomplete}} placeholder="Street 1" class="w-full" as |result|>
                     {{result.address}}

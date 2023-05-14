@@ -44,6 +44,20 @@ export default class ManagementPlacesIndexController extends Controller {
     @service store;
 
     /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
+
+    /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
+
+    /**
      * Inject the `crud` service
      *
      * @var {Service}
@@ -55,7 +69,7 @@ export default class ManagementPlacesIndexController extends Controller {
      *
      * @var {Array}
      */
-    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_at', 'updated_at'];
+    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'country', 'phone', 'email', 'created_at', 'updated_at'];
 
     /**
      * The current page of data being viewed
@@ -76,7 +90,7 @@ export default class ManagementPlacesIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -93,11 +107,25 @@ export default class ManagementPlacesIndexController extends Controller {
     @tracked internal_id;
 
     /**
-     * True if all records are `selected`
+     * The filterable param `phone`
      *
-     * @var {Boolean}
+     * @var {String}
      */
-    @tracked allToggled = false;
+    @tracked phone;
+
+    /**
+     * The filterable param `email`
+     *
+     * @var {String}
+     */
+    @tracked email;
+
+    /**
+     * The filterable param `country`
+     *
+     * @var {String}
+     */
+    @tracked country;
 
     /**
      * All columns applicable for orders
@@ -180,7 +208,8 @@ export default class ManagementPlacesIndexController extends Controller {
             resizable: true,
             sortable: true,
             filterable: true,
-            filterComponent: 'filter/string',
+            filterComponent: 'filter/country',
+            filterParam: 'country'
         },
         {
             label: 'Created At',
@@ -300,7 +329,6 @@ export default class ManagementPlacesIndexController extends Controller {
             place,
             titleComponent: 'modal/title-with-buttons',
             acceptButtonText: 'Done',
-            args: ['place'],
             headerButtons: [
                 {
                     icon: 'cog',
@@ -381,7 +409,7 @@ export default class ManagementPlacesIndexController extends Controller {
                     return;
                 }
 
-                this.table.addRow(place);
+                return this.hostRouter.refresh();
             },
             ...options,
         });
@@ -407,6 +435,8 @@ export default class ManagementPlacesIndexController extends Controller {
             autocomplete: (selected) => {
                 const coordinatesInputComponent = this.modalsManager.getOption('coordinatesInputComponent');
 
+                console.log('selected', selected);
+
                 place.setProperties({ ...selected });
 
                 if (coordinatesInputComponent) {
@@ -421,10 +451,10 @@ export default class ManagementPlacesIndexController extends Controller {
 
                 place.setProperties({ location });
             },
-            confirm: (modal, done) => {
+            confirm: (modal) => {
                 modal.startLoading();
 
-                place
+                return place
                     .save()
                     .then((place) => {
                         if (typeof options.successNotification === 'function') {
@@ -433,10 +463,9 @@ export default class ManagementPlacesIndexController extends Controller {
                             this.notifications.success(options.successNotification ?? `${place.name} details updated.`);
                         }
 
-                        done();
+                        return this.hostRouter.refresh();
                     })
                     .catch((error) => {
-                        // driver.rollbackAttributes();
                         modal.stopLoading();
                         this.notifications.serverError(error);
                     });
@@ -455,9 +484,7 @@ export default class ManagementPlacesIndexController extends Controller {
     @action deletePlace(place, options = {}) {
         this.crud.delete(place, {
             onConfirm: (place) => {
-                if (place.get('isDeleted')) {
-                    this.table.removeRow(place);
-                }
+                return this.hostRouter.refresh();
             },
             ...options,
         });
@@ -470,19 +497,13 @@ export default class ManagementPlacesIndexController extends Controller {
      * @void
      */
     @action bulkDeletePlaces() {
-        const selected = this.table.selectedRows.map(({ content }) => content);
+        const selected = this.table.selectedRows;
 
         this.crud.bulkDelete(selected, {
             modelNamePath: `address`,
             acceptButtonText: 'Delete Places',
-            onConfirm: (deletedPlaces) => {
-                this.allToggled = false;
-
-                deletedPlaces.forEach((place) => {
-                    this.table.removeRow(place);
-                });
-
-                this.target?.targetState?.router?.refresh();
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
         });
     }

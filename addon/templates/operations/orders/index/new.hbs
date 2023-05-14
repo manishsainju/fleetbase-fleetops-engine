@@ -43,7 +43,7 @@
             </div>
         </DropdownButton>
         <Button @icon="upload" @type="magic" @text={{if (media 'isMobile') "" "Import"}} @onClick={{this.importOrder}} @disabled={{this.isCreatingOrder}} class="mr-2" />
-        <Button @icon="box-check" @type="primary" @text={{if (media 'isMobile') "" "Submit"}} @onClick={{this.createOrder}} @isLoading={{this.isCreatingOrder}} @isSubscriptionRequired={{true}} @disabled={{not this.isValid}} />
+        <Button @icon="check" @type="primary" @text={{if (media 'isMobile') "" "Submit"}} @onClick={{this.createOrder}} @isLoading={{this.isCreatingOrder}} @isSubscriptionRequired={{true}} @disabled={{not this.isValid}} />
     </Overlay::Header>
 
     <Overlay::Body @wrapperClass="new-order-overlay-body" @increaseInnerBodyHeightBy={{1000}}>
@@ -65,7 +65,7 @@
                     <ModelSelect @modelName="customer" @selectedModel={{this.order.customer}} @placeholder="Select Customer" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @allowClear={{true}} @onChange={{fn (mut this.order.customer)}} as |model|>
                         <div class="flex items-center">
                             <div class="w-7">
-                                <FaIcon @icon={{if model.isVendor "warehouse-alt" "user-alt" }} />
+                                <FaIcon @icon={{if model.isVendor "warehouse" "user" }} />
                             </div>
                             <span class="uppercase">
                                 {{model.name}}
@@ -79,9 +79,9 @@
                         <div class="flex items-center">
                             <div class="w-7">
                                 {{#if model.isIntegratedVendor}}
-                                    <img src={{model.photo_url}} alt={{model.name}} class="w-4 h-4" width="16" height="16" />
+                                    <Image src={{model.photo_url}} alt={{model.name}} class="w-4 h-4" width="16" height="16" />
                                 {{else}}
-                                    <FaIcon @icon={{if model.isVendor "warehouse-alt" "user-alt" }} />
+                                    <FaIcon @icon={{if model.isVendor "warehouse" "user" }} />
                                 {{/if}}
                             </div>
                             <span class="uppercase">
@@ -431,7 +431,7 @@
             {{#if this.servicable}}
                 <ContentPanel @title="Service Quotes" @open={{true}} @pad={{true}} @wrapperClass="mt-6" @panelBodyClass="bg-white dark:bg-gray-800">
                     {{#unless this.isUsingIntegratedVendor}}
-                        <div class="input-group mb-2">
+                        <div class="input-group mb-2i">
                             <InputLabel @labelText="Select Service Rate" @helpText="Select which service rate to fetch quotes for." />
 
                             <Select class="w-full" @options={{this.serviceRates}} @value={{this.selectedServiceRate}} @optionLabel="service_name" @optionValue="uuid" @onSelect={{this.getQuotes}} @placeholder="Select Service Rate" />
@@ -444,7 +444,7 @@
 
                     {{#if this.isFetchingQuotes}}
                         <div class="flex items-center justify-center py-5">
-                            <PageLoader class="text-sm dar:text-gray-100" @loadingMessage="Loading service quotes..." />
+                            <Spinner class="text-sm dark:text-gray-100 flex flex-row items-center" @iconClass="mr-2" @loadingMessage="Loading service quotes..." />
                         </div>
                     {{else}}
                         <InfoBlock class="my-3" @text="Select a real time service quote to apply to this order. Once a quote is applied to the order, it will become a purchased rate. Transactions will be tracked within the Fleetbase ledger." />
@@ -459,7 +459,7 @@
                                             {{serviceQuote.request_id}}
                                         </Badge>
                                     </div>
-                                    <Next::TableWrapper class="flex">
+                                    <div class="next-table-wrapper h-auto table-fluid rounded-none">
                                         <table class="table table-fixed flex-1">
                                             <thead>
                                                 <tr>
@@ -488,7 +488,7 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-                                    </Next::TableWrapper>
+                                    </div>
                                 </div>
                             {{else}}
                                 <InfoBlock class="my-2 px-4 py-1.5 warning" @blockClass="flex flex-row items-center" @text={{if this.payloadCoordinates.length "No service quotes." "Input order route to view service quotes."}} />

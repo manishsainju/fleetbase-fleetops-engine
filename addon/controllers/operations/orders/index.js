@@ -45,6 +45,13 @@ export default class OperationsOrdersIndexController extends Controller {
     @service filters;
 
     /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
+
+    /**
      * Inject the `notifications` service
      *
      * @var {Service}
@@ -534,7 +541,6 @@ export default class OperationsOrdersIndexController extends Controller {
         this.modalsManager.confirm({
             title: `Are you sure you wish to cancel this order?`,
             body: `Once this order is canceled, the order record will still be visible but activity cannot be added to this order.`,
-            args: ['model'],
             order,
             confirm: (modal) => {
                 modal.startLoading();
@@ -555,7 +561,6 @@ export default class OperationsOrdersIndexController extends Controller {
             acceptButtonScheme: 'primary',
             acceptButtonText: 'Dispatch',
             acceptButtonIcon: 'paper-plane',
-            args: ['order'],
             order,
             confirm: (modal) => {
                 modal.startLoading();
@@ -577,36 +582,27 @@ export default class OperationsOrdersIndexController extends Controller {
 
     @action deleteOrder(order, options = {}) {
         this.crud.delete(order, {
-            onConfirm: (order) => {
-                if (order.get('isDeleted')) {
-                    this.table.removeRow(order);
-                }
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
             ...options,
         });
     }
 
     @action bulkDeleteOrders(selected = []) {
-        selected = selected.length > 0 ? selected : this.table.selectedRows.map(({ content }) => content);
+        selected = selected.length > 0 ? selected : this.table.selectedRows;
 
         this.crud.bulkDelete(selected, {
             modelNamePath: `public_id`,
             acceptButtonText: 'Delete Orders',
-            onConfirm: (deletedOrders) => {
-                this.allToggled = false;
-
-                deletedOrders.forEach((order) => {
-                    this.table.removeRow(order);
-                });
-
-                this.target?.targetState?.router?.refresh();
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
         });
     }
 
     @action bulkCancelOrders(selected = []) {
-        console.log('bulkCancelOrders()', ...arguments);
-        selected = selected.length > 0 ? selected : this.table.selectedRows.map(({ content }) => content);
+        selected = selected.length > 0 ? selected : this.table.selectedRows;
 
         if (!isArray(selected) || selected.length === 0) {
             return;
@@ -623,6 +619,9 @@ export default class OperationsOrdersIndexController extends Controller {
                 canceledOrders.forEach((order) => {
                     order.set('status', 'canceled');
                 });
+            },
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
         });
     }

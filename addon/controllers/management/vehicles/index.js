@@ -99,7 +99,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort= '-created_at';
 
     /**
      * The filterable param `public_id`.
@@ -390,14 +390,13 @@ export default class ManagementVehiclesIndexController extends ManagementControl
      * @void
      */
     @action bulkDeleteVehicles() {
-        const { selectedRows } = this.table;
+        const selectedRows = this.table.selectedRows;
 
         this.crud.bulkDelete(selectedRows, {
             modelNamePath: `display_name`,
             acceptButtonText: 'Delete Vehicles',
             onSuccess: () => {
-                this.table.removeRows(selectedRows);
-                this.hostRouter.refresh();
+                return this.hostRouter.refresh();
             },
         });
     }
@@ -450,7 +449,6 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             titleComponent: 'modal/title-with-buttons',
             modalClass: 'modal-lg',
             acceptButtonText: 'Done',
-            args: ['vehicle'],
             headerButtons: [
                 {
                     icon: 'cog',
@@ -531,11 +529,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             acceptButtonIconPrefix: 'fas',
             // successNotification: `New vehicle (${vehicle.name}) created.`,
             onConfirm: () => {
-                if (vehicle.get('isNew')) {
-                    return;
-                }
-
-                this.table.addRow(vehicle);
+                return this.hostRouter.refresh();
             },
         });
     }
@@ -603,10 +597,8 @@ export default class ManagementVehiclesIndexController extends ManagementControl
      */
     @action deleteVehicle(vehicle, options = {}) {
         this.crud.delete(vehicle, {
-            onConfirm: (vehicle) => {
-                if (vehicle.get('isDeleted')) {
-                    this.table.removeRow(vehicle);
-                }
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
             ...options,
         });

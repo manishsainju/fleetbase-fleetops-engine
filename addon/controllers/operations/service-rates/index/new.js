@@ -2,6 +2,7 @@ import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, computed } from '@ember/object';
+import { isBlank } from '@ember/utils';
 
 export default class OperationsServiceRatesIndexNewController extends Controller {
     /**
@@ -53,11 +54,12 @@ export default class OperationsServiceRatesIndexNewController extends Controller
      */
     @tracked serviceAreas = [];
 
-    @computed('serviceRate.service_area_uuid', 'store') get zones() {
-        let zones = this.store.peekAll('zone');
-
-        return zones.filter((zone) => zone.service_area_uuid === this.serviceRate.service_area_uuid);
-    }
+    /**
+     * Zones.
+     *
+     * @var {Array}
+     */
+    @tracked zones = [];
 
     /**
      * True if creating service rate.
@@ -155,13 +157,12 @@ export default class OperationsServiceRatesIndexNewController extends Controller
      *
      * @var {Array}
      */
-    @computed('fixedMeterMaxDistance', 'fixedMeterUnit', 'serviceRate.currency', '_rateFees')
-    get rateFees() {
-        if (this._rateFees) {
+    @computed('fixedMeterMaxDistance', 'fixedMeterUnit', 'serviceRate.currency', '_rateFees') get rateFees() {
+        if (!isBlank(this._rateFees)) {
             return this._rateFees;
         }
 
-        let maxDistance = parseInt(this.fixedMeterMaxDistance || 0);
+        let maxDistance = parseInt(this.fixedMeterMaxDistance ?? 0);
         let distanceUnit = this.fixedMeterUnit;
         let currency = this.serviceRate.currency;
         let rateFees = [];
@@ -284,7 +285,6 @@ export default class OperationsServiceRatesIndexNewController extends Controller
      * @void
      */
     @action createServiceRate() {
-        const loader = this.loader.showLoader('.overlay-inner-content', 'Creating service rate...');
         const { serviceRate, rateFees, parcelFees } = this;
 
         serviceRate.setServiceRateFees(rateFees).setServiceRateParcelFees(parcelFees);
@@ -294,6 +294,7 @@ export default class OperationsServiceRatesIndexNewController extends Controller
         }
 
         this.isCreatingServiceRate = true;
+        this.loader.showLoader('.overlay-inner-content', 'Creating service rate...');
 
         try {
             return serviceRate
@@ -311,11 +312,30 @@ export default class OperationsServiceRatesIndexNewController extends Controller
                 })
                 .finally(() => {
                     this.isCreatingServiceRate = false;
-                    this.loader.removeLoader(loader);
+                    this.loader.removeLoader();
                 });
         } catch (error) {
             this.isCreatingServiceRate = false;
-            this.loader.removeLoader(loader);
+            this.loader.removeLoader();
+        }
+    }
+
+    /**
+     * Select a service area and load it's zones
+     *
+     * @param {String} serviceAreaId
+     * @memberof OperationsServiceRatesIndexNewController
+     */
+    @action selectServiceArea(serviceAreaId) {
+        if (typeof serviceAreaId === 'string' && !isBlank(serviceAreaId)) {
+            this.serviceRate.service_area_uuid = serviceAreaId;
+
+            // load zones for this service area
+            this.store.query('zone', { service_area_uuid: serviceAreaId }).then((zones) => {
+                this.zones = zones;
+            });
+        } else {
+            this.zones = [];
         }
     }
 

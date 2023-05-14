@@ -10,17 +10,16 @@ export default class OperationsZonesIndexRoute extends Route {
      */
     @service loader;
 
-    model() {
-        return this.store.query('service-area', { with: ['zones'] });
-    }
-
     /**
      * Loading event handler for route.
      *
      * @param {Transition} transition
      */
-    @action
-    loading(transition) {
-        this.loader.showOnInitialTransition(transition, '#mainContent', 'Loading zones...');
+    @action loading(transition) {
+        this.loader.showOnInitialTransition(transition, 'section.next-view-section', 'Loading zones...');
+    }
+
+    model() {
+        return this.store.query('service-area', { with: ['zones'] });
     }
 }

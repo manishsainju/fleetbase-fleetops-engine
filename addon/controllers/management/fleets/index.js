@@ -49,6 +49,13 @@ export default class ManagementFleetsIndexController extends Controller {
     @service fetch;
 
     /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
+
+    /**
      * Inject the `filters` service
      *
      * @var {Service}
@@ -67,7 +74,7 @@ export default class ManagementFleetsIndexController extends Controller {
      *
      * @var {Array}
      */
-    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_by', 'updated_by', 'status'];
+    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'zone', 'service_area', 'created_by', 'updated_by', 'status'];
 
     /**
      * The current page of data being viewed
@@ -88,7 +95,7 @@ export default class ManagementFleetsIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort= '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -103,6 +110,27 @@ export default class ManagementFleetsIndexController extends Controller {
      * @var {String}
      */
     @tracked internal_id;
+
+    /**
+     * The filterable param `service_area`
+     *
+     * @var {String}
+     */
+    @tracked service_area;
+
+    /**
+     * The filterable param `zone`
+     *
+     * @var {String}
+     */
+    @tracked zone;
+
+    /**
+     * The filterable param `task`
+     *
+     * @var {Array}
+     */
+    @tracked task;
 
     /**
      * The filterable param `status`
@@ -150,8 +178,10 @@ export default class ManagementFleetsIndexController extends Controller {
             resizable: true,
             width: '130px',
             filterable: true,
-            filterParam: 'zone',
-            filterComponent: 'filter/string',
+            filterComponent: 'filter/model',
+            filterComponentPlaceholder: 'Select service area',
+            filterParam: 'service_area',
+            model: 'service-area',
         },
         {
             label: 'Zone',
@@ -161,19 +191,20 @@ export default class ManagementFleetsIndexController extends Controller {
             resizable: true,
             width: '130px',
             filterable: true,
+            filterComponent: 'filter/model',
+            filterComponentPlaceholder: 'Select zone',
             filterParam: 'zone',
-            filterComponent: 'filter/string',
+            model: 'zone',
         },
         {
             label: 'ID',
             valuePath: 'public_id',
             width: '120px',
-            cellComponent: 'table/cell/anchor',
+            cellComponent: 'click-to-copy',
             action: this.viewFleet,
             resizable: true,
             sortable: true,
             filterable: true,
-            hidden: true,
             filterComponent: 'filter/string',
         },
         {
@@ -311,19 +342,13 @@ export default class ManagementFleetsIndexController extends Controller {
      * @void
      */
     @action bulkDeleteFleets() {
-        const selected = this.table.selectedRows.map(({ content }) => content);
+        const selected = this.table.selectedRows;
 
         this.crud.bulkDelete(selected, {
             modelNamePath: `name`,
             acceptButtonText: 'Delete Fleets',
-            onConfirm: (deletedFleets) => {
-                this.allToggled = false;
-
-                deletedFleets.forEach((place) => {
-                    this.table.removeRow(place);
-                });
-
-                this.target?.targetState?.router?.refresh();
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
         });
     }
@@ -348,7 +373,6 @@ export default class ManagementFleetsIndexController extends Controller {
         this.modalsManager.show('modals/fleet-details', {
             title: fleet.name,
             titleComponent: 'modal/title-with-buttons',
-            args: ['fleet'],
             headerStatus: fleet.status,
             headerButtons: [
                 {
@@ -427,19 +451,14 @@ export default class ManagementFleetsIndexController extends Controller {
             confirm: (modal, done) => {
                 modal.startLoading();
 
-                fleet
+                return fleet
                     .save()
                     .then((fleet) => {
                         this.notifications.invoke('success', options.successNotification ?? `${fleet.name} details updated.`, fleet);
 
-                        if (isNew) {
-                            this.table.addRow(fleet);
-                        }
-
-                        done();
+                        return this.hostRouter.refresh();
                     })
                     .catch((error) => {
-                        // driver.rollbackAttributes();
                         modal.stopLoading();
                         this.notifications.serverError(error);
                     });
@@ -457,8 +476,8 @@ export default class ManagementFleetsIndexController extends Controller {
      */
     @action deleteFleet(fleet, options = {}) {
         this.crud.delete(fleet, {
-            onConfirm: (fleet) => {
-                this.table.removeRow(fleet);
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
             ...options,
         });

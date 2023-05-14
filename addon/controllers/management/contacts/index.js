@@ -1,19 +1,12 @@
-import Controller, { inject as controller } from '@ember/controller';
+import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, get } from '@ember/object';
-import { A, isArray } from '@ember/array';
+import { isArray } from '@ember/array';
 import { timeout } from 'ember-concurrency';
 import { task } from 'ember-concurrency-decorators';
 
 export default class ManagementContactsIndexController extends Controller {
-    /**
-     * Inject the `operations.zones.index` controller
-     *
-     * @var {Controller}
-     */
-    @controller('operations.zones.index') zones;
-
     /**
      * Inject the `currentUser` service
      *
@@ -36,11 +29,25 @@ export default class ManagementContactsIndexController extends Controller {
     @service modalsManager;
 
     /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
+
+    /**
      * Inject the `crud` service
      *
      * @var {Service}
      */
     @service crud;
+
+    /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
 
     /**
      * Inject the `fetch` service
@@ -75,7 +82,7 @@ export default class ManagementContactsIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort= '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -103,7 +110,7 @@ export default class ManagementContactsIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked contactTypes = A(['contact', 'customer']);
+    @tracked contactTypes = ['contact', 'customer'];
 
     /**
      * All columns applicable for orders
@@ -145,7 +152,7 @@ export default class ManagementContactsIndexController extends Controller {
         {
             label: 'Email',
             valuePath: 'email',
-            cellComponent: 'table/cell/base',
+            cellComponent: 'click-to-copy',
             width: '160px',
             resizable: true,
             sortable: true,
@@ -155,7 +162,7 @@ export default class ManagementContactsIndexController extends Controller {
         {
             label: 'Phone',
             valuePath: 'phone',
-            cellComponent: 'table/cell/base',
+            cellComponent: 'click-to-copy',
             width: '140px',
             resizable: true,
             sortable: true,
@@ -165,7 +172,7 @@ export default class ManagementContactsIndexController extends Controller {
         {
             label: 'Type',
             valuePath: 'type',
-            cellComponent: 'table/cell/base',
+            cellComponent: 'table/cell/status',
             width: '140px',
             resizable: true,
             sortable: true,
@@ -258,19 +265,13 @@ export default class ManagementContactsIndexController extends Controller {
      * @void
      */
     @action bulkDeleteContacts() {
-        const selected = this.table.selectedRows.map(({ content }) => content);
+        const selected = this.table.selectedRows;
 
         this.crud.bulkDelete(selected, {
             modelNamePath: `name`,
             acceptButtonText: 'Delete Contacts',
-            onConfirm: (deletedContacts) => {
-                this.allToggled = false;
-
-                deletedContacts.forEach((place) => {
-                    this.table.removeRow(place);
-                });
-
-                this.target?.targetState?.router?.refresh();
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
         });
     }
@@ -299,7 +300,6 @@ export default class ManagementContactsIndexController extends Controller {
             acceptButtonIcon: 'check',
             acceptButtonIconPrefix: 'fas',
             hideDeclineButton: true,
-            args: ['contact'],
             headerButtons: [
                 {
                     icon: 'cog',
@@ -357,11 +357,7 @@ export default class ManagementContactsIndexController extends Controller {
             acceptButtonIconPrefix: 'fas',
             successNotification: (contact) => `New contact (${contact.name}) created.`,
             onConfirm: () => {
-                if (contact.get('isNew')) {
-                    return;
-                }
-
-                this.table.addRow(contact);
+                return this.hostRouter.refresh();
             },
         });
     }
@@ -403,19 +399,18 @@ export default class ManagementContactsIndexController extends Controller {
             confirm: (modal, done) => {
                 modal.startLoading();
 
-                contact
+                return contact
                     .save()
                     .then((contact) => {
                         if (typeof options.successNotification === 'function') {
                             this.notifications.success(options.successNotification(contact));
                         } else {
-                            this.notifications.success(options.successNotification || `${contact.name} details updated.`);
+                            this.notifications.success(options.successNotification ?? `${contact.name} details updated.`);
                         }
 
                         done();
                     })
                     .catch((error) => {
-                        // driver.rollbackAttributes();
                         modal.stopLoading();
                         this.notifications.serverError(error);
                     });
@@ -435,9 +430,7 @@ export default class ManagementContactsIndexController extends Controller {
         this.crud.delete(contact, {
             acceptButtonIcon: 'trash',
             onConfirm: (contact) => {
-                if (contact.get('isDeleted')) {
-                    this.table.removeRow(contact);
-                }
+                this.hostRouter.refresh();
             },
             ...options,
         });

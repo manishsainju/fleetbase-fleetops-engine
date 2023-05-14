@@ -495,7 +495,7 @@ export default class OperationsOrdersIndexViewController extends Controller {
     @action cancelOrder(order) {
         this.ordersController.cancelOrder(order, {
             onConfirm: () => {
-                this.reloadTrackingStatuses();
+                order.loadTrackingActivity();
             },
         });
     }
@@ -523,7 +523,7 @@ export default class OperationsOrdersIndexViewController extends Controller {
     @action dispatchOrder(order) {
         this.ordersController.dispatchOrder(order, {
             onConfirm: () => {
-                this.reloadTrackingStatuses();
+                order.loadTrackingActivity();
             },
         });
     }
@@ -689,17 +689,7 @@ export default class OperationsOrdersIndexViewController extends Controller {
      * @void
      */
     @action reloadTrackingStatuses() {
-        if (!this.model.tracking_number_uuid) {
-            return;
-        }
-
-        this.store
-            .query('tracking-status', {
-                tracking_number_uuid: this.model.tracking_number_uuid,
-            })
-            .then((trackingStatuses) => {
-                this.model.tracking_statuses = trackingStatuses;
-            });
+        return this.model.loadTrackingActivity();
     }
 
     /**

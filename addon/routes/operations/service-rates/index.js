@@ -23,7 +23,7 @@ export default class OperationsServiceRatesIndexRoute extends Route {
      * @param {Transition} transition
      */
     @action loading(transition) {
-        this.loader.showOnInitialTransition(transition, '#mainContent', 'Loading service rates...');
+        this.loader.showOnInitialTransition(transition, 'section.next-view-section', 'Loading service rates...');
     }
 
     /**
@@ -36,16 +36,14 @@ export default class OperationsServiceRatesIndexRoute extends Route {
         limit: { refreshModel: true },
         sort: { refreshModel: true },
         query: { refreshModel: true },
+        service_area: { refreshModel: true },
+        zone: { refreshModel: true },
     };
 
     model(params) {
         return this.store.query('service-rate', {
             ...params,
-            with: ['parcelFees', 'rateFees'],
+            with: ['parcelFees', 'rateFees', 'zone', 'serviceArea'],
         });
-    }
-
-    async setupController(controller, model) {
-        super.setupController(controller, model);
     }
 }
