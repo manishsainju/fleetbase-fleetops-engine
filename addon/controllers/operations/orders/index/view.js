@@ -530,7 +530,7 @@ export default class OperationsOrdersIndexViewController extends Controller {
      * @void
      */
     @action listenToSocket(order) {
-        this.hostRouter.transitionTo('console.developers-console.sockets.watch', `order.${order.public_id}`);
+        this.hostRouter.transitionTo('console.developers.sockets.view', `order.${order.public_id}`);
     }
 
     /**
