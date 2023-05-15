@@ -12,35 +12,35 @@
                 </div>
                 <div class="next-dd-menu-seperator"></div>
                 <div class="px-1">
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "editOrder" dd @model)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.editOrder @model)}}>
                         <div class="w-6">
                             <FaIcon @icon="edit" />
                         </div>
                         <span>Edit Details</span>
                     </a>
                     {{#unless @model.isIntegratedVendorOrder}}
-                        <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "createNewActivity" dd @model)}}>
+                        <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.createNewActivity @model)}}>
                             <div class="w-6">
                                 <FaIcon @icon="signal" />
                             </div>
                             <span>Update Activity</span>
                         </a>
                         {{#if @model.driver_assigned_uuid}}
-                            <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "unassignDriver" dd @model)}}>
+                            <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.unassignDriver @model)}}>
                                 <div class="w-6">
                                     <FaIcon @icon="user-xmark" />
                                 </div>
                                 <span>Unassign Driver</span>
                             </a>
                         {{else}}
-                            <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "assignDriver" dd @model)}}>
+                            <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.assignDriver @model)}}>
                                 <div class="w-6">
                                     <FaIcon @icon="user-check" />
                                 </div>
                                 <span>Assign Driver</span>
                             </a>
                         {{/if}}
-                        <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "viewOrderLabel" dd @model)}}>
+                        <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.viewOrderLabel @model)}}>
                             <div class="w-6">
                                 <FaIcon @icon="file-invoice" />
                             </div>
@@ -48,13 +48,13 @@
                         </a>
                     {{/unless}}
                     <div class="next-dd-menu-seperator"></div>
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "listenToSocket" dd @model)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.listenToSocket @model)}}>
                         <div class="w-6">
                             <FaIcon @icon="headphones" />
                         </div>
                         <span>Listen to socket channel</span>
                     </a>
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "viewOrderMeta" dd @model)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.viewOrderMeta @model)}}>
                         <div class="w-6">
                             <FaIcon @icon="table" />
                         </div>
@@ -62,14 +62,14 @@
                     </a>
                     {{#unless @model.isCanceled}}
                         <div class="next-dd-menu-seperator"></div>
-                        <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (fn this.dropdownAction "cancelOrder" dd @model)}}>
+                        <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (dropdown-fn dd this.cancelOrder @model)}}>
                             <div class="w-6">
                                 <FaIcon @icon="ban" class="text-danger" />
                             </div>
                             <span>Cancel Order</span>
                         </a>
                     {{/unless}}
-                    <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (fn this.dropdownAction "deleteOrder" dd @model)}}>
+                    <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (dropdown-fn dd this.deleteOrder @model)}}>
                         <div class="w-6">
                             <FaIcon @icon="trash" class="text-danger" />
                         </div>
@@ -331,7 +331,7 @@
             </ContentPanel>
         {{/if}}
 
-        <ContentPanel @title="Payload" @open={{@model.payload.entities.length}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
+        <ContentPanel @title="Payload" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
             {{#if this.isMultiDropOrder}}
                 <div class="space-y-2">
                     {{#each this.entitiesByDestination as |group|}}

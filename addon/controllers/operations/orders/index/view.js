@@ -6,10 +6,10 @@ import { isArray } from '@ember/array';
 import { not, notEmpty, alias } from '@ember/object/computed';
 import { OSRMv1, Control as RoutingControl } from '@fleetbase/leaflet-routing-machine';
 import groupBy from '@fleetbase/ember-core/utils/macros/group-by';
-import refreshRoute from '@fleetbase/ember-core/utils/refresh-route';
 import findClosestWaypoint from '@fleetbase/ember-core/utils/find-closest-waypoint';
 import getRoutingHost from '@fleetbase/ember-core/utils/get-routing-host';
 import extractCoordinates from '@fleetbase/ember-core/utils/extract-coordinates';
+import getModelName from '@fleetbase/ember-core/utils/get-model-name';
 
 export default class OperationsOrdersIndexViewController extends Controller {
     /**
@@ -254,16 +254,6 @@ export default class OperationsOrdersIndexViewController extends Controller {
         }, 300);
     }
 
-    @action dropdownAction(actionName, dd, ...params) {
-        if (typeof dd?.actions?.close === 'function') {
-            dd.actions.close();
-        }
-
-        if (typeof this[actionName] === 'function') {
-            this[actionName](...params);
-        }
-    }
-
     /**
      * Edit order details.
      *
@@ -293,6 +283,7 @@ export default class OperationsOrdersIndexViewController extends Controller {
             acceptButtonIcon: 'save',
             setOrderFacilitator: (model) => {
                 order.set('facilitator', model);
+                order.set('facilitator_type', `fleet-ops:${model.facilitator_type}`);
                 order.set('driver', null);
 
                 if (model) {
@@ -300,6 +291,10 @@ export default class OperationsOrdersIndexViewController extends Controller {
                         facilitator: model.id,
                     });
                 }
+            },
+            setOrderCustomer: (model) => {
+                order.set('customer', model);
+                order.set('customer_type', `fleet-ops:${model.customer_type}`);
             },
             setDriver: (driver) => {
                 order.set('driver_assigned', driver);
@@ -583,7 +578,7 @@ export default class OperationsOrdersIndexViewController extends Controller {
                     })
                     .then(() => {
                         modal.stopLoading();
-                        refreshRoute(this);
+                        return this.hostRouter.refresh();
                     })
                     .catch((error) => {
                         modal.stopLoading();
