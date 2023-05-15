@@ -3,6 +3,7 @@ import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, computed } from '@ember/object';
 import { isArray } from '@ember/array';
+import { later } from '@ember/runloop';
 import { not, notEmpty, alias } from '@ember/object/computed';
 import { OSRMv1, Control as RoutingControl } from '@fleetbase/leaflet-routing-machine';
 import groupBy from '@fleetbase/ember-core/utils/macros/group-by';
@@ -578,7 +579,13 @@ export default class OperationsOrdersIndexViewController extends Controller {
                     })
                     .then(() => {
                         modal.stopLoading();
-                        return this.hostRouter.refresh();
+                        return later(
+                            this,
+                            () => {
+                                return this.hostRouter.refresh();
+                            },
+                            100
+                        );
                     })
                     .catch((error) => {
                         modal.stopLoading();

@@ -221,7 +221,7 @@
         {{#if @model.tracking_number}}
             <ContentPanel @title="Tracking" @prefixTitleRight={{@model.tracking}} @isLoading={{this.isLoadingAdditionalData}} @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
                 <div class="mb-4 flex justify-end">
-                    <Button @size="xs" @type="default" @icon="barcode-read" @text="Get Order Label" @onClick={{fn this.viewOrderLabel @model}} />
+                    <Button @size="xs" @type="default" @icon="barcode" @text="Get Order Label" @onClick={{fn this.viewOrderLabel @model}} />
                 </div>
                 <div class="flex flex-row items-center justify-center space-x-4">
                     <div class="p-2 rounded-md bg-white">
