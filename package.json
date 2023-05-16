@@ -3,17 +3,23 @@
     "extension": "Fleet Ops",
     "icon": "route",
     "version": "0.0.1",
-    "description": "The default blueprint for ember-cli addons.",
+    "description": "Fleetbase Fleet-Ops extension provides a fleet management and last mile delivery operations system module.",
     "keywords": [
+        "fleetbase-extension",
+        "fleet-management",
+        "fleet-ops",
+        "fleetbase-fleet-ops",
+        "fleetbase",
         "ember-addon",
         "ember-engine"
     ],
-    "repository": "",
+    "repository": "https://github.com/fleetbase/fleetops-engine",
     "license": "MIT",
-    "author": "",
+    "author": "Fleetbase Pte Ltd <hello@fleetbase.io>",
     "directories": {
-        "doc": "doc",
-        "test": "tests"
+        "app": "app",
+        "addon": "addon",
+        "tests": "tests"
     },
     "scripts": {
         "build": "ember build --environment=production",
