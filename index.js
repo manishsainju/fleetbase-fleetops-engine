@@ -4,8 +4,8 @@ const MergeTrees = require('broccoli-merge-trees');
 const { buildEngine } = require('ember-engines/lib/engine-addon');
 const { name } = require('./package');
 const packagePrefix = `node_modules/${name}/node_modules`;
-const fs = require('fs-extra');
-const path = require('path');
+// const fs = require('fs-extra');
+// const path = require('path');
 
 module.exports = buildEngine({
     name,
@@ -58,14 +58,14 @@ module.exports = buildEngine({
         return publicTree ? new MergeTrees([publicTree, ...addonTree], { overwrite: true }) : new MergeTrees([...addonTree], { overwrite: true });
     },
 
-    postBuild: function (result) {
-        const src = path.join(result.directory, 'assets', 'leaflet-images');
-        const dest = path.join(result.directory, '..', '..', 'public', 'fleet-ops', 'assets', 'images');
+    // postBuild: function (result) {
+    //     const src = path.join(result.directory, 'assets', 'leaflet-images');
+    //     const dest = path.join(result.directory, '..', '..', 'public', 'fleet-ops', 'assets', 'images');
 
-        if (fs.existsSync(src)) {
-            fs.copySync(src, dest);
-        }
-    },
+    //     if (fs.existsSync(src)) {
+    //         fs.copySync(src, dest);
+    //     }
+    // },
 
     isDevelopingAddon() {
         return true;
