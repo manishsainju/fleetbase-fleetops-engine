@@ -92,7 +92,7 @@ export default class ManagementIssuesIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort= '-created_at';
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -185,93 +185,48 @@ export default class ManagementIssuesIndexController extends Controller {
      */
     @tracked columns = [
         {
-            label: 'Name',
-            valuePath: 'name',
-            width: '200px',
-            cellComponent: 'table/cell/anchor',
-            action: this.viewFuelReport,
-            resizable: true,
-            sortable: true,
-            filterable: true,
-            filterComponent: 'filter/string',
-        },
-        {
             label: 'ID',
             valuePath: 'public_id',
             width: '120px',
-            cellComponent: 'table/cell/anchor',
-            action: this.viewFuelReport,
+            resizable: true,
+            sortable: true,
+        },
+        {
+            label: 'Type',
+            valuePath: 'type',
+            width: '100px',
             resizable: true,
             sortable: true,
             filterable: true,
             filterComponent: 'filter/string',
         },
         {
-            label: 'Internal ID',
-            valuePath: 'internal_id',
-            cellComponent: 'table/cell/anchor',
-            action: this.viewFuelReport,
+            label: 'Reporter',
+            valuePath: 'reporter.name',
             width: '120px',
             resizable: true,
             sortable: true,
-            filterable: true,
-            filterComponent: 'filter/string',
         },
         {
-            label: 'Email',
-            valuePath: 'email',
-            cellComponent: 'table/cell/base',
-            width: '80px',
+            label: 'Assignee',
+            valuePath: 'reporter.name',
+            width: '120px',
             resizable: true,
             sortable: true,
-            hidden: true,
-            filterable: true,
-            filterComponent: 'filter/string',
         },
         {
-            label: 'Phone',
-            valuePath: 'phone',
-            cellComponent: 'table/cell/base',
-            width: '80px',
+            label: 'Vehicle',
+            valuePath: 'vehicle.name',
+            width: '120px',
             resizable: true,
             sortable: true,
-            hidden: true,
-            filterable: true,
-            filterComponent: 'filter/string',
         },
         {
-            label: 'Country',
-            valuePath: 'country',
-            cellComponent: 'table/cell/base',
-            width: '80px',
+            label: 'Report',
+            valuePath: 'report',
+            width: '120px',
             resizable: true,
             sortable: true,
-            hidden: true,
-            filterable: true,
-            filterComponent: 'filter/string',
-        },
-        {
-            label: 'Address',
-            valuePath: 'place.address',
-            cellComponent: 'table/cell/base',
-            width: '80px',
-            resizable: true,
-            sortable: true,
-            hidden: true,
-            filterable: true,
-            filterParam: 'address',
-            filterComponent: 'filter/string',
-        },
-        {
-            label: 'Status',
-            valuePath: 'status',
-            cellComponent: 'table/cell/status',
-            width: '10%',
-            resizable: true,
-            sortable: true,
-            filterable: true,
-            filterComponent: 'filter/multi-option',
-            filterOptions: this.statusOptions,
         },
         {
             label: 'Created At',
@@ -306,18 +261,18 @@ export default class ManagementIssuesIndexController extends Controller {
             actions: [
                 {
                     label: 'View Details',
-                    fn: this.viewFuelReport,
+                    // fn: this.viewFuelReport,
                 },
                 {
                     label: 'Edit Issue',
-                    fn: this.editFuelReport,
+                    // fn: this.editFuelReport,
                 },
                 {
                     separator: true,
                 },
                 {
                     label: 'Delete Issue',
-                    fn: this.deleteFuelReport,
+                    // fn: this.deleteFuelReport,
                 },
             ],
             sortable: false,
