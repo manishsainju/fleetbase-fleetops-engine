@@ -3,7 +3,7 @@
         <div class="flex">
             <div class="w-32 mb-6 mr-6 flex flex-col items-center">
                 <Image src={{@options.entity.photo_url}} alt={{@options.entity.name}} height="128" width="128" class="h-32 w-32 rounded-md" />
-                <UploadButton @name="photos" @accept="image/*" @onFileAdded={{@options.uploadNewPhoto}} class="w-32" />
+                <UploadButton @name="photos" @accept="image/*" @onFileAdded={{fn @options.uploadNewPhoto}} class="w-32" />
             </div>
             <div class="flex-1 space-y-4">
                 <ContentPanel @title="Details" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
