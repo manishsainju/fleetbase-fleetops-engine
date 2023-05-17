@@ -1,4 +1,4 @@
-# @fleetbase/flb-fleetops-extension
+# @fleetbase/fleetops-engine
 
 FleetOps extension for Fleetbase.
 
@@ -13,7 +13,7 @@ FleetOps extension for Fleetbase.
 ## Installation
 
 ```
-ember install @fleetbase/flb-fleetops-extension
+ember install @fleetbase/fleetops-engine
 ```
 
 
