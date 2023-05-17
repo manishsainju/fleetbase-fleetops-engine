@@ -3,17 +3,24 @@
     "extension": "Fleet Ops",
     "icon": "route",
     "version": "0.0.1",
-    "description": "The default blueprint for ember-cli addons.",
+    "priority": 0,
+    "description": "Fleetbase Fleet-Ops extension provides a fleet management and last mile delivery operations system module.",
     "keywords": [
+        "fleetbase-extension",
+        "fleet-management",
+        "fleet-ops",
+        "fleetbase-fleet-ops",
+        "fleetbase",
         "ember-addon",
         "ember-engine"
     ],
-    "repository": "",
+    "repository": "https://github.com/fleetbase/fleetops-engine",
     "license": "MIT",
-    "author": "",
+    "author": "Fleetbase Pte Ltd <hello@fleetbase.io>",
     "directories": {
-        "doc": "doc",
-        "test": "tests"
+        "app": "app",
+        "addon": "addon",
+        "tests": "tests"
     },
     "scripts": {
         "build": "ember build --environment=production",
@@ -29,36 +36,36 @@
         "test:ember-compatibility": "ember try:each"
     },
     "dependencies": {
-        "@fleetbase/ember-ui": "file:../ember-ui",
+        "@fleetbase/ember-core": "^0.0.1",
+        "@fleetbase/ember-ui": "^0.0.1",
+        "@fleetbase/fleetops-data": "^0.0.1",
         "@fleetbase/leaflet-routing-machine": "^3.2.15",
         "@fortawesome/ember-fontawesome": "^0.4.1",
         "@fortawesome/free-solid-svg-icons": "^6.2.0",
         "@terraformer/spatial": "^2.1.2",
+        "@zestia/ember-dragula": "^12.0.0",
+        "broccoli-funnel": "^3.0.8",
+        "broccoli-merge-trees": "^4.2.0",
         "ember-cli-babel": "^7.26.11",
         "ember-cli-es6-transform": "^1.0.0",
         "ember-cli-htmlbars": "^6.1.0",
-        "ember-collapsible-panel": "^5.0.0",
-        "ember-concurrency": "^2.3.7",
-        "ember-drag-sort": "^3.0.1",
         "ember-leaflet": "^5.0.1",
-        "ember-math-helpers": "^2.18.2",
-        "ember-responsive": "^5.0.0",
+        "ember-radio-button": "3.0.0-beta.1",
         "ember-wormhole": "^0.6.0",
         "leaflet": "^1.8.0",
         "leaflet-contextmenu": "^1.4.0",
         "leaflet-draw": "^1.0.4",
-        "leaflet-rotatedmarker": "^0.2.0",
-        "socketcluster-client": "^17.1.1"
+        "leaflet-rotatedmarker": "^0.2.0"
     },
     "devDependencies": {
         "@ember/optional-features": "^2.0.0",
         "@ember/test-helpers": "^2.8.1",
         "@embroider/test-setup": "^1.8.3",
-        "@fleetbase/ember-core": "../ember-core",
         "@glimmer/component": "^1.1.2",
         "@glimmer/tracking": "^1.1.2",
         "babel-eslint": "^10.1.0",
         "broccoli-asset-rev": "^3.0.0",
+        "dragula": "^3.7.3",
         "ember-auto-import": "^2.4.2",
         "ember-cli": "~4.6.0",
         "ember-cli-dependency-checker": "^3.3.1",
@@ -66,19 +73,22 @@
         "ember-cli-sri": "^2.1.1",
         "ember-cli-terser": "^4.0.2",
         "ember-composable-helpers": "^5.0.0",
+        "ember-concurrency": "^2.3.7",
         "ember-concurrency-decorators": "^2.0.3",
-        "ember-data": "^4.6.1",
+        "ember-data": "~4.6.0",
         "ember-disable-prototype-extensions": "^1.1.3",
+        "ember-drag-sort": "^3.0.1",
         "ember-engines": "^0.8.23",
         "ember-load-initializers": "^2.1.2",
+        "ember-math-helpers": "^2.18.2",
         "ember-page-title": "^7.0.0",
         "ember-qunit": "^5.1.5",
         "ember-resolver": "^8.0.3",
+        "ember-responsive": "^5.0.0",
         "ember-source": "~4.6.0",
         "ember-source-channel-url": "^3.0.0",
         "ember-template-lint": "^4.10.1",
         "ember-try": "^2.0.0",
-        "ember-wormhole": "^0.6.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-ember": "^11.0.2",
@@ -93,12 +103,7 @@
         "webpack": "^5.74.0"
     },
     "peerDependencies": {
-        "@fleetbase/ember-core": "file:../ember-core",
-        "@fleetbase/ember-ui": "file:../ember-ui",
         "ember-engines": "^0.8.23"
-    },
-    "resolutions": {
-        "ember-model-select/ember-power-select/ember-element-helper": "^0.6.1"
     },
     "engines": {
         "node": "14.* || >= 16"
@@ -108,5 +113,20 @@
     },
     "ember-addon": {
         "configPath": "tests/dummy/config"
+    },
+    "prettier": {
+        "trailingComma": "es5",
+        "tabWidth": 4,
+        "semi": true,
+        "singleQuote": true,
+        "printWidth": 190,
+        "overrides": [
+            {
+                "files": "*.hbs",
+                "options": {
+                    "singleQuote": false
+                }
+            }
+        ]
     }
 }

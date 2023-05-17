@@ -2,21 +2,13 @@ import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, get } from '@ember/object';
-import { A, isArray } from '@ember/array';
+import { isBlank } from '@ember/utils';
+import { isArray } from '@ember/array';
 import { capitalize } from '@ember/string';
-import { task, timeout } from 'ember-concurrency';
-import isModel from '@fleetbase/ember-core/utils/is-model';
+import { task } from 'ember-concurrency-decorators';
 import apiUrl from '@fleetbase/ember-core/utils/api-url';
 
 export default class ManagementVendorsIndexController extends Controller {
-
-    /**
-     * Inject the `operations.zones.index` controller
-     *
-     * @var {Controller}
-     */
-    @controller('operations.zones.index') zones;
-
     /**
      * Inject the `management.places.index` controller
      *
@@ -46,6 +38,27 @@ export default class ManagementVendorsIndexController extends Controller {
     @service crud;
 
     /**
+     * Inject the `store` service
+     *
+     * @var {Service}
+     */
+    @service store;
+
+    /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
+
+    /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
+
+    /**
      * Inject the `fetch` service
      *
      * @var {Service}
@@ -58,13 +71,6 @@ export default class ManagementVendorsIndexController extends Controller {
      * @var {Array}
      */
     queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_by', 'updated_by', 'status'];
-
-    /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
 
     /**
      * The current page of data being viewed
@@ -85,7 +91,7 @@ export default class ManagementVendorsIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -109,32 +115,22 @@ export default class ManagementVendorsIndexController extends Controller {
     @tracked status;
 
     /**
-     * All possible order status options
-     *
-     * @var {String}
-     */
-    @tracked statusOptions = [];
-
-    /**
-     * All columns applicable for orders
+     * Rows for the table
      *
      * @var {Array}
      */
-    @tracked columns = A([
-        { 
-            label: '', 
-            valuePath: 'selected', 
-            width: '40px', 
-            cellComponent: 'table/cell/checkbox', 
-            resizable: false,
-            searchable: false,
-            filterable: false, 
-            sortable: false 
-        },
+    @tracked rows = [];
+
+    /**
+     * All columns for the table
+     *
+     * @var {Array}
+     */
+    @tracked columns = [
         {
             label: 'Name',
             valuePath: 'name',
-            width: '200px',
+            width: '180px',
             cellComponent: 'table/cell/media-name',
             action: this.viewVendor,
             resizable: true,
@@ -146,7 +142,7 @@ export default class ManagementVendorsIndexController extends Controller {
             label: 'ID',
             valuePath: 'public_id',
             cellComponent: 'click-to-copy',
-            width: '120px',
+            width: '110px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -156,7 +152,7 @@ export default class ManagementVendorsIndexController extends Controller {
             label: 'Internal ID',
             valuePath: 'internal_id',
             cellComponent: 'click-to-copy',
-            width: '120px',
+            width: '100px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -165,7 +161,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Email',
             valuePath: 'email',
-            cellComponent: 'table/cell/base',
+            cellComponent: 'click-to-copy',
             width: '80px',
             resizable: true,
             sortable: true,
@@ -176,7 +172,7 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Phone',
             valuePath: 'phone',
-            cellComponent: 'table/cell/base',
+            cellComponent: 'click-to-copy',
             width: '80px',
             resizable: true,
             sortable: true,
@@ -186,7 +182,7 @@ export default class ManagementVendorsIndexController extends Controller {
         },
         {
             label: 'Address',
-            valuePath: 'address_street',
+            valuePath: 'address',
             cellComponent: 'table/cell/anchor',
             action: this.viewVendorPlace,
             width: '150px',
@@ -199,8 +195,8 @@ export default class ManagementVendorsIndexController extends Controller {
         {
             label: 'Type',
             valuePath: 'type',
-            cellComponent: 'table/cell/base',
-            width: '140px',
+            cellComponent: 'table/cell/status',
+            width: '120px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -222,7 +218,7 @@ export default class ManagementVendorsIndexController extends Controller {
             label: 'Created At',
             valuePath: 'createdAt',
             sortParam: 'created_at',
-            width: '130px',
+            width: '150px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -259,7 +255,7 @@ export default class ManagementVendorsIndexController extends Controller {
             ddMenuLabel: 'Vendor Actions',
             cellClassNames: 'overflow-visible',
             wrapperClass: 'flex items-center justify-end mx-2',
-            width: '10%',
+            width: '7%',
             actions: [
                 {
                     label: 'View Vendor Details',
@@ -270,7 +266,7 @@ export default class ManagementVendorsIndexController extends Controller {
                     fn: this.editVendor,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete Vendor',
@@ -282,128 +278,48 @@ export default class ManagementVendorsIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
-     /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
+    /**
+     * The search task.
+     *
      * @void
      */
-     @action sendDropdownAction(dd, sentAction, ...params) { 
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
- 
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
+            this.query = null;
+            return;
+        }
 
-     /**
+        // timeout for typing
+        yield timeout(250);
+
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
+        }
+
+        // update the query param
+        this.query = value;
+    }
+
+    /**
      * Bulk deletes selected `driver` via confirm prompt
      *
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeleteVendors() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeleteVendors() {
+        const selected = this.table.selectedRows;
 
-         this.crud.bulkDelete(selected, {
-             modelNamePath: `name`,
-             acceptButtonText: 'Delete Vendors',
-             onConfirm: (deletedVendors) => {
-                 this.allToggled = false;
-                 
-                 deletedVendors.forEach(place => {
-                     this.table.removeRow(place);
-                 });
- 
-                this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
-    }
-
-    /**
-     * The actual search task
-     * 
-     * @void
-     */
-    @task(function* (query) {
-        if(!query) {
-            this.query = null;
-            return;
-        }
-
-        yield timeout(250);
-
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
-        }
-
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
-
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action applyFilters(columns) {
-        columns.forEach((column) => {
-            // if value is a model only filter by id
-            if (isModel(column.filterValue)) {
-                column.filterValue = column.filterValue.id;
-            }
-            // if value is an array of models map to ids
-            if (isArray(column.filterValue) && column.filterValue.every((v) => isModel(v))) {
-                column.filterValue = column.filterValue.map((v) => v.id);
-            }
-            // only if filter is active continue
-            if (column.isFilterActive && column.filterValue) {
-                this[column.filterParam || column.valuePath] = column.filterValue;
-            } else {
-                this[column.filterParam || column.valuePath] = undefined;
-                column.isFilterActive = false;
-                column.filterValue = undefined;
-            }
+        this.crud.bulkDelete(selected, {
+            modelNamePath: `name`,
+            acceptButtonText: 'Delete Vendors',
+            onSuccess: () => {
+                return this.hostRouter.refresh();
+            },
         });
-        this.columns = columns;
-    }
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action setFilterOptions(valuePath, options) {
-        const updatedColumns = this.columns.map((column) => {
-            if (column.valuePath === valuePath) {
-                column.filterOptions = options;
-            }
-            return column;
-        });
-        this.columns = updatedColumns;
     }
 
     /**
@@ -429,7 +345,7 @@ export default class ManagementVendorsIndexController extends Controller {
             title: vendor.name,
             titleComponent: 'modal/title-with-buttons',
             acceptButtonText: 'Done',
-            args: ['vendor'],
+            hideDeclineButton: true,
             headerButtons: [
                 {
                     icon: 'cog',
@@ -478,10 +394,7 @@ export default class ManagementVendorsIndexController extends Controller {
      */
     @action async createVendor() {
         const vendor = this.store.createRecord('vendor', { status: 'active' });
-        const supportedIntegratedVendors = await this.fetch.cachedGet('integrated-vendors/supported', {}, {
-            expirationInterval: 60,
-            expirationIntervalUnit: 'minutes'
-        });
+        const supportedIntegratedVendors = await this.fetch.get('integrated-vendors/supported');
 
         return this.editVendor(vendor, {
             title: 'New Vendor',
@@ -494,30 +407,39 @@ export default class ManagementVendorsIndexController extends Controller {
             integratedVendor: null,
             selectIntegratedVendor: (integratedVendor) => {
                 this.modalsManager.setOption('selectedIntegratedVendor', integratedVendor);
-                
+
+                const { credential_params, option_params } = integratedVendor;
+
                 // create credentials object
                 const credentials = {};
-                for (let i = 0; i < integratedVendor.params.length; i++) {
-                    const param = integratedVendor.params.objectAt(i);
-                    credentials[param] = null;
+                if (isArray(integratedVendor.credential_params)) {
+                    for (let i = 0; i < integratedVendor.credential_params.length; i++) {
+                        const param = integratedVendor.credential_params.objectAt(i);
+                        credentials[param] = null;
+                    }
+                }
+
+                // create options object
+                const options = {};
+                if (isArray(integratedVendor.option_params)) {
+                    for (let i = 0; i < integratedVendor.option_params.length; i++) {
+                        const param = integratedVendor.option_params.objectAt(i);
+                        options[param.key] = null;
+                    }
                 }
 
                 const vendor = this.store.createRecord('integrated-vendor', {
                     provider: integratedVendor.code,
                     webhook_url: apiUrl(`listeners/${integratedVendor.code}`),
-                    credentials
+                    credentials: {},
+                    options: {},
+                    credential_params,
+                    option_params
                 });
 
                 this.modalsManager.setOption('integratedVendor', vendor);
             },
             successNotification: (vendor) => `New vendor '${vendor.name}' successfully created.`,
-            onConfirm: () => {
-                if (vendor.get('isNew')) {
-                    return;
-                }
-
-                this.table.addRow(vendor);
-            }
         });
     }
 
@@ -560,6 +482,13 @@ export default class ManagementVendorsIndexController extends Controller {
                     this.modalsManager.setOption('showAdvancedOptions', true);
                 }
             },
+            selectAddress: (place) => {
+                vendor.setProperties({
+                    place_uuid: place.id,
+                    place: place,
+                    country: place.country,
+                });
+            },
             editAddress: () => {
                 return this.editVendorPlace(vendor, {
                     onFinish: () => {
@@ -588,31 +517,40 @@ export default class ManagementVendorsIndexController extends Controller {
                 if (isAddingIntegratedVendor) {
                     const integratedVendor = modal.getOption('integratedVendor');
 
-                    return integratedVendor.save().then((integratedVendor) => {
-                        this.notifications.success(`Successfully added ${capitalize(integratedVendor.provider)} new integrated vendor`);
-                        this.table.addRow(integratedVendor);
-                    }).catch((error) => {
-                        this.notifications.serverError(error, {
-                            clearDuration: 600 * 6
+                    return integratedVendor
+                        .save()
+                        .then((integratedVendor) => {
+                            this.notifications.success(`Successfully added ${capitalize(integratedVendor.provider)} new integrated vendor`);
+
+                            return this.hostRouter.refresh();
+                        })
+                        .catch((error) => {
+                            this.notifications.serverError(error, {
+                                clearDuration: 600 * 6,
+                            });
+                        })
+                        .finally(() => {
+                            modal.stopLoading();
                         });
-                    }).finally(() => {
-                        modal.stopLoading();
-                    });
                 }
 
-                vendor.save().then((vendor) => {
-                    if (typeof options.successNotification === 'function') {
-                        this.notifications.success(options.successNotification(vendor));
-                    } else {
-                        this.notifications.success(options.successNotification || `${vendor.name} details updated.`);
-                    }
+                return vendor
+                    .save()
+                    .then((vendor) => {
+                        if (typeof options.successNotification === 'function') {
+                            this.notifications.success(options.successNotification(vendor));
+                        } else {
+                            this.notifications.success(options.successNotification || `${vendor.name} details updated.`);
+                        }
 
-                    return done();
-                }).catch((error) => {
-                    this.notifications.serverError(error);
-                }).finally(() => {
-                    modal.stopLoading();
-                });
+                        return this.hostRouter.refresh();
+                    })
+                    .catch((error) => {
+                        this.notifications.serverError(error);
+                    })
+                    .finally(() => {
+                        modal.stopLoading();
+                    });
             },
             ...options,
         });
@@ -628,10 +566,8 @@ export default class ManagementVendorsIndexController extends Controller {
     @action deleteVendor(vendor, options = {}) {
         this.crud.delete(vendor, {
             acceptButtonIcon: 'trash',
-            onConfirm: (vendor) => {
-                if (vendor.get('isDeleted')) {
-                    this.table.removeRow(vendor);
-                }
+            onSuccess: () => {
+                return this.hostRouter.refresh();
             },
             ...options,
         });

@@ -4,23 +4,23 @@ import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | modals/map-field-form', function (hooks) {
-  setupRenderingTest(hooks);
+    setupRenderingTest(hooks);
 
-  test('it renders', async function (assert) {
-    // Set any properties with this.set('myProperty', 'value');
-    // Handle any actions with this.set('myAction', function(val) { ... });
+    test('it renders', async function (assert) {
+        // Set any properties with this.set('myProperty', 'value');
+        // Handle any actions with this.set('myAction', function(val) { ... });
 
-    await render(hbs`<Modals::MapFieldForm />`);
+        await render(hbs`<Modals::MapFieldForm />`);
 
-    assert.dom(this.element).hasText('');
+        assert.dom(this.element).hasText('');
 
-    // Template block usage:
-    await render(hbs`
+        // Template block usage:
+        await render(hbs`
       <Modals::MapFieldForm>
         template block text
       </Modals::MapFieldForm>
     `);
 
-    assert.dom(this.element).hasText('template block text');
-  });
+        assert.dom(this.element).hasText('template block text');
+    });
 });

@@ -2,17 +2,23 @@ import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { A, isArray } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
-import isModel from '@fleetbase/ember-core/utils/is-model';
+import { timeout } from 'ember-concurrency';
+import { task } from 'ember-concurrency-decorators';
 
 export default class ManagementFuelReportsIndexController extends Controller {
     /**
-     * Inject the `operations.zones.index` controller
+     * Inject the `management.drivers.index` controller
      *
      * @var {Controller}
      */
-    @controller('operations.zones.index') zones;
+    @controller('management.drivers.index') drivers;
+
+    /**
+     * Inject the `management.vehicles.index` controller
+     *
+     * @var {Controller}
+     */
+    @controller('management.vehicles.index') vehicles;
 
     /**
      * Inject the `notifications` service
@@ -36,18 +42,39 @@ export default class ManagementFuelReportsIndexController extends Controller {
     @service crud;
 
     /**
+     * Inject the `store` service
+     *
+     * @var {Service}
+     */
+    @service store;
+
+    /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
+
+    /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
+
+    /**
+     * Inject the `loader` service
+     *
+     * @var {Service}
+     */
+    @service loader;
+
+    /**
      * Queryable parameters for this controller's model
      *
      * @var {Array}
      */
-    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_by', 'updated_by', 'status'];
-
-    /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
+    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'vehicle', 'driver', 'created_by', 'updated_by', 'status'];
 
     /**
      * The current page of data being viewed
@@ -68,7 +95,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort= '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -85,6 +112,20 @@ export default class ManagementFuelReportsIndexController extends Controller {
     @tracked internal_id;
 
     /**
+     * The filterable param `driver`
+     *
+     * @var {String}
+     */
+    @tracked driver;
+
+    /**
+     * The filterable param `vehicle`
+     *
+     * @var {String}
+     */
+    @tracked vehicle;
+
+    /**
      * The filterable param `status`
      *
      * @var {Array}
@@ -92,30 +133,46 @@ export default class ManagementFuelReportsIndexController extends Controller {
     @tracked status;
 
     /**
-     * All possible order status options
-     *
-     * @var {String}
-     */
-    @tracked statusOptions = [];
-
-        @tracked allToggled = false;
-
-    /**
      * All columns applicable for orders
      *
      * @var {Array}
      */
-    @tracked columns = A([
+    @tracked columns = [
         {
-            label: 'Name',
-            valuePath: 'name',
-            width: '200px',
+            label: null,
+            width: '20px',
             cellComponent: 'table/cell/anchor',
+            anchorIcon: 'eye',
+            anchorSpanClass: 'hidden',
             action: this.viewFuelReport,
+        },
+        {
+            label: 'Driver',
+            valuePath: 'driver_name',
+            width: '120px',
+            cellComponent: 'table/cell/anchor',
+            action: this.viewDriver,
             resizable: true,
             sortable: true,
             filterable: true,
-            filterComponent: 'filter/string',
+            filterComponent: 'filter/model',
+            filterComponentPlaceholder: 'Select driver',
+            filterParam: 'driver',
+            model: 'driver',
+        },
+        {
+            label: 'Vehicle',
+            valuePath: 'vehicle_name',
+            width: '120px',
+            cellComponent: 'table/cell/anchor',
+            action: this.viewVehicle,
+            resizable: true,
+            sortable: true,
+            filterable: true,
+            filterComponent: 'filter/model',
+            filterComponentPlaceholder: 'Select vehicle',
+            filterParam: 'vehicle',
+            model: 'vehicle',
         },
         {
             label: 'ID',
@@ -129,66 +186,21 @@ export default class ManagementFuelReportsIndexController extends Controller {
             filterComponent: 'filter/string',
         },
         {
-            label: 'Internal ID',
-            valuePath: 'internal_id',
-            cellComponent: 'table/cell/anchor',
-            action: this.viewFuelReport,
-            width: '120px',
-            resizable: true,
-            sortable: true,
-            filterable: true,
-            filterComponent: 'filter/string',
-        },
-        {
-            label: 'Email',
-            valuePath: 'email',
-            cellComponent: 'table/cell/base',
-            width: '80px',
-            resizable: true,
-            sortable: true,
-            hidden: true,
-            filterable: true,
-            filterComponent: 'filter/string',
-        },
-        {
-            label: 'Phone',
-            valuePath: 'phone',
-            cellComponent: 'table/cell/base',
-            width: '80px',
-            resizable: true,
-            sortable: true,
-            hidden: true,
-            filterable: true,
-            filterComponent: 'filter/string',
-        },
-        {
             label: 'Country',
             valuePath: 'country',
             cellComponent: 'table/cell/base',
-            width: '80px',
+            width: '100px',
             resizable: true,
             sortable: true,
             hidden: true,
             filterable: true,
-            filterComponent: 'filter/string',
-        },
-        {
-            label: 'Address',
-            valuePath: 'place.address',
-            cellComponent: 'table/cell/base',
-            width: '80px',
-            resizable: true,
-            sortable: true,
-            hidden: true,
-            filterable: true,
-            filterParam: 'address',
             filterComponent: 'filter/string',
         },
         {
             label: 'Status',
             valuePath: 'status',
             cellComponent: 'table/cell/status',
-            width: '10%',
+            width: '100px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -199,7 +211,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
             label: 'Created At',
             valuePath: 'createdAt',
             sortParam: 'created_at',
-            width: '10%',
+            width: '150px',
             resizable: true,
             sortable: true,
             filterable: true,
@@ -209,7 +221,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
             label: 'Updated At',
             valuePath: 'updatedAt',
             sortParam: 'updated_at',
-            width: '10%',
+            width: '150px',
             resizable: true,
             sortable: true,
             hidden: true,
@@ -224,7 +236,8 @@ export default class ManagementFuelReportsIndexController extends Controller {
             ddButtonIconPrefix: 'fas',
             ddMenuLabel: 'Fuel Report Actions',
             cellClassNames: 'overflow-visible',
-            width: '150px',
+            wrapperClass: 'flex items-center justify-end mx-2',
+            width: '10%',
             actions: [
                 {
                     label: 'View Details',
@@ -235,7 +248,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
                     fn: this.editFuelReport,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete Fuel Report',
@@ -247,128 +260,48 @@ export default class ManagementFuelReportsIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
-     /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
-     * @void
-     */
-     @action sendDropdownAction(dd, sentAction, ...params) { 
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
- 
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
-
-     /**
+    /**
      * Bulk deletes selected `driver` via confirm prompt
      *
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeleteFuelReports() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeleteFuelReports() {
+        const selected = this.table.selectedRows;
 
-         this.crud.bulkFuelReports(selected, {
-             modelNamePath: `name`,
-             acceptButtonText: 'Delete Fuel Reports',
-             onConfirm: (deletedFuelReports) => {
-                 this.allToggled = false;
-                 
-                 deletedFuelReports.forEach(place => {
-                     this.table.removeRow(place);
-                 });
- 
-                this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
-
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
+        this.crud.bulkFuelReports(selected, {
+            modelNamePath: `name`,
+            acceptButtonText: 'Delete Fuel Reports',
+            onSuccess: () => {
+                return this.hostRouter.refresh();
+            },
+        });
     }
 
     /**
-     * The actual search task
-     * 
+     * The search task.
+     *
      * @void
      */
-    @task(function* (query) {
-        if(!query) {
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
             this.query = null;
             return;
         }
 
+        // timeout for typing
         yield timeout(250);
 
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
         }
 
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action applyFilters(columns) {
-        columns.forEach((column) => {
-            // if value is a model only filter by id
-            if (isModel(column.filterValue)) {
-                column.filterValue = column.filterValue.id;
-            }
-            // if value is an array of models map to ids
-            if (isArray(column.filterValue) && column.filterValue.every((v) => isModel(v))) {
-                column.filterValue = column.filterValue.map((v) => v.id);
-            }
-            // only if filter is active continue
-            if (column.isFilterActive && column.filterValue) {
-                this[column.filterParam || column.valuePath] = column.filterValue;
-            } else {
-                this[column.filterParam || column.valuePath] = undefined;
-                column.isFilterActive = false;
-                column.filterValue = undefined;
-            }
-        });
-        this.columns = columns;
-    }
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action setFilterOptions(valuePath, options) {
-        const updatedColumns = this.columns.map((column) => {
-            if (column.valuePath === valuePath) {
-                column.filterOptions = options;
-            }
-            return column;
-        });
-        this.columns = updatedColumns;
+        // update the query param
+        this.query = value;
     }
 
     /**
@@ -380,6 +313,32 @@ export default class ManagementFuelReportsIndexController extends Controller {
         this.crud.export('fuel-report');
     }
 
+    @action async viewDriver(fuelReport) {
+        if (!fuelReport.driver_uuid) {
+            return this.notifications.warning('No driver attributed to fuel report.');
+        }
+
+        this.loader.show('Loading...');
+        const driver = await this.store.findRecord('driver', fuelReport.driver_uuid);
+        this.loader.removeLoader();
+
+        // display driver details
+        this.drivers.viewDriver(driver);
+    }
+
+    @action async viewVehicle(fuelReport) {
+        if (!fuelReport.vehicle_uuid) {
+            return this.notifications.warning('No vehicle attributed to fuel report.');
+        }
+
+        this.loader.show('Loading...');
+        const vehicle = await this.store.findRecord('vehicle', fuelReport.vehicle_uuid);
+        this.loader.remove();
+
+        // display vehicle details
+        this.vehicles.viewVehicle(vehicle);
+    }
+
     /**
      * View a `fuelReport` details in modal
      *
@@ -387,9 +346,11 @@ export default class ManagementFuelReportsIndexController extends Controller {
      * @param {Object} options
      * @void
      */
-    @action viewFuelReport(fuelReport, options) {
+    @action viewFuelReport(fuelReport, options = {}) {
         this.modalsManager.show('modals/fuel-report-details', {
-            title: fuelReport.name,
+            title: `Fuel Report - ${fuelReport.createdAt}`,
+            hideDeclineButton: true,
+            confirmButtonText: 'Done',
             fuelReport,
             ...options,
         });
@@ -408,14 +369,10 @@ export default class ManagementFuelReportsIndexController extends Controller {
             acceptButtonText: 'Confirm & Create',
             acceptButtonIcon: 'check',
             acceptButtonIconPrefix: 'fas',
-            successNotification: (fuelReport) => `New fuel report (${fuelReport.name}) created.`,
+            successNotification: 'New fuel report created.',
             onConfirm: () => {
-                if (fuelReport.get('isNew')) {
-                    return;
-                }
-
-                this.table.addRow(fuelReport);
-            }
+                this.hostRouter.refresh();
+            },
         });
     }
 
@@ -434,17 +391,20 @@ export default class ManagementFuelReportsIndexController extends Controller {
             confirm: (modal, done) => {
                 modal.startLoading();
 
-                fuelReport.save().then((fuelReport) => {
-                    if (typeof options.successNotification === 'function') {
-                        this.notifications.success(options.successNotification(fuelReport));
-                    } else {
-                        this.notifications.success(options.successNotification || `${fuelReport.name} details updated.`);
-                    }
-                    return done();
-                }).catch((error) => {
-                    this.notifications.serverError(error);
-                    modal.stopLoading();
-                });
+                return fuelReport
+                    .save()
+                    .then((fuelReport) => {
+                        if (typeof options.successNotification === 'function') {
+                            this.notifications.success(options.successNotification(fuelReport));
+                        } else {
+                            this.notifications.success(options.successNotification ?? `Fuel report details updated.`);
+                        }
+                        return done();
+                    })
+                    .catch((error) => {
+                        this.notifications.serverError(error);
+                        modal.stopLoading();
+                    });
             },
             ...options,
         });
@@ -460,7 +420,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
     @action deleteFuelReport(fuelReport, options = {}) {
         this.crud.delete(fuelReport, {
             onConfirm: (fuelReport) => {
-                this.table.removeRow(fuelReport);
+                this.hostRouter.refresh();
             },
             ...options,
         });

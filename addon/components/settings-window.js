@@ -4,59 +4,59 @@ import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
 
 export default class SettingsWindowComponent extends Component {
-  @service currentUser;
-  @service store;
-  @service notifications;
+    @service currentUser;
+    @service store;
+    @service notifications;
 
-  @tracked isSaving = false;
-  @tracked isLoading = false;
-  @tracked company;
+    @tracked isSaving = false;
+    @tracked isLoading = false;
+    @tracked company;
 
-  @action onLoad() {
-    if (typeof this.args.onLoad === 'function') {
-      this.args.onLoad(...arguments);
+    @action onLoad() {
+        if (typeof this.args.onLoad === 'function') {
+            this.args.onLoad(...arguments);
+        }
+
+        this.fetchCurrentCompany();
     }
 
-    this.fetchCurrentCompany();
-  }
+    @action fetchCurrentCompany() {
+        this.isLoading = true;
 
-  @action fetchCurrentCompany() {
-    this.isLoading = true;
-
-    this.store
-      .findRecord('company', this.currentUser.companyId)
-      .then((company) => {
-        company.options = this.createDefaultSettings(company.options);
-        this.company = company;
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
-  }
-
-  @action createDefaultSettings(settings) {
-    if (!settings) {
-      settings = {
-        fleetops: {
-          adhoc_distance: 6000,
-        },
-        storefront: {},
-      };
+        this.store
+            .findRecord('company', this.currentUser.companyId)
+            .then((company) => {
+                company.options = this.createDefaultSettings(company.options);
+                this.company = company;
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
 
-    return settings;
-  }
+    @action createDefaultSettings(settings) {
+        if (!settings) {
+            settings = {
+                fleetops: {
+                    adhoc_distance: 6000,
+                },
+                storefront: {},
+            };
+        }
 
-  @action saveSettings() {
-    this.isSaving = true;
+        return settings;
+    }
 
-    return this.company
-      .save()
-      .then(() => {
-        this.notifications.success('Settings successfully saved.');
-      })
-      .finally(() => {
-        this.isSaving = false;
-      });
-  }
+    @action saveSettings() {
+        this.isSaving = true;
+
+        return this.company
+            .save()
+            .then(() => {
+                this.notifications.success('Settings successfully saved.');
+            })
+            .finally(() => {
+                this.isSaving = false;
+            });
+    }
 }

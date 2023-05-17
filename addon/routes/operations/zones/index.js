@@ -3,28 +3,23 @@ import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
 
 export default class OperationsZonesIndexRoute extends Route {
-  /**
-   * Inject the `loader` service.
-   *
-   * @var {Service}
-   */
-  @service loader;
+    /**
+     * Inject the `loader` service.
+     *
+     * @var {Service}
+     */
+    @service loader;
 
-  model() {
-    return this.store.query('service-area', { with: ['zones'] });
-  }
+    /**
+     * Loading event handler for route.
+     *
+     * @param {Transition} transition
+     */
+    @action loading(transition) {
+        this.loader.showOnInitialTransition(transition, 'section.next-view-section', 'Loading zones...');
+    }
 
-  /**
-   * Loading event handler for route.
-   *
-   * @param {Transition} transition
-   */
-  @action
-  loading(transition) {
-    this.loader.showOnInitialTransition(
-      transition,
-      '#mainContent',
-      'Loading zones...'
-    );
-  }
+    model() {
+        return this.store.query('service-area', { with: ['zones'] });
+    }
 }

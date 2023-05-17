@@ -26,7 +26,10 @@
         </button>
         <button type="button" class="toolbar-button relative" {{on "click" (fn this.onAction "onPressViewOrders")}}>
             <div class="active-orders-count absolute top-0 right-0 -mr-2.5 -mt-1">
-                <div class="flex items-center justify-center rounded-full w-5 h-5 text-xs bg-blue-500 opacity-75 text-white {{if @activeOrdersCount 'animate-ping'}} z-10">{{@activeOrdersCount}}</div>
+                <div class="relative flex w-5 h-5 rounded-full">
+                    <div class="absolute inset-0 rounded-full w-5 h-5 text-xs bg-blue-500 opacity-75 {{if @activeOrdersCount 'animate-ping'}}"></div>
+                    <div class="relative inline-flex items-center justify-center rounded-full w-5 h-5 text-xs bg-blue-500 text-white z-10">{{@activeOrdersCount}}</div>
+                </div>
             </div>
             <FaIcon @icon="layer-group" />
             <Attach::Tooltip @class="clean" @animation="scale" @placement="right">

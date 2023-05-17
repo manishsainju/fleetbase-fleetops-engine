@@ -4,11 +4,12 @@
             <div class="fleet-driver-listing-search">
                 <Input @type="text" {{on "keyup" this.search}} placeholder="Search drivers in fleet" class="w-64 form-input form-input-sm" />
             </div>
-            <div>
-                {{#if this.isLoading}}
-                    <Spinner class="mx-2" @iconClass="text-sky-500 fa-spin-800ms" />
-                {{/if}}
-            </div>
+
+            {{#if this.isLoading}}
+                <div class="mx-2">
+                    <Spinner @iconClass="text-sky-500 fa-spin-800ms" />
+                </div>
+            {{/if}}
         </div>
         <div class="w-56">
             {{#if @onAddDriver}}

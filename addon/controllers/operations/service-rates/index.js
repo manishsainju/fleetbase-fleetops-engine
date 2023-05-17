@@ -2,8 +2,9 @@ import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, computed } from '@ember/object';
-import { A } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
+import { isBlank } from '@ember/utils';
+import { timeout } from 'ember-concurrency';
+import { task } from 'ember-concurrency-decorators';
 
 export default class OperationsServiceRatesIndexController extends Controller {
     /**
@@ -12,7 +13,7 @@ export default class OperationsServiceRatesIndexController extends Controller {
      * @var {Service}
      */
     @service store;
-    
+
     /**
      * Inject the `currentUser` service
      *
@@ -26,6 +27,13 @@ export default class OperationsServiceRatesIndexController extends Controller {
      * @var {Service}
      */
     @service fetch;
+
+    /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
 
     /**
      * Inject the `fetch` service
@@ -56,13 +64,6 @@ export default class OperationsServiceRatesIndexController extends Controller {
     @service loader;
 
     /**
-     * True if all records are `selected`
-     *
-     * @var {Boolean}
-     */
-    @tracked allToggled = false;
-
-    /**
      * The current page of data being viewed
      *
      * @var {Integer}
@@ -77,76 +78,77 @@ export default class OperationsServiceRatesIndexController extends Controller {
     @tracked limit;
 
     /**
+     * The search query
+     *
+     * @var {String}
+     */
+    @tracked query;
+
+    /**
      * The param to sort the data on, the param with prepended `-` is descending
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort = '-created_at';
 
     /**
      * Queryable parameters for this controller's model
      *
      * @var {Array}
      */
-    queryParams = [
-        'page',
-        'limit',
-        'sort'
-    ];
+    queryParams = ['page', 'query', 'limit', 'sort', 'zone', 'service_area'];
 
     /**
      * All columns applicable for orders
      *
      * @var {Array}
      */
-    @tracked columns = A([
-        { 
-            label: '', 
-            valuePath: 'selected', 
-            width: '40px', 
-            cellComponent: 'table/cell/checkbox', 
-            resizable: false,
-            searchable: false,
-            filterable: false, 
-            sortable: false 
-        },
+    @tracked columns = [
         {
             label: 'ID',
             valuePath: 'public_id',
             width: '150px',
-            cellComponent: 'cell/link-to',
-            onLinkClick: this.editServiceRate,
+            cellComponent: 'table/cell/anchor',
+            onClick: this.editServiceRate,
             resizable: true,
             sortable: true,
             filterable: true,
             filterComponent: 'filter/string',
         },
-        { 
-            label: 'Service', 
-            valuePath: 'service_name', 
+        {
+            label: 'Service',
+            valuePath: 'service_name',
             cellComponent: 'table/cell/base',
-            width: '125px', 
-            resizable: true, 
-            sortable: true, 
-            filterable: false 
+            width: '125px',
+            resizable: true,
+            sortable: true,
+            filterable: false,
         },
-        { 
-            label: 'Service Area', 
-            valuePath: 'service_area_name', 
+        {
+            label: 'Service Area',
+            valuePath: 'service_area.name',
             cellComponent: 'table/cell/base',
-            width: '125px', 
-            resizable: true, 
-            sortable: true, 
-            filterable: false 
+            width: '125px',
+            resizable: true,
+            sortable: true,
+            filterable: true,
+            filterComponent: 'filter/model',
+            filterComponentPlaceholder: 'Select service area',
+            filterParam: 'service_area',
+            model: 'service-area',
         },
-        { 
-            label: 'Zone', 
-            valuePath: 'zone_name', 
+        {
+            label: 'Zone',
+            valuePath: 'zone.name',
             cellComponent: 'table/cell/base',
-            width: '125px', 
-            resizable: true, 
-            sortable: true, 
-            filterable: false 
+            width: '125px',
+            resizable: true,
+            sortable: true,
+            filterable: true,
+            filterComponent: 'filter/model',
+            filterComponentPlaceholder: 'Select zone',
+            filterParam: 'zone',
+            model: 'zone',
         },
         {
             label: 'Created At',
@@ -193,11 +195,36 @@ export default class OperationsServiceRatesIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
+
+    /**
+     * The search task.
+     *
+     * @void
+     */
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
+            this.query = null;
+            return;
+        }
+
+        // timeout for typing
+        yield timeout(250);
+
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
+        }
+
+        // update the query param
+        this.query = value;
+    }
 
     /**
      * Toggles dialog to export `service-rate`
      *
+     * @memberof OperationsServiceRatesIndexController
      * @void
      */
     @action exportServiceRates() {
@@ -205,26 +232,12 @@ export default class OperationsServiceRatesIndexController extends Controller {
     }
 
     /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
-     * @void
+     * Transition to service rate edit route.
+     *
+     * @param {ServiceRateModel} serviceRate
+     * @memberof OperationsServiceRatesIndexController
      */
-    @action sendDropdownAction(dd, sentAction, ...params) {
-        if(typeof dd.actions.close === 'function') {
-            dd.actions.close();
-        }
-
-        if(typeof this[sentAction] === 'function') {
-            this[sentAction](...params);
-        }
-    }
-
-    @action createServiceRate() {
-        this.transitionToRoute('operations.service-rates.index.new');
-    }
-
     @action editServiceRate(serviceRate) {
-        console.log('editServiceRate()', serviceRate);
         this.transitionToRoute('operations.service-rates.index.edit', serviceRate);
     }
 
@@ -237,12 +250,10 @@ export default class OperationsServiceRatesIndexController extends Controller {
      */
     @action deleteServiceRate(serviceRate, options = {}) {
         this.crud.delete(serviceRate, {
-            onConfirm: (serviceRate) => {
-                if (serviceRate.get('isDeleted')) {
-                    this.table.removeRow(serviceRate);
-                }
+            onSuccess: (serviceRate) => {
+                return this.hostRouter.refresh();
             },
-            ...options
+            ...options,
         });
     }
 
@@ -255,55 +266,10 @@ export default class OperationsServiceRatesIndexController extends Controller {
     @action bulkDeleteServiceRates(selected) {
         this.crud.bulkDelete(selected, {
             modelNamePath: `public_id`,
-            acceptButtonText: 'Delete Service\'s',
-            onConfirm: (deletedServiceRates) => {
-                this.allToggled = false;
-                
-                deletedServiceRates.forEach(serviceRate => {
-                    serviceRate.set('selected', false);
-                    this.table.removeRow(serviceRate);
-                });
-
-                this.notifyPropertyChange('sek');
-                this.reloadCurrentPage();
-            }
+            acceptButtonText: "Delete Service's",
+            onSuccess: () => {
+                return this.hostRouter.refresh();
+            },
         });
     }
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
-    }
-
-    /**
-     * The actual search task
-     * 
-     * @void
-     */
-    @task(function* (query) {
-        if(!query) {
-            this.query = null;
-            return;
-        }
-
-        yield timeout(250);
-
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
-        }
-
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
-
 }

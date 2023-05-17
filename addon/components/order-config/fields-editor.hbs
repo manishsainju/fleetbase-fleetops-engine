@@ -14,14 +14,14 @@
                 <p>Meta fields configuration will allow you to define custom input fields that will be applied to orders.</p>
             </div>
 
-            <EmberDragula @onDrop={{this.moveMetaField}} as |d|>
+            <Dragula @onDrop={{this.moveMetaField}} as |Container|>
                 {{#each this.groupedMetaFields as |group|}}
                     <div class="content-panel">
                         <div class="content-panel-header items-center">
                             <div class="font-semibold dark:text-gray-100">
                                 <span class="mr-1">Custom Fields Group:</span>
                                 {{#if group.value}}
-                                    <span>{{humanize group.value}}</span>
+                                    <span>{{smart-humanize group.value}}</span>
                                 {{else}}
                                     <span>Default Fields</span>
                                 {{/if}}
@@ -36,7 +36,7 @@
                         </div>
 
                         <div class="content-panel-body">
-                            <d.Container data-meta-group-key={{or group.value "default"}} class="space-y-2">
+                            <Container data-meta-group-key={{or group.value "default"}} class="space-y-2">
                                 {{#each group.items as |metaField|}}
                                     <div class="content-panel cursor-move">
                                         <div class="content-panel-header items-center">
@@ -75,8 +75,8 @@
                                                                                         {{/unless}}
                                                                                     </div>
                                                                                 </div>
-                                                                                <EmberDragula @onDrop={{fn this.sortMetaFieldOptions metaField}} as |dd|>
-                                                                                    <dd.Container>
+                                                                                <Dragula @onDrop={{fn this.sortMetaFieldOptions metaField}} as |SubContainer|>
+                                                                                    <SubContainer>
                                                                                         {{#each metaField.options as |option index|}}
                                                                                             <div id={{option.id}} class="meta-field-option z-50 py-2 px-3 cursor-move border-b border-gray-300 dark:border-gray-900 last:border-b-0" data-index={{index}}>
                                                                                                 <div class="flex items-start justify-between">
@@ -93,8 +93,8 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                         {{/each}}
-                                                                                    </dd.Container>
-                                                                                </EmberDragula>
+                                                                                    </SubContainer>
+                                                                                </Dragula>
                                                                             </div>
                                                                         </div>
                                                                     </dd.Content>
@@ -111,11 +111,11 @@
                                         </div>
                                     </div>
                                 {{/each}}
-                            </d.Container>
+                            </Container>
                         </div>
                     </div>
                 {{/each}}
-            </EmberDragula>
+            </Dragula>
         </div>
     </div>
     {{yield}}

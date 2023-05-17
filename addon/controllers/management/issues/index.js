@@ -1,105 +1,52 @@
 import Controller from '@ember/controller';
+import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action, computed } from '@ember/object';
-import { A, isArray } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
-import isModel from '@fleetbase/ember-core/utils/is-model';
-// import Table from 'ember-light-table';
+import { timeout } from 'ember-concurrency';
+import { task } from 'ember-concurrency-decorators';
 
 export default class ManagementIssuesIndexController extends Controller {
+    /**
+     * Inject the `notifications` service
+     *
+     * @var {Service}
+     */
+    @service notifications;
 
     /**
-     * After column is resized save the column state to user options
+     * Inject the `modals-manager` service
      *
-     * @void
+     * @var {Service}
      */
-    @action
-    onColumnResized() {
-        // const columnIndex = this.columns.findIndex((column) => column.valuePath === resizedColumn.valuePath);
-        // this.columns = this.columns.replace(columnIndex, 1, [resizedColumn]);
-        // console.log(this.columns);
-    }
+    @service modalsManager;
 
     /**
-     * Update columns
+     * Inject the `crud` service
      *
-     * @param {Array} columns the columns to update to this controller
-     * @void
+     * @var {Service}
      */
-    @action
-    toggleMapView() {
-        return this.transitionToRoute('operations.orders.index.map');
-    }
+    @service crud;
 
     /**
-     * Apply column filter values to the controller
+     * Inject the `store` service
      *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
+     * @var {Service}
      */
-    @action
-    applyFilters(columns) {
-        columns.forEach((column) => {
-            // if value is a model only filter by id
-            if (isModel(column.filterValue)) {
-                column.filterValue = column.filterValue.id;
-            }
-            // if value is an array of models map to ids
-            if (isArray(column.filterValue) && column.filterValue.every((v) => isModel(v))) {
-                column.filterValue = column.filterValue.map((v) => v.id);
-            }
-            // only if filter is active continue
-            if (column.isFilterActive && column.filterValue) {
-                this[column.filterParam || column.valuePath] = column.filterValue;
-            } else {
-                this[column.filterParam || column.valuePath] = undefined;
-                column.isFilterActive = false;
-                column.filterValue = undefined;
-            }
-        });
-        this.columns = columns;
-    }
+    @service store;
 
     /**
-     * Apply column filter values to the controller
+     * Inject the `hostRouter` service
      *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
+     * @var {Service}
      */
-    @action
-    setFilterOptions(valuePath, options) {
-        const updatedColumns = this.columns.map((column) => {
-            if (column.valuePath === valuePath) {
-                column.filterOptions = options;
-            }
-            return column;
-        });
-        this.columns = updatedColumns;
-    }
+    @service hostRouter;
 
     /**
-     * Update columns
+     * Inject the `filters` service
      *
-     * @void
+     * @var {Service}
      */
-    @action
-    checkRow() {
-        this.notifyPropertyChange('checkedRows');
-    }
-
-    /**
-     * Update columns
-     *
-     * @void
-     */
-    @action
-    handleLinkClick(column, row) {
-        if (column.valuePath === 'public_id') {
-            return this.transitionToRoute('operations.orders.index.view', row.content || row);
-        }
-    }
+    @service filters;
 
     /**
      * Queryable parameters for this controller's model
@@ -127,13 +74,6 @@ export default class ManagementIssuesIndexController extends Controller {
     ];
 
     /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
-
-    /**
      * The current page of data being viewed
      *
      * @var {Integer}
@@ -152,7 +92,7 @@ export default class ManagementIssuesIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -239,118 +179,54 @@ export default class ManagementIssuesIndexController extends Controller {
     @tracked status;
 
     /**
-     * All possible order status options
-     *
-     * @var {String}
-     */
-    @tracked statusOptions = [];
-
-        @tracked allToggled = false;
-
-    /**
-     * Actions that can be triggered from the table interactions
-     *
-     * @var {Object}
-     */
-    tableActions = {
-        onCheckboxToggle: this.checkRow,
-        onLinkClick: this.handleLinkClick,
-    };
-
-    /**
      * All columns applicable for orders
      *
      * @var {Array}
      */
-    @tracked columns = A([
-        {
-            label: 'Name',
-            valuePath: 'name',
-            width: '200px',
-            cellComponent: 'table/cell/anchor',
-            action: this.viewFuelReport,
-            resizable: true,
-            sortable: true,
-            filterable: true,
-            filterComponent: 'filter/string',
-        },
+    @tracked columns = [
         {
             label: 'ID',
             valuePath: 'public_id',
             width: '120px',
-            cellComponent: 'table/cell/anchor',
-            action: this.viewFuelReport,
+            resizable: true,
+            sortable: true,
+        },
+        {
+            label: 'Type',
+            valuePath: 'type',
+            width: '100px',
             resizable: true,
             sortable: true,
             filterable: true,
             filterComponent: 'filter/string',
         },
         {
-            label: 'Internal ID',
-            valuePath: 'internal_id',
-            cellComponent: 'table/cell/anchor',
-            action: this.viewFuelReport,
+            label: 'Reporter',
+            valuePath: 'reporter.name',
             width: '120px',
             resizable: true,
             sortable: true,
-            filterable: true,
-            filterComponent: 'filter/string',
         },
         {
-            label: 'Email',
-            valuePath: 'email',
-            cellComponent: 'table/cell/base',
-            width: '80px',
+            label: 'Assignee',
+            valuePath: 'reporter.name',
+            width: '120px',
             resizable: true,
             sortable: true,
-            hidden: true,
-            filterable: true,
-            filterComponent: 'filter/string',
         },
         {
-            label: 'Phone',
-            valuePath: 'phone',
-            cellComponent: 'table/cell/base',
-            width: '80px',
+            label: 'Vehicle',
+            valuePath: 'vehicle.name',
+            width: '120px',
             resizable: true,
             sortable: true,
-            hidden: true,
-            filterable: true,
-            filterComponent: 'filter/string',
         },
         {
-            label: 'Country',
-            valuePath: 'country',
-            cellComponent: 'table/cell/base',
-            width: '80px',
+            label: 'Report',
+            valuePath: 'report',
+            width: '120px',
             resizable: true,
             sortable: true,
-            hidden: true,
-            filterable: true,
-            filterComponent: 'filter/string',
-        },
-        {
-            label: 'Address',
-            valuePath: 'place.address',
-            cellComponent: 'table/cell/base',
-            width: '80px',
-            resizable: true,
-            sortable: true,
-            hidden: true,
-            filterable: true,
-            filterParam: 'address',
-            filterComponent: 'filter/string',
-        },
-        {
-            label: 'Status',
-            valuePath: 'status',
-            cellComponent: 'table/cell/status',
-            width: '10%',
-            resizable: true,
-            sortable: true,
-            filterable: true,
-            filterComponent: 'filter/multi-option',
-            filterOptions: this.statusOptions,
         },
         {
             label: 'Created At',
@@ -385,18 +261,18 @@ export default class ManagementIssuesIndexController extends Controller {
             actions: [
                 {
                     label: 'View Details',
-                    fn: this.viewFuelReport,
+                    // fn: this.viewFuelReport,
                 },
                 {
                     label: 'Edit Issue',
-                    fn: this.editFuelReport,
+                    // fn: this.editFuelReport,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete Issue',
-                    fn: this.deleteFuelReport,
+                    // fn: this.deleteFuelReport,
                 },
             ],
             sortable: false,
@@ -404,102 +280,56 @@ export default class ManagementIssuesIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
-     /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     * 
+    /**
+     * The search task.
+     *
      * @void
      */
-     @action sendDropdownAction(dd, sentAction, ...params) { 
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
- 
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
+            this.query = null;
+            return;
+        }
 
-     /**
+        // timeout for typing
+        yield timeout(250);
+
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
+        }
+
+        // update the query param
+        this.query = value;
+    }
+
+    /**
      * Bulk deletes selected `driver` via confirm prompt
      *
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeleteIssues() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeleteIssues() {
+        const selected = this.table.selectedRows;
 
-         this.crud.bulkDelete(selected, {
-             modelNamePath: `name`,
-             acceptButtonText: 'Delete Issues',
-             onConfirm: (deletedIssues) => {
-                 this.allToggled = false;
-                 
-                 deletedIssues.forEach(place => {
-                     this.table.removeRow(place);
-                 });
- 
-                this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
-
-
-    /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action
-    search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
+        this.crud.bulkDelete(selected, {
+            modelNamePath: `name`,
+            acceptButtonText: 'Delete Issues',
+            onSuccess: () => {
+                return this.hostRouter.refresh();
+            },
+        });
     }
-
-    /**
-     * The actual search task
-     * 
-     * @void
-     */
-    @task(function* (query) {
-        if(!query) {
-            this.query = null;
-            return;
-        }
-
-        yield timeout(250);
-
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
-        }
-
-        this.set('query', query);
-    }).restartable() 
-    searchTask;
 
     /**
      * Toggles dialog to export `issue`
      *
      * @void
      */
-    @action
-    exportIssues() {
+    @action exportIssues() {
         this.crud.export('issue');
-    }
-
-    /**
-     * Get visible only columns
-     *
-     * @var {Array}
-     */
-    @computed('model.@each.isChecked')
-    get checkedRows() {
-        return this.model.filter((row) => row.isChecked);
     }
 }

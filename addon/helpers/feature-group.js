@@ -10,5 +10,5 @@ import { helper } from '@ember/component/helper';
  * @return {FeatureGroup}
  */
 export default helper(function featureGroup(params) {
-  return L.featureGroup(params);
+    return L.featureGroup(params);
 });

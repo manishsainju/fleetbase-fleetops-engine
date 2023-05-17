@@ -5,10 +5,9 @@ import { action, computed } from '@ember/object';
 import { A, isArray } from '@ember/array';
 import { task, timeout } from 'ember-concurrency';
 import isModel from '@fleetbase/ember-core/utils/is-model';
-import Point from '@fleetbase/fleetops-engine/utils/geojson/point';
+import Point from '@fleetbase/fleetops-data/utils/geojson/point';
 
 export default class ManagementPlacesIndexController extends Controller {
-
     /**
      * Inject the `operations.zones.index` controller
      *
@@ -38,6 +37,27 @@ export default class ManagementPlacesIndexController extends Controller {
     @service modalsManager;
 
     /**
+     * Inject the `store` service
+     *
+     * @var {Service}
+     */
+    @service store;
+
+    /**
+     * Inject the `filters` service
+     *
+     * @var {Service}
+     */
+    @service filters;
+
+    /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
+    @service hostRouter;
+
+    /**
      * Inject the `crud` service
      *
      * @var {Service}
@@ -49,14 +69,7 @@ export default class ManagementPlacesIndexController extends Controller {
      *
      * @var {Array}
      */
-    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'created_at', 'updated_at'];
-
-    /**
-     * True if route is loading data
-     *
-     * @var {Boolean}
-     */
-    @tracked isRouteLoading;
+    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'country', 'phone', 'email', 'created_at', 'updated_at'];
 
     /**
      * The current page of data being viewed
@@ -77,7 +90,7 @@ export default class ManagementPlacesIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort;
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -94,18 +107,32 @@ export default class ManagementPlacesIndexController extends Controller {
     @tracked internal_id;
 
     /**
-     * True if all records are `selected`
+     * The filterable param `phone`
      *
-     * @var {Boolean}
+     * @var {String}
      */
-     @tracked allToggled = false;
+    @tracked phone;
+
+    /**
+     * The filterable param `email`
+     *
+     * @var {String}
+     */
+    @tracked email;
+
+    /**
+     * The filterable param `country`
+     *
+     * @var {String}
+     */
+    @tracked country;
 
     /**
      * All columns applicable for orders
      *
      * @var {Array}
      */
-    @tracked columns = A([
+    @tracked columns = [
         {
             label: 'Name',
             valuePath: 'name',
@@ -181,7 +208,8 @@ export default class ManagementPlacesIndexController extends Controller {
             resizable: true,
             sortable: true,
             filterable: true,
-            filterComponent: 'filter/string',
+            filterComponent: 'filter/country',
+            filterParam: 'country'
         },
         {
             label: 'Created At',
@@ -224,14 +252,14 @@ export default class ManagementPlacesIndexController extends Controller {
                     fn: this.editPlace,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'View Place on Map',
                     fn: this.viewOnMap,
                 },
                 {
-                    separator: true
+                    separator: true,
                 },
                 {
                     label: 'Delete Place',
@@ -243,104 +271,31 @@ export default class ManagementPlacesIndexController extends Controller {
             resizable: false,
             searchable: false,
         },
-    ]);
+    ];
 
     /**
-     * Update search query and subjects
-     *
-     * @param {Object} column
-     * @void
-     */
-    @action search(event) {
-        const query = event.target.value;
-
-        this.searchTask.perform(query);
-    }
-
-    /**
-     * The actual search task
+     * The search task.
      *
      * @void
      */
-    @task(function* (query) {
-        if(!query) {
+    @task({ restartable: true }) *search({ target: { value } }) {
+        // if no query don't search
+        if (isBlank(value)) {
             this.query = null;
             return;
         }
 
+        // timeout for typing
         yield timeout(250);
 
-        if(this.page > 1) {
-            return this.setProperties({
-                query,
-                page: 1
-            });
+        // reset page for results
+        if (this.page > 1) {
+            this.page = 1;
         }
 
-        this.set('query', query);
-    }).restartable()
-    searchTask;
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action applyFilters(columns) {
-        columns.forEach((column) => {
-            // if value is a model only filter by id
-            if (isModel(column.filterValue)) {
-                column.filterValue = column.filterValue.id;
-            }
-            // if value is an array of models map to ids
-            if (isArray(column.filterValue) && column.filterValue.every((v) => isModel(v))) {
-                column.filterValue = column.filterValue.map((v) => v.id);
-            }
-            // only if filter is active continue
-            if (column.isFilterActive && column.filterValue) {
-                this[column.filterParam || column.valuePath] = column.filterValue;
-            } else {
-                this[column.filterParam || column.valuePath] = undefined;
-                column.isFilterActive = false;
-                column.filterValue = undefined;
-            }
-        });
-        this.columns = columns;
+        // update the query param
+        this.query = value;
     }
-
-    /**
-     * Apply column filter values to the controller
-     *
-     * @param {Array} columns the columns to apply filter changes for
-     *
-     * @void
-     */
-    @action setFilterOptions(valuePath, options) {
-        const updatedColumns = this.columns.map((column) => {
-            if (column.valuePath === valuePath) {
-                column.filterOptions = options;
-            }
-            return column;
-        });
-        this.columns = updatedColumns;
-    }
-
-    /**
-     * Sends up a dropdown action, closes the dropdown then executes the action
-     *
-     * @void
-     */
-     @action sendDropdownAction(dd, sentAction, ...params) {
-         if(typeof dd?.actions?.close === 'function') {
-             dd.actions.close();
-         }
-
-         if(typeof this[sentAction] === 'function') {
-             this[sentAction](...params);
-         }
-     }
 
     /**
      * Toggles dialog to export `place`
@@ -374,7 +329,6 @@ export default class ManagementPlacesIndexController extends Controller {
             place,
             titleComponent: 'modal/title-with-buttons',
             acceptButtonText: 'Done',
-            args: ['place'],
             headerButtons: [
                 {
                     icon: 'cog',
@@ -424,11 +378,12 @@ export default class ManagementPlacesIndexController extends Controller {
                     ],
                 },
             ],
-            viewVendor: () => this.viewPlaceVendor(place, {
-                onFinish: () => {
-                    this.viewPlace(place);
-                },
-            }),
+            viewVendor: () =>
+                this.viewPlaceVendor(place, {
+                    onFinish: () => {
+                        this.viewPlace(place);
+                    },
+                }),
             viewPlaceOnMap,
             ...options,
         });
@@ -454,9 +409,9 @@ export default class ManagementPlacesIndexController extends Controller {
                     return;
                 }
 
-                this.table.addRow(place);
+                return this.hostRouter.refresh();
             },
-            ...options
+            ...options,
         });
     }
 
@@ -480,6 +435,8 @@ export default class ManagementPlacesIndexController extends Controller {
             autocomplete: (selected) => {
                 const coordinatesInputComponent = this.modalsManager.getOption('coordinatesInputComponent');
 
+                console.log('selected', selected);
+
                 place.setProperties({ ...selected });
 
                 if (coordinatesInputComponent) {
@@ -489,27 +446,29 @@ export default class ManagementPlacesIndexController extends Controller {
             setCoordinatesInput: (coordinatesInputComponent) => {
                 this.modalsManager.setOption('coordinatesInputComponent', coordinatesInputComponent);
             },
-            updatePlaceCoordinates: ({ latitude, longitude}) => {
+            updatePlaceCoordinates: ({ latitude, longitude }) => {
                 const location = new Point(longitude, latitude);
 
                 place.setProperties({ location });
             },
-            confirm: (modal, done) => {
+            confirm: (modal) => {
                 modal.startLoading();
 
-                place.save().then((place) => {
-                    if (typeof options.successNotification === 'function') {
-                        this.notifications.success(options.successNotification(place));
-                    } else {
-                        this.notifications.success(options.successNotification ?? `${place.name} details updated.`);
-                    }
+                return place
+                    .save()
+                    .then((place) => {
+                        if (typeof options.successNotification === 'function') {
+                            this.notifications.success(options.successNotification(place));
+                        } else {
+                            this.notifications.success(options.successNotification ?? `${place.name} details updated.`);
+                        }
 
-                    done();
-                }).catch((error) => {
-                    // driver.rollbackAttributes();
-                    modal.stopLoading();
-                    this.notifications.serverError(error);
-                });
+                        return this.hostRouter.refresh();
+                    })
+                    .catch((error) => {
+                        modal.stopLoading();
+                        this.notifications.serverError(error);
+                    });
             },
             ...options,
         });
@@ -525,9 +484,7 @@ export default class ManagementPlacesIndexController extends Controller {
     @action deletePlace(place, options = {}) {
         this.crud.delete(place, {
             onConfirm: (place) => {
-                if (place.get('isDeleted')) {
-                    this.table.removeRow(place);
-                }
+                return this.hostRouter.refresh();
             },
             ...options,
         });
@@ -539,23 +496,17 @@ export default class ManagementPlacesIndexController extends Controller {
      * @param {Array} selected an array of selected models
      * @void
      */
-     @action bulkDeletePlaces() {
-         const selected = this.table.selectedRows.map(({ content }) => content);
+    @action bulkDeletePlaces() {
+        const selected = this.table.selectedRows;
 
-         this.crud.bulkDelete(selected, {
-             modelNamePath: `address`,
-             acceptButtonText: 'Delete Places',
-             onConfirm: (deletedPlaces) => {
-                 this.allToggled = false;
-
-                 deletedPlaces.forEach(place => {
-                     this.table.removeRow(place);
-                 });
-
-                this.target?.targetState?.router?.refresh();
-             }
-         });
-     }
+        this.crud.bulkDelete(selected, {
+            modelNamePath: `address`,
+            acceptButtonText: 'Delete Places',
+            onSuccess: () => {
+                return this.hostRouter.refresh();
+            },
+        });
+    }
 
     /**
      * Prompt user to assign a `vendor` to a `place`

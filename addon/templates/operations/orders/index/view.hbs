@@ -12,35 +12,35 @@
                 </div>
                 <div class="next-dd-menu-seperator"></div>
                 <div class="px-1">
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "editOrder" dd @model)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.editOrder @model)}}>
                         <div class="w-6">
                             <FaIcon @icon="edit" />
                         </div>
                         <span>Edit Details</span>
                     </a>
                     {{#unless @model.isIntegratedVendorOrder}}
-                        <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "createNewActivity" dd @model)}}>
+                        <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.createNewActivity @model)}}>
                             <div class="w-6">
-                                <FaIcon @icon="signal-stream" />
+                                <FaIcon @icon="signal" />
                             </div>
                             <span>Update Activity</span>
                         </a>
                         {{#if @model.driver_assigned_uuid}}
-                            <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "unassignDriver" dd @model)}}>
+                            <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.unassignDriver @model)}}>
                                 <div class="w-6">
-                                    <FaIcon @icon="user-times" />
+                                    <FaIcon @icon="user-xmark" />
                                 </div>
                                 <span>Unassign Driver</span>
                             </a>
                         {{else}}
-                            <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "assignDriver" dd @model)}}>
+                            <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.assignDriver @model)}}>
                                 <div class="w-6">
                                     <FaIcon @icon="user-check" />
                                 </div>
                                 <span>Assign Driver</span>
                             </a>
                         {{/if}}
-                        <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "viewOrderLabel" dd @model)}}>
+                        <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.viewOrderLabel @model)}}>
                             <div class="w-6">
                                 <FaIcon @icon="file-invoice" />
                             </div>
@@ -48,13 +48,13 @@
                         </a>
                     {{/unless}}
                     <div class="next-dd-menu-seperator"></div>
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "listenToSocket" dd @model)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.listenToSocket @model)}}>
                         <div class="w-6">
                             <FaIcon @icon="headphones" />
                         </div>
                         <span>Listen to socket channel</span>
                     </a>
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "viewOrderMeta" dd @model)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.viewOrderMeta @model)}}>
                         <div class="w-6">
                             <FaIcon @icon="table" />
                         </div>
@@ -62,14 +62,14 @@
                     </a>
                     {{#unless @model.isCanceled}}
                         <div class="next-dd-menu-seperator"></div>
-                        <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (fn this.dropdownAction "cancelOrder" dd @model)}}>
+                        <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (dropdown-fn dd this.cancelOrder @model)}}>
                             <div class="w-6">
                                 <FaIcon @icon="ban" class="text-danger" />
                             </div>
                             <span>Cancel Order</span>
                         </a>
                     {{/unless}}
-                    <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (fn this.dropdownAction "deleteOrder" dd @model)}}>
+                    <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (dropdown-fn dd this.deleteOrder @model)}}>
                         <div class="w-6">
                             <FaIcon @icon="trash" class="text-danger" />
                         </div>
@@ -83,22 +83,21 @@
     <Overlay::Body @wrapperClass="new-order-overlay-body" @increaseInnerBodyHeightBy={{1000}}>
         <ContentPanel @title="Activity" @open={{true}} @pad={{false}} @isLoading={{this.isLoadingAdditionalData}} @panelBodyWrapperClass="px-0 py-4" @panelBodyClass="bg-white dark:bg-gray-800">
             {{#if @model.tracking_statuses}}
-                <Timeline>
-                    {{#each @model.tracking_statuses as |trackingStatus|}}
-                        <Timeline::Item>
-                            <div class="w-40 px-3 py-2 rounded text-sm leading-4 truncate space-y-2 bg-gray-100 dark:bg-gray-900 dark:text-white">
-                                <div class="font-semibold">
-                                    {{trackingStatus.status}}
-                                </div>
-                                <div class="truncate">
-                                    {{trackingStatus.details}}
-                                </div>
-                                <div class="truncate">
-                                    {{trackingStatus.createdAt}}
-                                </div>
-                            </div>
-                        </Timeline::Item>
-                    {{/each}}
+                <Timeline @activity={{@model.tracking_statuses}} @wrapperClass="space-x-4 px-2" @arrowClass="bg-gray-600 border border-gray-900 shadow-md" as |TimelineItem|>
+                    <TimelineItem class="flex flex-col w-40 px-3 py-2 rounded text-sm leading-4 truncate space-y-2 bg-gray-100 dark:bg-gray-900 dark:text-white" as |trackingStatus|>
+                        <div class="font-semibold truncate">
+                            {{trackingStatus.status}}
+                        </div>
+                        <div class="truncate">
+                            {{trackingStatus.details}}
+                        </div>
+                        <div class="truncate">
+                            {{trackingStatus.createdAt}}
+                        </div>
+                        <Attach::Tooltip @class="clean" @animation="scale" @placement="top">
+                            <InputInfo @text={{trackingStatus.details}} />
+                        </Attach::Tooltip>
+                    </TimelineItem>
                 </Timeline>
             {{else}}
                 <div class="px-10 py-2 flex items-center justify-center">
@@ -121,7 +120,7 @@
                     <div class="field-name">Customer</div>
                     <div class="flex flex-row">
                         <div>
-                            <img src={{avatar-url @model.customer.photo_url}} class="w-8 h-8 rounded-md shadow-sm mr-2" alt={{@model.customer.name}} />
+                            <Image src={{avatar-url @model.customer.photo_url}} @fallbackSrc={{config "defaultValues.contactImage"}} class="w-8 h-8 rounded-md shadow-sm mr-2" alt={{@model.customer.name}} />
                         </div>
                         <div>
                             <div class="field-value">{{n-a @model.customer.name "No Customer"}}</div>
@@ -136,7 +135,7 @@
                     {{#if @model.facilitator.isIntegratedVendor}}
                         <div class="flex flex-row">
                             <div>
-                                <img src={{avatar-url @model.facilitator.photo_url}} class="w-8 h-8 rounded-md border border-gray-200 dark:border-gray-900 shadow-sm mr-2" alt={{@model.facilitator.name}} />
+                                <Image src={{avatar-url @model.facilitator.photo_url}} @fallbackSrc={{config "defaultValues.contactImage"}} class="w-8 h-8 rounded-md border border-gray-200 dark:border-gray-900 shadow-sm mr-2" alt={{@model.facilitator.name}} />
                             </div>
                             <div>
                                 <div class="field-value">{{n-a @model.facilitator.name}}</div>
@@ -153,7 +152,7 @@
                     <div>
                         <div class="flex flex-row">
                             <div>
-                                <img src={{avatar-url @model.driver_assigned.photo_url}} width="32" height="32" class="w-8 h-8 rounded-md shadow-sm mr-3 lg:mr-2" alt={{@model.driver_assigned.name}} />
+                                <Image src={{avatar-url @model.driver_assigned.photo_url}} @fallbackSrc={{config "defaultValues.driverImage"}} width="32" height="32" class="w-8 h-8 rounded-md shadow-sm mr-3 lg:mr-2" alt={{@model.driver_assigned.name}} />
                             </div>
                             <div class="field-value">
                                 <div>{{n-a @model.driver_assigned.name "No Driver"}}</div>
@@ -162,11 +161,9 @@
                                 {{/if}}
                             </div>
                         </div>
-                        {{#if @model.driver_assigned}}
-                            <div class="mt-1">
-                                <Button @size="xs" @type="default" @icon="steering-wheel" @text={{if @model.has_driver_assigned "Change Driver" "Assign Driver"}} @onClick={{fn this.assignDriver @model}} />
-                            </div>
-                        {{/if}}
+                        <div class="mt-1">
+                            <Button @size="xs" @type="default" @icon="edit" @text={{if @model.has_driver_assigned "Change Driver" "Assign Driver"}} @onClick={{fn this.assignDriver @model}} />
+                        </div>
                     </div>
                 </div>
                 <div class="field-info-container space-y-2">
@@ -224,7 +221,7 @@
         {{#if @model.tracking_number}}
             <ContentPanel @title="Tracking" @prefixTitleRight={{@model.tracking}} @isLoading={{this.isLoadingAdditionalData}} @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
                 <div class="mb-4 flex justify-end">
-                    <Button @size="xs" @type="default" @icon="barcode-read" @text="Get Order Label" @onClick={{fn this.viewOrderLabel @model}} />
+                    <Button @size="xs" @type="default" @icon="barcode" @text="Get Order Label" @onClick={{fn this.viewOrderLabel @model}} />
                 </div>
                 <div class="flex flex-row items-center justify-center space-x-4">
                     <div class="p-2 rounded-md bg-white">
@@ -334,7 +331,7 @@
             </ContentPanel>
         {{/if}}
 
-        <ContentPanel @title="Payload" @open={{@model.payload.entities.length}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
+        <ContentPanel @title="Payload" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
             {{#if this.isMultiDropOrder}}
                 <div class="space-y-2">
                     {{#each this.entitiesByDestination as |group|}}
