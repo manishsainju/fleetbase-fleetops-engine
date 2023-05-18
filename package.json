@@ -2,7 +2,7 @@
     "name": "@fleetbase/fleetops-engine",
     "extension": "Fleet Ops",
     "icon": "route",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "priority": 0,
     "description": "Fleetbase Fleet-Ops extension provides a fleet management and last mile delivery operations system module.",
     "keywords": [
@@ -37,7 +37,7 @@
     },
     "dependencies": {
         "@fleetbase/ember-core": "^0.0.1",
-        "@fleetbase/ember-ui": "^0.0.2",
+        "@fleetbase/ember-ui": "^0.0.3",
         "@fleetbase/fleetops-data": "^0.0.1",
         "@fleetbase/leaflet-routing-machine": "^3.2.15",
         "@fortawesome/ember-fontawesome": "^0.4.1",
