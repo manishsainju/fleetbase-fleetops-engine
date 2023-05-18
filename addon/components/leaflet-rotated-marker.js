@@ -1,5 +1,4 @@
 import MarkerLayer from 'ember-leaflet/components/marker-layer';
-import 'leaflet-rotatedmarker';
 
 export default class LeafletRotatedMarkerComponent extends MarkerLayer {
     leafletOptions = [
