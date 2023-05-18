@@ -1,4 +1,3 @@
-import 'leaflet-contextmenu';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
@@ -132,6 +131,7 @@ export default class LiveMapComponent extends Component {
         }
 
         const { contextmenu } = map;
+        console.log('map.contextmenu', contextmenu);
         const contextMenuItems = this.buildContextMenuItems();
 
         contextMenuItems.forEach((options) => contextmenu.addItem(options));

@@ -1,4 +1,3 @@
-import 'leaflet-draw-src';
 import BaseLayer from 'ember-leaflet/components/base-layer';
 import { getProperties, computed } from '@ember/object';
 import { run } from '@ember/runloop';
