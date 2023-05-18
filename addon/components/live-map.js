@@ -131,7 +131,6 @@ export default class LiveMapComponent extends Component {
         }
 
         const { contextmenu } = map;
-        console.log('map.contextmenu', contextmenu);
         const contextMenuItems = this.buildContextMenuItems();
 
         contextMenuItems.forEach((options) => contextmenu.addItem(options));
