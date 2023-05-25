@@ -36,12 +36,12 @@ module.exports = buildEngine({
         const leafletPath = path.dirname(require.resolve('leaflet'));
         const leafletImagesPath = path.join(leafletPath, 'images');
         const addonTree = [
-            new Funnel(`node_modules/${name}/assets`, {
-                destDir: '/',
-            }),
             new Funnel(leafletImagesPath, {
                 srcDir: '/',
                 destDir: '/leaflet-images',
+            }),
+            new Funnel(path.join(__dirname, 'assets'), {
+                destDir: '/',
             }),
         ];
 
