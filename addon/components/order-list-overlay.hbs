@@ -9,7 +9,7 @@
         {{#if this.selectedOrders.length}}
             <BasicDropdown class="mr-2" @renderInPlace={{true}} as |dd|>
                 <dd.Trigger>
-                    <div role="button" class="next-org-button-trigger has-selections {{if dd.isOpen 'is-open'}}">
+                    <div class="next-org-button-trigger has-selections {{if dd.isOpen 'is-open'}}">
                         <FaIcon @icon="ellipsis-h" @prefix="fas" class="text-gray-800 dark:text-white" />
                     </div>
                 </dd.Trigger>
@@ -32,7 +32,7 @@
         {{/if}}
         <BasicDropdown @renderInPlace={{true}} as |dd|>
             <dd.Trigger>
-                <div role="button" class="next-org-button-trigger {{if dd.isOpen 'is-open'}}">
+                <div class="next-org-button-trigger {{if dd.isOpen 'is-open'}}">
                     <FaIcon @icon="ellipsis-h" @prefix="fas" class="text-gray-900 dark:text-gray-500" />
                 </div>
             </dd.Trigger>

@@ -4,6 +4,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { equal } from '@ember/object/computed';
 import { isArray } from '@ember/array';
+import { isBlank } from '@ember/utils';
 import { timeout } from 'ember-concurrency';
 import { task } from 'ember-concurrency-decorators';
 import isModel from '@fleetbase/ember-core/utils/is-model';

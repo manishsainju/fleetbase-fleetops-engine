@@ -1,8 +1,8 @@
 import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { action, get } from '@ember/object';
-import { isArray } from '@ember/array';
+import { action } from '@ember/object';
+import { isBlank } from '@ember/utils';
 import { timeout } from 'ember-concurrency';
 import { task } from 'ember-concurrency-decorators';
 
@@ -82,7 +82,7 @@ export default class ManagementContactsIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort= '-created_at';
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -429,7 +429,7 @@ export default class ManagementContactsIndexController extends Controller {
     @action deleteContact(contact, options = {}) {
         this.crud.delete(contact, {
             acceptButtonIcon: 'trash',
-            onConfirm: (contact) => {
+            onConfirm: () => {
                 this.hostRouter.refresh();
             },
             ...options,

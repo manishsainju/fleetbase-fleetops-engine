@@ -12,7 +12,7 @@ module.exports = buildEngine({
         enabled: true,
     },
 
-    included: function (app) {
+    included: function () {
         this._super.included.apply(this, arguments);
 
         const importJs = (module, file, options) => {

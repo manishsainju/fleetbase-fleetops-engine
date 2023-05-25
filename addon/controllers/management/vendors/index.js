@@ -1,10 +1,11 @@
 import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { action, get } from '@ember/object';
+import { action } from '@ember/object';
 import { isBlank } from '@ember/utils';
 import { isArray } from '@ember/array';
 import { capitalize } from '@ember/string';
+import { timeout } from 'ember-concurrency';
 import { task } from 'ember-concurrency-decorators';
 import apiUrl from '@fleetbase/ember-core/utils/api-url';
 
@@ -434,7 +435,7 @@ export default class ManagementVendorsIndexController extends Controller {
                     credentials: {},
                     options: {},
                     credential_params,
-                    option_params
+                    option_params,
                 });
 
                 this.modalsManager.setOption('integratedVendor', vendor);
@@ -509,7 +510,7 @@ export default class ManagementVendorsIndexController extends Controller {
                     },
                 });
             },
-            confirm: (modal, done) => {
+            confirm: (modal) => {
                 modal.startLoading();
 
                 const isAddingIntegratedVendor = modal.getOption('action') !== undefined && modal.getOption('integratedVendor')?.isNew;

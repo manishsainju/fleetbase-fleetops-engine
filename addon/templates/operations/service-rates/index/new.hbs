@@ -294,7 +294,7 @@
         <ContentPanel @title="Restrict Service" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
             <div class="input-group">
                 <InputLabel @labelText="Service Area" @helpText="Restrict this service to order request originating from a service area." />
-                <Select class="w-full" @options={{this.serviceAreas}} @optionLabel="name" @optionValue="id" @value={{this.serviceRate.service_area_uuid}} @onSelect={{fn this.selectServiceArea}} @placeholder="Restrict to service area" @disabled={{not this.serviceAreas.length}} />
+                <Select class="w-full" @options={{this.serviceAreas}} @optionLabel="name" @optionValue="id" @value={{this.serviceRate.service_area_uuid}} @onSelect={{this.selectServiceArea}} @placeholder="Restrict to service area" @disabled={{not this.serviceAreas.length}} />
             </div>
 
             {{#if this.serviceRate.service_area_uuid}}

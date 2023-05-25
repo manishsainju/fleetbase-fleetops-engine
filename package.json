@@ -41,7 +41,7 @@
         "@fleetbase/fleetops-data": "^0.0.1",
         "@fleetbase/leaflet-routing-machine": "^3.2.15",
         "@fortawesome/ember-fontawesome": "^0.4.1",
-        "@fortawesome/free-solid-svg-icons": "^6.2.0",
+        "@fortawesome/free-solid-svg-icons": "^6.4.0",
         "@terraformer/spatial": "^2.1.2",
         "@zestia/ember-dragula": "^12.0.0",
         "broccoli-funnel": "^3.0.8",

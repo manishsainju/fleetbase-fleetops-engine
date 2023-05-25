@@ -5,7 +5,6 @@ import { action } from '@ember/object';
 import { isArray } from '@ember/array';
 import { dasherize } from '@ember/string';
 import { later } from '@ember/runloop';
-import first from '@fleetbase/ember-core/utils/first';
 import GeoJson from '@fleetbase/fleetops-data/utils/geojson/geo-json';
 import MultiPolygon from '@fleetbase/fleetops-data/utils/geojson/multi-polygon';
 import Polygon from '@fleetbase/fleetops-data/utils/geojson/polygon';

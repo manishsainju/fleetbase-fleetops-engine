@@ -1,5 +1,4 @@
 import { helper } from '@ember/component/helper';
-/* global L */
 
 /**
  * Represents a Leaflet FeatureGroup

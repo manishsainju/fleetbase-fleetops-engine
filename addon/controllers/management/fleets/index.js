@@ -2,6 +2,7 @@ import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { isBlank } from '@ember/utils';
 import { timeout } from 'ember-concurrency';
 import { task } from 'ember-concurrency-decorators';
 
@@ -95,7 +96,7 @@ export default class ManagementFleetsIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort= '-created_at';
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -438,8 +439,6 @@ export default class ManagementFleetsIndexController extends Controller {
      * @void
      */
     @action editFleet(fleet, options = {}) {
-        const isNew = fleet.get('isNew');
-
         this.modalsManager.show('modals/fleet-form', {
             title: 'Edit Fleet',
             acceptButtonText: 'Save Changes',
@@ -448,7 +447,7 @@ export default class ManagementFleetsIndexController extends Controller {
             declineButtonIconPrefix: 'fas',
             statusOptions: this.statusOptions,
             fleet,
-            confirm: (modal, done) => {
+            confirm: (modal) => {
                 modal.startLoading();
 
                 return fleet

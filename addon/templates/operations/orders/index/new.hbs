@@ -365,10 +365,10 @@
                                             </div>
                                             <div class="space-y-2">
                                                 <div>
-                                                    <Input @value={{entity.name}} type="text" class="w-full form-input form-input-sm" placeholder="Name" />
+                                                    <Input @value={{entity.name}}  @type="text" class="w-full form-input form-input-sm" placeholder="Name" />
                                                 </div>
                                                 <div>
-                                                    <Input @value={{entity.sku}} type="text" class="w-full form-input form-input-sm" placeholder="SKU" />
+                                                    <Input @value={{entity.sku}}  @type="text" class="w-full form-input form-input-sm" placeholder="SKU" />
                                                 </div>
                                                 <Button @icon="pencil" @text="Edit Item" @size="sm" @onClick={{fn this.editEntity entity}} />
                                             </div>
@@ -392,10 +392,10 @@
                                 </div>
                                 <div class="space-y-2">
                                     <div>
-                                        <Input @value={{entity.name}} type="text" class="w-full form-input form-input-sm" placeholder="Name" />
+                                        <Input @value={{entity.name}}  @type="text" class="w-full form-input form-input-sm" placeholder="Name" />
                                     </div>
                                     <div>
-                                        <Input @value={{entity.sku}} type="text" class="w-full form-input form-input-sm" placeholder="SKU" />
+                                        <Input @value={{entity.sku}}  @type="text" class="w-full form-input form-input-sm" placeholder="SKU" />
                                     </div>
                                     {{#if this.waypoints.length}}
                                         <select class="form-select w-full form-input-sm" {{on "change" (fn

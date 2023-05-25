@@ -1,6 +1,6 @@
 <div class="custom-meta-field" ...attributes>
     {{#if this.isTextInput}}
-        <Input type="text" class="form-input w-full {{@inputClass}}" @value={{@value}} placeholder={{@placeholder}} />
+        <Input @type="text" class="form-input w-full {{@inputClass}}" @value={{@value}} placeholder={{@placeholder}} />
     {{/if}}
 
     {{#if this.isSelectInput}}
