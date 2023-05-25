@@ -3,26 +3,27 @@ import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import { action, computed } from '@ember/object';
 import { isArray } from '@ember/array';
-import { task, timeout } from 'ember-concurrency';
+import { isBlank } from '@ember/utils';
+import { timeout } from 'ember-concurrency';
+import { task } from 'ember-concurrency-decorators';
 
 export default class FleetDriverListingComponent extends Component {
     @service store;
     @service appCache;
-
     @tracked drivers = [];
     @tracked selected = [];
     @tracked query;
     @tracked isLoading = false;
     @tracked isLoaded = false;
 
-    @computed ('selected.[]') get ids() {
-        return this.selected.map(selection => selection.id);
+    @computed('selected.[]') get ids() {
+        return this.selected.map((selection) => selection.id);
     }
 
     @action async setupComponent() {
         const { selected, fleet } = this.args;
 
-        this.selected = (isArray(selected) && selected.length) ? selected : [];
+        this.selected = isArray(selected) && selected.length ? selected : [];
         this.drivers = await this.queryFleetDrivers(fleet);
     }
 
@@ -95,23 +96,22 @@ export default class FleetDriverListingComponent extends Component {
     }
 
     @action toggleSelected(options = []) {
-        return options.map(option => {
+        return options.map((option) => {
             option.set('selected', this.ids.includes(option.id));
 
             return option;
         });
     }
 
-     @action search({ target }) {
-        const { value } = target;
+    @task({ restartable: true }) *search({ target: { value } }) {
         const { fleet } = this.args;
 
-        this.searchTask.perform(fleet, value);
-     }
- 
-     @task(function* (fleet, query) {
+        if (isBlank(value)) {
+            return;
+        }
+
         yield timeout(300);
- 
-        this.drivers = yield this.queryFleetDrivers(fleet, query);
-     }).restartable() searchTask;
+
+        this.drivers = yield this.queryFleetDrivers(fleet, value);
+    }
 }

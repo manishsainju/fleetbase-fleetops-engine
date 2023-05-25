@@ -2,6 +2,7 @@ import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { later } from '@ember/runloop';
 import GeoJson from '@fleetbase/fleetops-data/utils/geojson/geo-json';
 import FeatureCollection from '@fleetbase/fleetops-data/utils/geojson/feature-collection';
 import last from '@fleetbase/ember-core/utils/last';
@@ -120,9 +121,13 @@ export default class OperationsZonesIndexController extends Controller {
         this.leafletMap = event.target;
 
         // handle resize event now
-        setTimeout(() => {
-            this.leafletMap.invalidateSize();
-        }, 100);
+        later(
+            this,
+            () => {
+                this.leafletMap.invalidateSize();
+            },
+            100
+        );
     }
 
     /**

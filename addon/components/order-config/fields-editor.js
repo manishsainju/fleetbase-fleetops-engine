@@ -196,27 +196,22 @@ export default class OrderConfigFieldsEditorComponent extends Component {
         }
     }
 
+    /* eslint no-unused-vars: "off" */
     @action sortMetaFieldOptions(metaField, el, target) {
-        console.log(`sortMetaFieldOptions`, ...arguments);
+        // console.log(`[sortMetaFieldOptions()]`, ...arguments);
         // const { fields } = this;
         // const { index } = el.dataset;
         // const parentEl = el.parentElement();
-
         // console.log(parentEl);
         // const { metaGroupKey } = target.dataset;
-
         // // get the index of the moved metafield
         // const metaFieldIndex = fields.findIndex((field) => field.key === metaFieldKey);
-
         // // get the meta field and update the group
         // const metaField = fields[metaFieldIndex];
-
         // if (!metaField) {
         //     return;
         // }
-
         // metaField.group = metaGroupKey;
-
         // if (typeof this.args.onFieldsChanged === 'function') {
         //     this.args.onFieldsChanged(fields);
         // }

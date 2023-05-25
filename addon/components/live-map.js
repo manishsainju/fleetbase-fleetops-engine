@@ -9,10 +9,8 @@ import { alias } from '@ember/object/computed';
 import { guidFor } from '@ember/object/internals';
 import { later } from '@ember/runloop';
 import { allSettled } from 'rsvp';
-import extractCoordinates from '@fleetbase/ember-core/utils/extract-coordinates';
 import config from 'ember-get-config';
 
-const L = window.L;
 const DEFAULT_LATITUDE = 1.369;
 const DEFAULT_LONGITUDE = 103.8864;
 

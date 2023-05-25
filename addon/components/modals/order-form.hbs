@@ -9,7 +9,7 @@
             </div>
 
             <InputGroup @name="Customer" @helpText="Optionally assign the customer of this order. If it's a new customer, use the 'New Customer' button above.">
-                <ModelSelect @modelName="customer" @selectedModel={{@options.order.customer}} @placeholder="Select Customer" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @allowClear={{true}} @onChange={{fn @options.setOrderCustomer}} as |model|>
+                <ModelSelect @modelName="customer" @selectedModel={{@options.order.customer}} @placeholder="Select Customer" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @allowClear={{true}} @onChange={{@options.setOrderCustomer}} as |model|>
                     <div class="flex items-center">
                         <div class="w-7">
                             <FaIcon @icon={{if model.isVendor "warehouse" "user" }} />

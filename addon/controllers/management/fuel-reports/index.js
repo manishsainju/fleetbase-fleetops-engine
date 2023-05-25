@@ -2,6 +2,7 @@ import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { isBlank } from '@ember/utils';
 import { timeout } from 'ember-concurrency';
 import { task } from 'ember-concurrency-decorators';
 
@@ -95,7 +96,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
      *
      * @var {String}
      */
-    @tracked sort= '-created_at';
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`
@@ -419,7 +420,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
      */
     @action deleteFuelReport(fuelReport, options = {}) {
         this.crud.delete(fuelReport, {
-            onConfirm: (fuelReport) => {
+            onConfirm: () => {
                 this.hostRouter.refresh();
             },
             ...options,

@@ -99,7 +99,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
      *
      * @var {String}
      */
-    @tracked sort= '-created_at';
+    @tracked sort = '-created_at';
 
     /**
      * The filterable param `public_id`.
@@ -612,5 +612,5 @@ export default class ManagementVehiclesIndexController extends ManagementControl
      * @todo implement
      * @void
      */
-    @action assignDriver(vehicle, options = {}) {}
+    @action assignDriver() {}
 }

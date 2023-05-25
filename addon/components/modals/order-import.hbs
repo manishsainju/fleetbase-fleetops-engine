@@ -30,7 +30,7 @@
                                 <p class="text-base font-semibold my-5">Drag and drop spreadsheet files onto this dropzone</p>
                             {{/if}}
 
-                            <UploadButton @buttonText="or select spreadsheets to upload" @type="magic" @name="spreadsheets" @for="spreadsheets" @accept={{join "," @options.acceptedFileTypes}} @multiple={{true}} @onFileAdded={{fn @options.queueFile}} class="w-72" />
+                            <UploadButton @buttonText="or select spreadsheets to upload" @type="magic" @name="spreadsheets" @for="spreadsheets" @accept={{join "," @options.acceptedFileTypes}} @multiple={{true}} @onFileAdded={{@options.queueFile}} class="w-72" />
                         </div>
                     {{/if}}
                 </FileDropzone>

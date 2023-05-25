@@ -1,10 +1,9 @@
 import Controller, { inject as controller } from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { action, computed } from '@ember/object';
-import { A, isArray } from '@ember/array';
+import { action } from '@ember/object';
+import { isBlank } from '@ember/utils';
 import { task, timeout } from 'ember-concurrency';
-import isModel from '@fleetbase/ember-core/utils/is-model';
 import Point from '@fleetbase/fleetops-data/utils/geojson/point';
 
 export default class ManagementPlacesIndexController extends Controller {
@@ -209,7 +208,7 @@ export default class ManagementPlacesIndexController extends Controller {
             sortable: true,
             filterable: true,
             filterComponent: 'filter/country',
-            filterParam: 'country'
+            filterParam: 'country',
         },
         {
             label: 'Created At',
@@ -483,7 +482,7 @@ export default class ManagementPlacesIndexController extends Controller {
      */
     @action deletePlace(place, options = {}) {
         this.crud.delete(place, {
-            onConfirm: (place) => {
+            onConfirm: () => {
                 return this.hostRouter.refresh();
             },
             ...options,

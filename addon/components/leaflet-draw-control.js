@@ -1,6 +1,5 @@
 import BaseLayer from 'ember-leaflet/components/base-layer';
-import { getProperties, computed } from '@ember/object';
-import { run } from '@ember/runloop';
+import { computed } from '@ember/object';
 import { assign } from '@ember/polyfills';
 import { scheduleOnce } from '@ember/runloop';
 import { classify, camelize } from '@ember/string';
@@ -25,7 +24,7 @@ export default class LeafletDrawControl extends BaseLayer {
 
     leafletOptions = ['draw', 'edit', 'remove', 'poly', 'position'];
 
-    @computed('args', 'leaflefEvents.[]', 'leafletEvents') get usedLeafletEvents() {
+    @computed('leafletEvents.[]', 'args') get usedLeafletEvents() {
         return this.leafletEvents.filter((eventName) => {
             eventName = camelize(eventName.replace(':', ' '));
             let methodName = `_${eventName}`;
@@ -35,7 +34,7 @@ export default class LeafletDrawControl extends BaseLayer {
         });
     }
 
-    @computed('args.draw', 'args.edit', 'args.remove', 'args.poly', 'args.position') get options() {
+    @computed('args.{draw,edit,remove,poly,position}') get options() {
         return {
             position: getWithDefault(this.args, 'position', 'topright'),
             draw: getWithDefault(this.args, 'draw', { marker: false, circlemarker: false, circle: false, polyline: false }),

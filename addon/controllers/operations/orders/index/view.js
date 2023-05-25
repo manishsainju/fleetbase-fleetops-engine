@@ -10,7 +10,6 @@ import groupBy from '@fleetbase/ember-core/utils/macros/group-by';
 import findClosestWaypoint from '@fleetbase/ember-core/utils/find-closest-waypoint';
 import getRoutingHost from '@fleetbase/ember-core/utils/get-routing-host';
 import extractCoordinates from '@fleetbase/ember-core/utils/extract-coordinates';
-import getModelName from '@fleetbase/ember-core/utils/get-model-name';
 
 export default class OperationsOrdersIndexViewController extends Controller {
     /**

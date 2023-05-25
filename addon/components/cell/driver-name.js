@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { action, get, computed } from '@ember/object';
 
 export default class CellDriverNameComponent extends Component {
-    @computed('args.column.modelPath', 'args.row') get driver() {
+    @computed('args.{column.modelPath,args.row}') get driver() {
         const { column, row } = this.args;
 
         if (typeof column?.modelPath === 'string') {
