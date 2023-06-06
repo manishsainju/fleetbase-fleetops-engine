@@ -1,4 +1,4 @@
-export function initialize(application) {
+export function initialize() {
     const path = '/engines-dist/leaflet/';
     const scripts = ['leaflet.contextmenu.js', 'leaflet.draw-src.js', 'leaflet.rotatedMarker.js'];
     const stylesheets = ['leaflet.contextmenu.css', 'leaflet.draw.css'];

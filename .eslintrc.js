@@ -27,6 +27,12 @@ module.exports = {
         'ember/no-get': 'off',
         'ember/classic-decorator-no-classic-methods': 'off',
         'no-prototype-builtins': 'off',
+        'node/no-unpublished-require': [
+            'error',
+            {
+                allowModules: ['resolve'],
+            },
+        ],
     },
     overrides: [
         // node files
