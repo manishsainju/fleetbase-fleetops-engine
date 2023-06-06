@@ -142,11 +142,14 @@ export default class LiveMapComponent extends Component {
 
     @action toggleDrawControlContextMenuItem() {
         const index = this.currentContextMenuItems.findIndex((options) => options.text?.includes('draw controls'));
-        const options = this.currentContextMenuItems.objectAt(index);
-
-        set(options, 'text', this.isDrawControlsVisible ? `Hide draw controls...` : `Enable draw controls...`);
 
         if (index > 0) {
+            const options = this.currentContextMenuItems.objectAt(index);
+
+            if (!isEmpty(options)) {
+                options.text = this.isDrawControlsVisible ? 'Hide draw controls...' : 'Enable draw controls...';
+            }
+
             this.leafletMap?.contextmenu?.removeItem(index);
             this.leafletMap?.contextmenu?.insertItem(options, index);
         }

@@ -29,7 +29,7 @@ export default class OperationsOrdersIndexRoute extends Route {
         this.controller?.resetView(transition);
     }
 
-    model(params) {
+    @action model(params) {
         return this.store.query('order', params);
     }
 }

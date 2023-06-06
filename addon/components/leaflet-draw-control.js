@@ -74,7 +74,7 @@ export default class LeafletDrawControl extends BaseLayer {
         const { onDrawControlCreated, onDrawControlAddedToMap } = this.args;
         const showDrawingLayer = getWithDefault(this.args, 'showDrawingLayer', true);
 
-        if (this.map && this._layer) {
+        if (this.map && this._layer && this.L.drawLocal) {
             this.options.edit = assign({ featureGroup: this._layer }, this.options.edit);
             this.options.draw = assign({}, this.L.drawLocal.draw, this.options.draw);
 
