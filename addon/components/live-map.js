@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import { action, computed, set } from '@ember/object';
 import { isArray } from '@ember/array';
-import { isEmpty } from '@ember/utils';
+import { isBlank } from '@ember/utils';
 import { dasherize } from '@ember/string';
 import { alias } from '@ember/object/computed';
 import { guidFor } from '@ember/object/internals';
@@ -146,7 +146,7 @@ export default class LiveMapComponent extends Component {
         if (index > 0) {
             const options = this.currentContextMenuItems.objectAt(index);
 
-            if (!isEmpty(options)) {
+            if (!isBlank(options)) {
                 options.text = this.isDrawControlsVisible ? 'Hide draw controls...' : 'Enable draw controls...';
             }
 
@@ -322,7 +322,7 @@ export default class LiveMapComponent extends Component {
      */
 
     @action removeDrawingControl() {
-        if (isEmpty(this.drawControl)) {
+        if (isBlank(this.drawControl)) {
             return;
         }
 
@@ -682,9 +682,19 @@ export default class LiveMapComponent extends Component {
      *
      */
 
+    createSocketClusterClient() {
+        const socketConfig = { ...config.socket };
+
+        if (isBlank(socketConfig.hostname)) {
+            socketConfig.hostname = window.location.hostname;
+        }
+
+        return socketClusterClient.create(socketConfig);
+    }
+
     @action watchDrivers(drivers = []) {
         // setup socket
-        const socket = socketClusterClient.create(config.socket);
+        const socket = this.createSocketClusterClient();
 
         // listen for stivers
         for (let i = 0; i < drivers.length; i++) {

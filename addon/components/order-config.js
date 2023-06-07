@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import { action, computed, set } from '@ember/object';
 import { equal } from '@ember/object/computed';
+import { isBlank } from '@ember/utils';
 import isModel from '@fleetbase/ember-core/utils/is-model';
 import config from 'ember-get-config';
 
@@ -254,12 +255,22 @@ export default class OrderConfigComponent extends Component {
         });
     }
 
+    createSocketClusterClient() {
+        const socketConfig = { ...config.socket };
+
+        if (isBlank(socketConfig.hostname)) {
+            socketConfig.hostname = window.location.hostname;
+        }
+
+        return socketClusterClient.create(socketConfig);
+    }
+
     async listenForUninstallProgress(extension) {
         // get channel identifier
         const channelId = `${extension.id}:${this.currentUser.id}`;
 
         // setup socket
-        const socket = socketClusterClient.create(config.socket);
+        const socket = this.createSocketClusterClient();
 
         // get channel
         const channel = socket.subscribe(channelId);
