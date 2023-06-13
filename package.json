@@ -2,8 +2,11 @@
     "name": "@fleetbase/fleetops-engine",
     "extension": "Fleet Ops",
     "icon": "route",
-    "version": "0.0.9",
+    "version": "0.1.0",
     "priority": 0,
+    "fleetbase": {
+        "dashboard": "int/v1/fleet-ops/dashboard"
+    },
     "description": "Fleetbase Fleet-Ops extension provides a fleet management and last mile delivery operations system module.",
     "keywords": [
         "fleetbase-extension",
@@ -36,8 +39,8 @@
         "test:ember-compatibility": "ember try:each"
     },
     "dependencies": {
-        "@fleetbase/ember-core": "^0.0.3",
-        "@fleetbase/ember-ui": "^0.0.6",
+        "@fleetbase/ember-core": "^0.0.4",
+        "@fleetbase/ember-ui": "^0.0.7",
         "@fleetbase/fleetops-data": "^0.0.2",
         "@fleetbase/leaflet-routing-machine": "^3.2.15",
         "@fortawesome/ember-fontawesome": "^0.4.1",
@@ -51,7 +54,7 @@
         "ember-cli-es6-transform": "^1.0.0",
         "ember-cli-htmlbars": "^6.1.0",
         "ember-leaflet": "^5.1.1",
-        "ember-radio-button": "3.0.0-beta.1",
+        "ember-radio-button": "^3.0.0-beta.1",
         "ember-wormhole": "^0.6.0",
         "leaflet": "^1.9.4",
         "leaflet-contextmenu": "^1.4.0",

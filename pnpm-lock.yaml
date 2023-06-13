@@ -2,11 +2,11 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@fleetbase/ember-core':
-    specifier: ^0.0.3
-    version: 0.0.3(@babel/core@7.22.1)(ember-fetch@8.1.2)(postcss@8.4.24)(webpack@5.74.0)
+    specifier: ^0.0.4
+    version: 0.0.4(@babel/core@7.22.1)(ember-fetch@8.1.2)(postcss@8.4.24)(webpack@5.74.0)
   '@fleetbase/ember-ui':
-    specifier: ^0.0.6
-    version: 0.0.6(@babel/core@7.22.1)(@ember/test-helpers@2.8.1)(ember-source@4.6.0)(rollup@3.23.1)(webpack@5.74.0)
+    specifier: ^0.0.7
+    version: 0.0.7(@babel/core@7.22.1)(@ember/test-helpers@2.8.1)(ember-source@4.6.0)(rollup@3.23.1)(webpack@5.74.0)
   '@fleetbase/fleetops-data':
     specifier: ^0.0.2
     version: 0.0.2
@@ -47,7 +47,7 @@ dependencies:
     specifier: ^5.1.1
     version: 5.1.1(@babel/core@7.22.1)(ember-source@4.6.0)(leaflet@1.9.4)
   ember-radio-button:
-    specifier: 3.0.0-beta.1
+    specifier: ^3.0.0-beta.1
     version: 3.0.0-beta.1
   ember-wormhole:
     specifier: ^0.6.0
@@ -1916,8 +1916,8 @@ packages:
       - supports-color
     dev: true
 
-  /@fleetbase/ember-core@0.0.3(@babel/core@7.22.1)(ember-fetch@8.1.2)(postcss@8.4.24)(webpack@5.74.0):
-    resolution: {integrity: sha512-0hGqFIs5J4SpFoeHnzVUkxg/oZCnRqPUAoRSBU0163UhidvZagZcnMZiDqpbTUdhpGHgbfY++WIImmGXaBFSpw==}
+  /@fleetbase/ember-core@0.0.4(@babel/core@7.22.1)(ember-fetch@8.1.2)(postcss@8.4.24)(webpack@5.74.0):
+    resolution: {integrity: sha512-Eh0odEhOWgNlW3DSxZMRabOIBzpyyGSZpPxIZrKq+eOK63vgGFfyP4B/sSMCmS49qpeYrBkjqe12FhNvUI+BYg==}
     engines: {node: 14.* || >= 16}
     dependencies:
       date-fns: 2.30.0
@@ -1946,8 +1946,8 @@ packages:
       - webpack
     dev: false
 
-  /@fleetbase/ember-ui@0.0.6(@babel/core@7.22.1)(@ember/test-helpers@2.8.1)(ember-source@4.6.0)(rollup@3.23.1)(webpack@5.74.0):
-    resolution: {integrity: sha512-rgog3b7j08EHcLdoi2G8Sp5prVcHeHqA5oEAuaL9+sxonTtBblBthkPpyrS0LfAJntBH1pQbHUyWjJ1sWgrAqg==}
+  /@fleetbase/ember-ui@0.0.7(@babel/core@7.22.1)(@ember/test-helpers@2.8.1)(ember-source@4.6.0)(rollup@3.23.1)(webpack@5.74.0):
+    resolution: {integrity: sha512-0gxet/cjaEpQ4n0/nqD7GxoRPZtSqGYqoZ9bHr4Af3zcQBMrB9eDGftfXah/xoVas8S/QG8R9TQlVyYIupJfWg==}
     engines: {node: 14.* || >= 16}
     dependencies:
       '@ember/render-modifiers': 2.1.0(@babel/core@7.22.1)(ember-source@4.6.0)
@@ -1957,6 +1957,7 @@ packages:
       '@floating-ui/dom': 1.2.9
       '@fortawesome/ember-fontawesome': 1.0.0(rollup@3.23.1)
       '@fortawesome/fontawesome-svg-core': 6.4.0
+      '@fortawesome/free-brands-svg-icons': 6.4.0
       '@fortawesome/free-solid-svg-icons': 6.4.0
       '@makepanic/ember-power-calendar-date-fns': 0.4.2
       air-datepicker: 3.3.5
@@ -2098,6 +2099,14 @@ packages:
 
   /@fortawesome/fontawesome-svg-core@6.4.0:
     resolution: {integrity: sha512-Bertv8xOiVELz5raB2FlXDPKt+m94MQ3JgDfsVbrqNpLU9+UE2E18GKjLKw+d3XbeYPqg1pzyQKGsrzbw+pPaw==}
+    engines: {node: '>=6'}
+    requiresBuild: true
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 6.4.0
+    dev: false
+
+  /@fortawesome/free-brands-svg-icons@6.4.0:
+    resolution: {integrity: sha512-qvxTCo0FQ5k2N+VCXb/PZQ+QMhqRVM4OORiO6MXdG6bKolIojGU/srQ1ptvKk0JTbRgaJOfL2qMqGvBEZG7Z6g==}
     engines: {node: '>=6'}
     requiresBuild: true
     dependencies:
