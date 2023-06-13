@@ -9,7 +9,6 @@ import { alias } from '@ember/object/computed';
 import { guidFor } from '@ember/object/internals';
 import { later } from '@ember/runloop';
 import { allSettled } from 'rsvp';
-import config from 'ember-get-config';
 
 const DEFAULT_LATITUDE = 1.369;
 const DEFAULT_LONGITUDE = 103.8864;
@@ -17,6 +16,7 @@ const DEFAULT_LONGITUDE = 103.8864;
 export default class LiveMapComponent extends Component {
     @service store;
     @service fetch;
+    @service socket;
     @service currentUser;
     @service notifications;
     @service serviceAreas;
@@ -681,20 +681,9 @@ export default class LiveMapComponent extends Component {
      * Functions are used to fetch date or handle socket callbacks/initializations.
      *
      */
-
-    createSocketClusterClient() {
-        const socketConfig = { ...config.socket };
-
-        if (isBlank(socketConfig.hostname)) {
-            socketConfig.hostname = window.location.hostname;
-        }
-
-        return socketClusterClient.create(socketConfig);
-    }
-
     @action watchDrivers(drivers = []) {
         // setup socket
-        const socket = this.createSocketClusterClient();
+        const socket = this.socket.instance();
 
         // listen for stivers
         for (let i = 0; i < drivers.length; i++) {
