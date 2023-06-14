@@ -18,7 +18,7 @@
                 <CountrySelect class="w-full form-input form-select form-datalist" @value={{@options.place.country}} @onChange={{fn (mut @options.place.country)}} placeholder="Country" />
             </InputGroup>
             <InputGroup @name="Coordinates" @wrapperClass="col-span-2">
-                <CoordinatesInput @value={{@options.place.location}} @onChange={{@options.updatePlaceCoordinates}} @onGeocode={{@options.autocomplete}} @onInit={{@options.setCoordinatesInput}} />
+                <CoordinatesInput @value={{@options.place.location}} @onChange={{@options.updatePlaceCoordinates}} @onGeocode={{@options.autocomplete}} @onUpdatedFromMap={{@options.reverseGeocode}} @onInit={{@options.setCoordinatesInput}} />
             </InputGroup>
             <div class="col-span-1"></div>
             <InputGroup @name="Phone">

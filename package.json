@@ -2,7 +2,7 @@
     "name": "@fleetbase/fleetops-engine",
     "extension": "Fleet Ops",
     "icon": "route",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "priority": 0,
     "fleetbase": {
         "dashboard": "int/v1/fleet-ops/dashboard"
@@ -39,9 +39,9 @@
         "test:ember-compatibility": "ember try:each"
     },
     "dependencies": {
-        "@fleetbase/ember-core": "^0.0.4",
-        "@fleetbase/ember-ui": "^0.0.7",
-        "@fleetbase/fleetops-data": "^0.0.2",
+        "@fleetbase/ember-core": "^0.0.6",
+        "@fleetbase/ember-ui": "^0.0.8",
+        "@fleetbase/fleetops-data": "^0.0.3",
         "@fleetbase/leaflet-routing-machine": "^3.2.15",
         "@fortawesome/ember-fontawesome": "^0.4.1",
         "@fortawesome/fontawesome-svg-core": "^6.4.0",

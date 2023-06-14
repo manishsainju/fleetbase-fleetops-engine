@@ -43,6 +43,13 @@ export default class ManagementPlacesIndexController extends Controller {
     @service store;
 
     /**
+     * Inject the `fetch` service
+     *
+     * @var {Service}
+     */
+    @service fetch;
+
+    /**
      * Inject the `filters` service
      *
      * @var {Service}
@@ -434,13 +441,20 @@ export default class ManagementPlacesIndexController extends Controller {
             autocomplete: (selected) => {
                 const coordinatesInputComponent = this.modalsManager.getOption('coordinatesInputComponent');
 
-                console.log('selected', selected);
-
                 place.setProperties({ ...selected });
 
                 if (coordinatesInputComponent) {
                     coordinatesInputComponent.updateCoordinates(selected.location);
                 }
+            },
+            reverseGeocode: ({ latitude, longitude }) => {
+                return this.fetch.get('geocoder/reverse', { coordinates: [latitude, longitude].join(','), single: true }).then((result) => {
+                    if (isBlank(result)) {
+                        return;
+                    }
+
+                    place.setProperties({ ...result });
+                });
             },
             setCoordinatesInput: (coordinatesInputComponent) => {
                 this.modalsManager.setOption('coordinatesInputComponent', coordinatesInputComponent);
