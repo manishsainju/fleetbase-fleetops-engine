@@ -9,6 +9,7 @@ import { task } from 'ember-concurrency-decorators';
 import extractCoordinates from '@fleetbase/ember-core/utils/extract-coordinates';
 import leafletIcon from '@fleetbase/ember-core/utils/leaflet-icon';
 import generateSlug from '@fleetbase/ember-core/utils/generate-slug';
+import Point from '@fleetbase/fleetops-data/utils/geojson/point';
 
 export default class ManagementDriversIndexController extends Controller {
     /**
@@ -672,7 +673,6 @@ export default class ManagementDriversIndexController extends Controller {
                         type: `driver_photo`,
                     },
                     (uploadedFile) => {
-                        console.log('uploadedFile', uploadedFile);
                         driver.setProperties({
                             photo_uuid: uploadedFile.id,
                             photo_url: uploadedFile.url,
@@ -683,6 +683,12 @@ export default class ManagementDriversIndexController extends Controller {
             },
             confirm: (modal, done) => {
                 modal.startLoading();
+
+                if (isBlank(driver.location)) {
+                    // set default location from currentUser service
+                    const { latitude, longitude } = this.currentUser;
+                    driver.set('location', new Point(latitude, longitude));
+                }
 
                 driver
                     .save()
@@ -696,7 +702,6 @@ export default class ManagementDriversIndexController extends Controller {
                         done();
                     })
                     .catch((error) => {
-                        console.log(error);
                         // driver.rollbackAttributes();
                         modal.stopLoading();
                         this.notifications.serverError(error);

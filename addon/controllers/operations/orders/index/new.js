@@ -674,8 +674,8 @@ export default class OperationsOrdersIndexNewController extends Controller {
                 profile: 'driving',
             });
 
-            console.log('[this.routePreviewArray]', this.routePreviewArray);
-            console.log('[this.routePreviewCoordinates]', this.routePreviewCoordinates);
+            // console.log('[this.routePreviewArray]', this.routePreviewArray);
+            // console.log('[this.routePreviewCoordinates]', this.routePreviewCoordinates);
 
             this.previewRouteControl = new RoutingControl({
                 waypoints: this.routePreviewCoordinates,
