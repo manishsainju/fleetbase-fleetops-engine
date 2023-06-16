@@ -231,6 +231,15 @@ export default class OperationsOrdersIndexViewController extends Controller {
 
         this.routeControl = new RoutingControl({
             waypoints,
+            markerOptions: {
+                icon: L.icon({
+                    iconUrl: '/assets/images/marker-icon.png',
+                    iconRetinaUrl: '/assets/images/marker-icon-2x.png',
+                    shadowUrl: '/assets/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                }),
+            },
             alternativeClassName: 'hidden',
             addWaypoints: false,
             router,
