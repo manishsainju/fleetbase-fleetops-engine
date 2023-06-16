@@ -2,17 +2,17 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@fleetbase/ember-core':
-    specifier: ^0.0.7
-    version: 0.0.7(@babel/core@7.22.5)(ember-fetch@8.1.2)(postcss@8.4.24)(webpack@5.74.0)
+    specifier: ^0.0.8
+    version: 0.0.8(@babel/core@7.22.5)(ember-fetch@8.1.2)(postcss@8.4.24)(webpack@5.74.0)
   '@fleetbase/ember-ui':
     specifier: ^0.0.8
     version: 0.0.8(@babel/core@7.22.5)(@ember/test-helpers@2.8.1)(ember-source@4.6.0)(rollup@3.25.1)(webpack@5.74.0)
   '@fleetbase/fleetops-data':
-    specifier: ^0.0.4
-    version: 0.0.4
+    specifier: ^0.0.5
+    version: 0.0.5
   '@fleetbase/leaflet-routing-machine':
-    specifier: ^3.2.15
-    version: 3.2.15
+    specifier: ^3.2.16
+    version: 3.2.16
   '@fortawesome/ember-fontawesome':
     specifier: ^0.4.1
     version: 0.4.1(rollup@3.25.1)
@@ -64,9 +64,6 @@ dependencies:
   leaflet-rotatedmarker:
     specifier: ^0.2.0
     version: 0.2.0
-  socketcluster-client:
-    specifier: ^17.1.1
-    version: 17.1.1
 
 devDependencies:
   '@ember/optional-features':
@@ -1924,8 +1921,8 @@ packages:
       - supports-color
     dev: true
 
-  /@fleetbase/ember-core@0.0.7(@babel/core@7.22.5)(ember-fetch@8.1.2)(postcss@8.4.24)(webpack@5.74.0):
-    resolution: {integrity: sha512-sHByATuNUjgihChE5/Pa2U35emlRVyAbvkOk+fSC1d3mX3sTm7mpsM+Z+gW8+ohbjCY+U3daWFio2458pntM0w==}
+  /@fleetbase/ember-core@0.0.8(@babel/core@7.22.5)(ember-fetch@8.1.2)(postcss@8.4.24)(webpack@5.74.0):
+    resolution: {integrity: sha512-Y8W3q2tACygGfE9HzNDGK/5KhN48sdVTQD2dZjYcApsrvduSPpCIHlpMuswyoan/IKovCeiXCICIJOVsSawn4Q==}
     engines: {node: 14.* || >= 16}
     dependencies:
       date-fns: 2.30.0
@@ -2019,8 +2016,8 @@ packages:
       - webpack-command
     dev: false
 
-  /@fleetbase/fleetops-data@0.0.4:
-    resolution: {integrity: sha512-knI0bY4fgN/EaXp4tzaBZgwiWh/6gcuZtx7TTZJWDojXD13N/eZPErzy9FGd+zqeW3OsOQKE06TA87dslWm7Ng==}
+  /@fleetbase/fleetops-data@0.0.5:
+    resolution: {integrity: sha512-v43REyxVzDeITl7CjKneQeICJQU243n+9ihmyiUP/xjKx/P8/fQ73DJgWOvDDTdVg2u5ltxCmtVcoN24RLhaSQ==}
     engines: {node: 14.* || >= 16}
     dependencies:
       date-fns: 2.30.0
@@ -2030,8 +2027,8 @@ packages:
       - supports-color
     dev: false
 
-  /@fleetbase/leaflet-routing-machine@3.2.15:
-    resolution: {integrity: sha512-GD0VrnPrXu4VoVsaIM49VDwQNG2yaYd69QrQkmzZzr/Wn5Uu2wXobOCPBq5D9xImmYUhJjNEPBKjUr3Xkzu7aw==}
+  /@fleetbase/leaflet-routing-machine@3.2.16:
+    resolution: {integrity: sha512-af0mKH3VKIGEfYEGXS9cedhgniwgkNwjC/Gp9ZEzXGTX2/13PyMdd1XOQTamaItPbh5x2uK2/n1BP0vIJ7ObEQ==}
     dependencies:
       '@mapbox/corslite': 0.0.7
       '@mapbox/polyline': 0.2.0
@@ -12494,7 +12491,7 @@ packages:
       stream-demux: 8.1.0
       uuid: 8.3.2
       vinyl-buffer: 1.0.1
-      ws: 8.13.0
+      ws: 8.11.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -13867,20 +13864,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-    dev: true
-
-  /ws@8.13.0:
-    resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: '>=5.0.2'
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-    dev: false
 
   /xdg-basedir@4.0.0:
     resolution: {integrity: sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q==}
