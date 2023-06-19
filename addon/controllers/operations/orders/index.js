@@ -74,6 +74,13 @@ export default class OperationsOrdersIndexController extends Controller {
     @service crud;
 
     /**
+     * Inject the `engineContext` service
+     *
+     * @var {Service}
+     */
+    @service engineContext;
+
+    /**
      * Queryable parameters for this controller's model
      *
      * @var {Array}
@@ -520,6 +527,8 @@ export default class OperationsOrdersIndexController extends Controller {
         if (mode === 'table') {
             this.isSearchVisible = false;
         }
+
+        this.engineContext.trigger('dashboard.layout.changed', mode);
     }
 
     @action setMapReference({ target }) {

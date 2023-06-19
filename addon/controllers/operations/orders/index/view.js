@@ -82,6 +82,13 @@ export default class OperationsOrdersIndexViewController extends Controller {
      */
     @service hostRouter;
 
+    /**
+     * Inject the `engineContext` service
+     *
+     * @var {Service}
+     */
+    @service engineContext;
+
     @tracked isLoadingAdditionalData = false;
     @tracked isWaypointsCollapsed;
     @tracked leafletRoute;
@@ -200,13 +207,40 @@ export default class OperationsOrdersIndexViewController extends Controller {
         // always set map layout
         this.ordersController.setLayoutMode('map');
 
-        setTimeout(() => {
-            this.leafletMap?.liveMap?.hideDrivers();
-            this.leafletMap?.liveMap?.hideRoutes();
+        // create initial setup function which runs 600ms after invoked
+        const setup = (ms = 500) => {
+            return later(
+                this,
+                () => {
+                    this.leafletMap?.liveMap?.hideDrivers();
+                    this.leafletMap?.liveMap?.hideRoutes();
 
-            // display order route on map
-            this.displayOrderRoute();
-        }, 600);
+                    // display order route on map
+                    this.displayOrderRoute();
+                },
+                ms
+            );
+        };
+
+        // create a display order route only function
+        const displayOrderRoute = () => {
+            return this.displayOrderRoute();
+        };
+
+        // re-display order routes when livemap has coordinates
+        this.engineContext.on('livemap.has_coordinates', this, displayOrderRoute);
+
+        // when transitioning away kill event listener
+        this.hostRouter.on('routeWillChange', () => {
+            const isListening = this.engineContext.has('livemap.has_coordinates');
+
+            if (isListening) {
+                this.engineContext.off('livemap.has_coordinates', this, displayOrderRoute);
+            }
+        });
+
+        // run setup
+        setup();
     }
 
     @action displayOrderRoute() {
@@ -251,16 +285,20 @@ export default class OperationsOrdersIndexViewController extends Controller {
             this.leafletRoute = routes.firstObject;
         });
 
-        setTimeout(() => {
-            leafletMap?.flyToBounds(waypoints, {
-                paddingBottomRight: [200, 0],
-                maxZoom: 14,
-                animate: true,
-            });
-            leafletMap.once('moveend', function () {
-                leafletMap.panBy([250, 0]);
-            });
-        }, 300);
+        later(
+            this,
+            () => {
+                leafletMap?.flyToBounds(waypoints, {
+                    paddingBottomRight: [200, 0],
+                    maxZoom: 14,
+                    animate: true,
+                });
+                leafletMap.once('moveend', function () {
+                    leafletMap.panBy([250, 0]);
+                });
+            },
+            300
+        );
     }
 
     /**
