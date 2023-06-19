@@ -21,6 +21,7 @@ export default class LiveMapComponent extends Component {
     @service notifications;
     @service serviceAreas;
     @service appCache;
+    @service engineContext;
 
     @tracked routes = [];
     @tracked drivers = [];
@@ -41,6 +42,7 @@ export default class LiveMapComponent extends Component {
     @tracked drawControl;
     @tracked latitude = DEFAULT_LATITUDE;
     @tracked longitude = DEFAULT_LONGITUDE;
+    @tracked skipSetCoordinates = false;
     @tracked mapId = guidFor(this);
     @alias('currentUser.latitude') userLatitude;
     @alias('currentUser.longitude') userLongitude;
@@ -60,29 +62,47 @@ export default class LiveMapComponent extends Component {
     }
 
     /**
+     * Creates an instance of LiveMapComponent.
+     * @memberof LiveMapComponent
+     */
+    constructor() {
+        super(...arguments);
+
+        this.skipSetCoordinates = this.args.skipSetCoordinates ?? false;
+    }
+
+    /**
      * ----------------------------------------------------------------------------
      * SETUP
      * ----------------------------------------------------------------------------
      *
      * Functions for initialization and setup.
      */
-
     @action async setupLiveMap() {
-        if (this.appCache.has(['map_latitude', 'map_longitude'])) {
-            this.latitude = this.appCache.get('map_latitude');
-            this.longitude = this.appCache.get('map_longitude');
-            this.isReady = true;
+        // trigger that initial coordinates have been set
+        this.engineContext.trigger('livemap.loaded', this);
+
+        if (this.skipSetCoordinates === false) {
+            if (this.appCache.has(['map_latitude', 'map_longitude'])) {
+                this.latitude = this.appCache.get('map_latitude');
+                this.longitude = this.appCache.get('map_longitude');
+                this.isReady = true;
+            }
+
+            const { latitude, longitude } = await this.getInitialCoordinates();
+
+            if (this.appCache.doesntHave(['map_latitude', 'map_longitude'])) {
+                this.appCache.set('map_latitude', latitude);
+                this.appCache.set('map_longitude', longitude);
+            }
+
+            this.latitude = latitude;
+            this.longitude = longitude;
         }
 
-        const { latitude, longitude } = await this.getInitialCoordinates();
+        // trigger that initial coordinates have been set
+        this.engineContext.trigger('livemap.has_coordinates', { latitude: this.latitude, longitude: this.longitude });
 
-        if (this.appCache.doesntHave(['map_latitude', 'map_longitude'])) {
-            this.appCache.set('map_latitude', latitude);
-            this.appCache.set('map_longitude', longitude);
-        }
-
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.routes = await this.fetchActiveRoutes();
         this.drivers = await this.fetchActiveDrivers();
         this.serviceAreaRecords = await this.fetchServiceAreas();
@@ -93,6 +113,9 @@ export default class LiveMapComponent extends Component {
         if (typeof this.args.onReady === 'function') {
             this.args.onReady(this);
         }
+
+        // add context event
+        this.engineContext.trigger('livemap.ready', this);
     }
 
     @action setMapReference(event) {
@@ -175,6 +198,10 @@ export default class LiveMapComponent extends Component {
         this[actionName] = callback;
     }
 
+    @action shouldSkipSettingInitialCoordinates() {
+        this.skipSetCoordinates = true;
+    }
+
     /**
      * ----------------------------------------------------------------------------
      * TRACKED LAYER UTILITIES
@@ -182,7 +209,6 @@ export default class LiveMapComponent extends Component {
      *
      * Functions provide utility for managing tracked editable layers.
      */
-
     @action pushEditableLayer(layer) {
         if (!this.editableLayers.includes(layer)) {
             this.editableLayers.pushObject(layer);
@@ -320,7 +346,6 @@ export default class LiveMapComponent extends Component {
      * Functions are used to help or utilize on Leaflet Layers/ Controls.
      *
      */
-
     @action removeDrawingControl() {
         if (isBlank(this.drawControl)) {
             return;
