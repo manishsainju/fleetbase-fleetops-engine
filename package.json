@@ -2,7 +2,7 @@
     "name": "@fleetbase/fleetops-engine",
     "extension": "Fleet Ops",
     "icon": "route",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "priority": 0,
     "fleetbase": {
         "dashboard": "int/v1/fleet-ops/dashboard"
