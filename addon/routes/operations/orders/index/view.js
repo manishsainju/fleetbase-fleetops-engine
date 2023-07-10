@@ -7,7 +7,9 @@ export default class OperationsOrdersIndexViewRoute extends Route {
     @service store;
 
     @action willTransition() {
-        this.controller?.resetView();
+        if (this.controller) {
+            this.controller.resetView();
+        }
     }
 
     model(order) {

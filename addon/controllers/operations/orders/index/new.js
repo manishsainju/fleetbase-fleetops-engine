@@ -182,16 +182,6 @@ export default class OperationsOrdersIndexNewController extends Controller {
         return groups;
     }
 
-    @action dropdownAction(actionName, dd, ...params) {
-        if (typeof dd?.actions?.close === 'function') {
-            dd.actions.close();
-        }
-
-        if (typeof this[actionName] === 'function') {
-            this[actionName](...params);
-        }
-    }
-
     @action createOrder() {
         if (!this.isValid) {
             return;
@@ -499,7 +489,7 @@ export default class OperationsOrdersIndexNewController extends Controller {
     }
 
     @action scheduleOrder(dateInstance) {
-        this.order.scheduled_at = dateInstance.toDate();
+        this.order.scheduled_at = dateInstance;
     }
 
     @action setupInterface() {
@@ -890,6 +880,7 @@ export default class OperationsOrdersIndexNewController extends Controller {
 
     @action setOrderFacilitator(model) {
         this.order.set('facilitator', model);
+        // this.order.set('facilitator_type', `fleet-ops:${model.facilitator_type}`);
         this.order.set('driver', null);
 
         this.isUsingIntegratedVendor = model.isIntegratedVendor;
@@ -906,6 +897,11 @@ export default class OperationsOrdersIndexNewController extends Controller {
         if (model) {
             this.driversQuery = { facilitator: model.id };
         }
+    }
+
+    @action setOrderCustomer(model) {
+        this.order.set('customer', model);
+        // this.order.set('customer_type', `fleet-ops:${model.customer_type}`);
     }
 
     @action selectIntegratedServiceType(key) {

@@ -169,38 +169,36 @@ export default class OperationsOrdersIndexViewController extends Controller {
 
     @action removeRoutingControlPreview() {
         const { leafletMap, routeControl } = this;
-        let removed = false;
 
         if (routeControl instanceof RoutingControl) {
             try {
                 routeControl.remove();
-                removed = true;
             } catch (e) {
                 // silent
             }
+        }
 
-            if (!removed) {
-                try {
-                    leafletMap?.removeControl(routeControl);
-                } catch (e) {
-                    // silent
-                }
+        if (leafletMap instanceof L.Map) {
+            try {
+                leafletMap.removeControl(routeControl);
+            } catch (e) {
+                // silent
             }
         }
 
-        if (!removed) {
-            this.forceRemoveRoutePreview();
-        }
+        this.forceRemoveRoutePreview();
     }
 
     @action forceRemoveRoutePreview() {
         const { leafletMap } = this;
 
-        leafletMap.eachLayer((layer) => {
-            if (layer instanceof L.Polyline || layer instanceof L.Marker) {
-                layer.remove();
-            }
-        });
+        if (leafletMap instanceof L.Map) {
+            leafletMap.eachLayer((layer) => {
+                if (layer instanceof L.Polyline || layer instanceof L.Marker) {
+                    layer.remove();
+                }
+            });
+        }
     }
 
     @action setupInterface() {

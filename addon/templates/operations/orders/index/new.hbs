@@ -3,37 +3,37 @@
         <DropdownButton @icon="ellipsis-h" @size="sm" @iconPrefix="fas" @triggerClass="mr-2 hidden md:flex" as |dd|>
             <div class="next-dd-menu mt-1 mx-0" aria-orientation="vertical" aria-labelledby="user-menu">
                 <div class="p-1">
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "newCustomer" dd)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.newCustomer)}}>
                         <div class="w-6">
                             <FaIcon @icon="user-plus" />
                         </div>
                         <span>Create new customer</span>
                     </a>
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "newFacilitator" dd)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.newFacilitator)}}>
                         <div class="w-6">
                             <FaIcon @icon="truck" />
                         </div>
                         <span>Create new facilitator</span>
                     </a>
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "newPlace" dd)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.newPlace)}}>
                         <div class="w-6">
                             <FaIcon @icon="map-pin" />
                         </div>
                         <span>Create new place</span>
                     </a>
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "addEntity" dd)}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.addEntity)}}>
                         <div class="w-6">
                             <FaIcon @icon="box" />
                         </div>
                         <span>Add entity to order</span>
                     </a>
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "editMetaData")}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.editMetaData)}}>
                         <div class="w-6">
                             <FaIcon @icon="table" />
                         </div>
                         <span>Edit order metadata</span>
                     </a>
-                    <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.dropdownAction "addCustomField")}}>
+                    <a href="javascript:;" class="next-dd-item" {{on "click" (dropdown-fn dd this.addCustomField)}}>
                         <div class="w-6">
                             <FaIcon @icon="edit" />
                         </div>
@@ -62,7 +62,7 @@
                 </InputGroup>
 
                 <InputGroup @name="Customer" @helpText="Optionally assign the customer of this order. If it's a new customer, use the 'New Customer' button above.">
-                    <ModelSelect @modelName="customer" @selectedModel={{this.order.customer}} @placeholder="Select Customer" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @allowClear={{true}} @onChange={{fn (mut this.order.customer)}} as |model|>
+                    <ModelSelect @modelName="customer" @selectedModel={{this.order.customer}} @placeholder="Select Customer" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @allowClear={{true}} @onChange={{this.setOrderCustomer}} as |model|>
                         <div class="flex items-center">
                             <div class="w-7">
                                 <FaIcon @icon={{if model.isVendor "warehouse" "user" }} />
