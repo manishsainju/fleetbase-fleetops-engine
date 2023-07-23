@@ -21,7 +21,7 @@ export default class LiveMapComponent extends Component {
     @service notifications;
     @service serviceAreas;
     @service appCache;
-    @service engineContext;
+    @service universe;
 
     @tracked routes = [];
     @tracked drivers = [];
@@ -80,7 +80,7 @@ export default class LiveMapComponent extends Component {
      */
     @action async setupLiveMap() {
         // trigger that initial coordinates have been set
-        this.engineContext.trigger('livemap.loaded', this);
+        this.universe.trigger('livemap.loaded', this);
 
         if (this.skipSetCoordinates === false) {
             if (this.appCache.has(['map_latitude', 'map_longitude'])) {
@@ -101,7 +101,7 @@ export default class LiveMapComponent extends Component {
         }
 
         // trigger that initial coordinates have been set
-        this.engineContext.trigger('livemap.has_coordinates', { latitude: this.latitude, longitude: this.longitude });
+        this.universe.trigger('livemap.has_coordinates', { latitude: this.latitude, longitude: this.longitude });
 
         this.routes = await this.fetchActiveRoutes();
         this.drivers = await this.fetchActiveDrivers();
@@ -115,7 +115,7 @@ export default class LiveMapComponent extends Component {
         }
 
         // add context event
-        this.engineContext.trigger('livemap.ready', this);
+        this.universe.trigger('livemap.ready', this);
     }
 
     @action setMapReference(event) {

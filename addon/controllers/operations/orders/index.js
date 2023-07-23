@@ -74,11 +74,11 @@ export default class OperationsOrdersIndexController extends Controller {
     @service crud;
 
     /**
-     * Inject the `engineContext` service
+     * Inject the `universe` service
      *
      * @var {Service}
      */
-    @service engineContext;
+    @service universe;
 
     /**
      * Queryable parameters for this controller's model
@@ -528,7 +528,7 @@ export default class OperationsOrdersIndexController extends Controller {
             this.isSearchVisible = false;
         }
 
-        this.engineContext.trigger('dashboard.layout.changed', mode);
+        this.universe.trigger('dashboard.layout.changed', mode);
     }
 
     @action setMapReference({ target }) {

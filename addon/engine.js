@@ -14,6 +14,10 @@ export default class FleetOpsEngine extends Engine {
         services,
         externalRoutes,
     };
+    setupExtension = function (app, engine, universe) {
+        // register menu item in header
+        universe.registerHeaderMenuItem('Fleet Ops', 'console.fleet-ops', { icon: 'route', priority: 0 });
+    };
 }
 
 loadInitializers(FleetOpsEngine, modulePrefix);

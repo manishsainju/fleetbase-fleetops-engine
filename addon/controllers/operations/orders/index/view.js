@@ -9,7 +9,6 @@ import { OSRMv1, Control as RoutingControl } from '@fleetbase/leaflet-routing-ma
 import groupBy from '@fleetbase/ember-core/utils/macros/group-by';
 import findClosestWaypoint from '@fleetbase/ember-core/utils/find-closest-waypoint';
 import getRoutingHost from '@fleetbase/ember-core/utils/get-routing-host';
-import extractCoordinates from '@fleetbase/ember-core/utils/extract-coordinates';
 
 export default class OperationsOrdersIndexViewController extends Controller {
     /**
@@ -83,11 +82,11 @@ export default class OperationsOrdersIndexViewController extends Controller {
     @service hostRouter;
 
     /**
-     * Inject the `engineContext` service
+     * Inject the `universe` service
      *
      * @var {Service}
      */
-    @service engineContext;
+    @service universe;
 
     @tracked isLoadingAdditionalData = false;
     @tracked isWaypointsCollapsed;
@@ -226,14 +225,14 @@ export default class OperationsOrdersIndexViewController extends Controller {
         };
 
         // re-display order routes when livemap has coordinates
-        this.engineContext.on('livemap.has_coordinates', this, displayOrderRoute);
+        this.universe.on('livemap.has_coordinates', this, displayOrderRoute);
 
         // when transitioning away kill event listener
         this.hostRouter.on('routeWillChange', () => {
-            const isListening = this.engineContext.has('livemap.has_coordinates');
+            const isListening = this.universe.has('livemap.has_coordinates');
 
             if (isListening) {
-                this.engineContext.off('livemap.has_coordinates', this, displayOrderRoute);
+                this.universe.off('livemap.has_coordinates', this, displayOrderRoute);
             }
         });
 
@@ -241,10 +240,28 @@ export default class OperationsOrdersIndexViewController extends Controller {
         setup();
     }
 
+    @computed('model.payload.{dropoff,pickup,waypoints}') get routeWaypoints() {
+        const { payload } = this.model;
+        let waypoints = [];
+        let coordinates = [];
+
+        waypoints.pushObjects([payload.pickup, ...payload.waypoints.toArray(), payload.dropoff]);
+        waypoints.forEach((place) => {
+            if (place && place.get('longitude') && place.get('latitude')) {
+                if (place.hasInvalidCoordinates) {
+                    return;
+                }
+
+                coordinates.pushObject([place.get('latitude'), place.get('longitude')]);
+            }
+        });
+
+        return coordinates;
+    }
+
     @action displayOrderRoute() {
-        // map coordinates from lng, lat -> lat, lng
         const payload = this.model.payload;
-        const waypoints = payload?.payloadCoordinates?.map((coord) => extractCoordinates(coord));
+        const waypoints = this.routeWaypoints;
         const leafletMap = this.leafletMap;
         const routingHost = getRoutingHost(payload, payload?.waypoints?.toArray());
 

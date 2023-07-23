@@ -31,16 +31,81 @@ export default class OperationsOrdersIndexNewController extends Controller {
     @controller('management.vendors.index') vendorsController;
     @controller('operations.orders.index') ordersController;
 
+    /**
+     * Inject the `modalsManager` service
+     *
+     * @var {Service}
+     */
     @service modalsManager;
+
+    /**
+     * Inject the `notifications` service
+     *
+     * @var {Service}
+     */
     @service notifications;
+
+    /**
+     * Inject the `loader` service
+     *
+     * @var {Service}
+     */
     @service loader;
+
+    /**
+     * Inject the `currentUser` service
+     *
+     * @var {Service}
+     */
     @service currentUser;
+
+    /**
+     * Inject the `hostRouter` service
+     *
+     * @var {Service}
+     */
     @service hostRouter;
+
+    /**
+     * Inject the `fileQueue` service
+     *
+     * @var {Service}
+     */
     @service fileQueue;
+
+    /**
+     * Inject the `fetch` service
+     *
+     * @var {Service}
+     */
     @service fetch;
+
+    /**
+     * Inject the `store` service
+     *
+     * @var {Service}
+     */
     @service store;
 
+    /**
+     * Inject the `universe` service
+     *
+     * @var {Service}
+     */
+    @service universe;
+
+    /**
+     * Create an OrderModel instance.
+     *
+     * @var {OrderModel}
+     */
     @tracked order = this.store.createRecord('order', { meta: [] });
+
+    /**
+     * Create an PayloadModel instance.
+     *
+     * @var {OrderModel}
+     */
     @tracked payload = this.store.createRecord('payload');
     @tracked driversQuery = {};
     @tracked meta = [];
@@ -213,12 +278,18 @@ export default class OperationsOrdersIndexNewController extends Controller {
             return;
         }
 
+        // send event that fleetops is `creating` an order
+        this.universe.trigger('fleet-ops.order.creating', order);
         this.isCreatingOrder = true;
 
         try {
             return order
                 .save()
                 .then((order) => {
+                    // trigger event that fleet-ops created an order
+                    this.universe.trigger('fleet-ops.order.created', order);
+
+                    // transition to order view
                     return this.transitionToRoute('operations.orders.index.view', order).then(() => {
                         this.notifications.success(`New Order ${order.public_id} Created`);
                         this.loader.removeLoader();
