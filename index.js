@@ -9,6 +9,8 @@ const path = require('path');
 module.exports = buildEngine({
     name,
 
+    _concatStyles: function () {},
+
     lazyLoading: {
         enabled: true,
     },

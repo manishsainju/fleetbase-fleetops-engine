@@ -102,6 +102,7 @@ export default class OperationsOrdersIndexController extends Controller {
         'created_by',
         'updated_by',
         'status',
+        'type',
     ];
 
     /**
@@ -209,6 +210,14 @@ export default class OperationsOrdersIndexController extends Controller {
      */
     @tracked status;
 
+    /**
+     * The filterable param `type` - Filter by order type
+     *
+     * @var {String}
+     */
+    @tracked type;
+
+    @tracked orderTypes = [];
     @tracked isSearchVisible = false;
     @tracked isOrdersPanelVisible = false;
     @tracked activeOrdersCount = 0;
@@ -216,6 +225,7 @@ export default class OperationsOrdersIndexController extends Controller {
     @tracked layout = 'map';
     @equal('layout', 'map') isMapLayout;
     @equal('layout', 'table') isTableLayout;
+    @equal('layout', 'kanban') isKanbanView;
     @equal('layout', 'analytics') isAnalyticsLayout;
 
     /**
@@ -293,8 +303,10 @@ export default class OperationsOrdersIndexController extends Controller {
             sortable: true,
             filterable: true,
             filterComponent: 'filter/model',
+            filterOptionLabel: 'address',
             filterComponentPlaceholder: 'Select order pickup location',
             filterParam: 'pickup',
+            modelNamePath: 'address',
             model: 'place',
         },
         {
@@ -308,6 +320,7 @@ export default class OperationsOrdersIndexController extends Controller {
             filterComponent: 'filter/model',
             filterComponentPlaceholder: 'Select order dropoff location',
             filterParam: 'dropoff',
+            modelNamePath: 'address',
             model: 'place',
         },
         {
@@ -369,6 +382,12 @@ export default class OperationsOrdersIndexController extends Controller {
             resizable: true,
             hidden: true,
             sortable: true,
+            filterable: true,
+            filterComponent: 'filter/select',
+            filterOptions: this.orderTypes,
+            filterOptionLabel: 'name',
+            filterOptionValue: 'key',
+            filterComponentPlaceholder: 'Filter by order type'
         },
         {
             label: 'Status',
@@ -379,7 +398,7 @@ export default class OperationsOrdersIndexController extends Controller {
             sortable: true,
             filterable: true,
             filterComponent: 'filter/multi-option',
-            filterOptions: this.statusOptions,
+            filterOptions: this.statusOptions
         },
         {
             label: 'Created At',
