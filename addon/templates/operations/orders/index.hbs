@@ -6,7 +6,7 @@
             <div class="mr-1.5">Table</div>
             <Badge class="flex items-center justify-center -mr-4" @spanClass="rounded-full items-center justify-center h-4 w-4" @hideStatusDot={{true}} @status="info">{{@model.meta.total}}</Badge>
         </button>
-        <button type="button" class="{{if this.isKanbanView 'active'}}" {{on "click" (fn this.setLayoutMode "kanban")}}>Board</button>
+        {{!-- <button type="button" class="{{if this.isKanbanView 'active'}}" {{on "click" (fn this.setLayoutMode "kanban")}}>Board</button> --}}
     </MapContainer::ViewSwitch>
 </MapContainer::Topbar>
 
@@ -54,7 +54,7 @@
         <Button @icon="long-arrow-up" @iconClass="rotate-icon-45" @text="Export" @onClick={{this.exportOrders}} />
     </Layout::Section::Header>
     <Layout::Section::Body>
-        
+        <OrderBoard @type={{this.type}} />
     </Layout::Section::Body>
 {{/if}}
 

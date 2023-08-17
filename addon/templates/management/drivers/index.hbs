@@ -1,4 +1,4 @@
-<Layout::Section::Header @title="Drivers" @searchQuery={{this.query}} @onSearch={{perform this.search}}>
+<Layout::Section::Header @title={{t "fleet-ops.management.drivers.index.title"}} @searchPlaceholder={{t "fleet-ops.management.drivers.index.fields.search.placeholder"}} @searchQuery={{this.query}} @onSearch={{perform this.search}}>
     <Button @icon="grip-horizontal" @prefix="fas" @onClick={{fn this.changeLayout "grid"}} @disabled={{this.isGridLayout}} class="mr-2" />
     <Button @icon="table" @prefix="fas" @onClick={{fn this.changeLayout "table"}} @disabled={{this.isTableLayout}} class="mr-2" />
     <FiltersPicker @columns={{this.columns}} @onApply={{fn this.filters.apply this}} @onClear={{fn this.filters.reset this}} @onFilterClear={{this.filters.clear}} @onChange={{this.filters.set}} @buttonWrapperClass="mr-2" />

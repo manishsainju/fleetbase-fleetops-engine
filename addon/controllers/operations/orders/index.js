@@ -103,6 +103,7 @@ export default class OperationsOrdersIndexController extends Controller {
         'updated_by',
         'status',
         'type',
+        'layout',
     ];
 
     /**
@@ -217,15 +218,67 @@ export default class OperationsOrdersIndexController extends Controller {
      */
     @tracked type;
 
-    @tracked orderTypes = [];
+    /**
+     * Flag to determine if the search is visible
+     *
+     * @type {Boolean}
+     */
     @tracked isSearchVisible = false;
+
+    /**
+     * Flag to determine if the orders panel is visible
+     *
+     * @type {Boolean}
+     */
     @tracked isOrdersPanelVisible = false;
+
+    /**
+     * Count of active orders
+     *
+     * @type {Number}
+     */
     @tracked activeOrdersCount = 0;
+
+    /**
+     * Reference to the leaflet map object
+     *
+     * @type {Object}
+     */
     @tracked leafletMap;
+
+    /**
+     * Current layout type (e.g., 'map', 'table', 'kanban', 'analytics')
+     *
+     * @type {String}
+     */
     @tracked layout = 'map';
+
+    /**
+     * Flag to determine if the layout is 'map'
+     *
+     * @type {Boolean}
+     */
     @equal('layout', 'map') isMapLayout;
+
+    /**
+     * Flag to determine if the layout is 'table'
+     *
+     * @type {Boolean}
+     */
     @equal('layout', 'table') isTableLayout;
+
+    /**
+     * Flag to determine if the view is 'kanban'
+     *
+     * @type {Boolean}
+     */
     @equal('layout', 'kanban') isKanbanView;
+
+    /**
+     * Flag to determine if the layout is 'analytics'
+     *
+     * @type {Boolean}
+     */
     @equal('layout', 'analytics') isAnalyticsLayout;
 
     /**
@@ -387,7 +440,7 @@ export default class OperationsOrdersIndexController extends Controller {
             filterOptions: this.orderTypes,
             filterOptionLabel: 'name',
             filterOptionValue: 'key',
-            filterComponentPlaceholder: 'Filter by order type'
+            filterComponentPlaceholder: 'Filter by order type',
         },
         {
             label: 'Status',
@@ -398,7 +451,7 @@ export default class OperationsOrdersIndexController extends Controller {
             sortable: true,
             filterable: true,
             filterComponent: 'filter/multi-option',
-            filterOptions: this.statusOptions
+            filterOptions: this.statusOptions,
         },
         {
             label: 'Created At',

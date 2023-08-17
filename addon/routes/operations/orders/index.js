@@ -5,7 +5,6 @@ import { action } from '@ember/object';
 
 export default class OperationsOrdersIndexRoute extends Route {
     @service store;
-    @service fetch;
 
     @tracked queryParams = {
         page: { refreshModel: true },
@@ -25,6 +24,7 @@ export default class OperationsOrdersIndexRoute extends Route {
         after: { refreshModel: true },
         before: { refreshModel: true },
         type: { refreshModel: true },
+        layout: { refreshModel: false },
     };
 
     @action willTransition(transition) {
@@ -33,10 +33,5 @@ export default class OperationsOrdersIndexRoute extends Route {
 
     @action model(params) {
         return this.store.query('order', params);
-    }
-
-    async setupController(controller) {
-        // load all configurable order types
-        controller.orderTypes = await this.fetch.get('orders/types');
     }
 }
