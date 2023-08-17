@@ -102,6 +102,8 @@ export default class OperationsOrdersIndexController extends Controller {
         'created_by',
         'updated_by',
         'status',
+        'type',
+        'layout',
     ];
 
     /**
@@ -209,13 +211,74 @@ export default class OperationsOrdersIndexController extends Controller {
      */
     @tracked status;
 
+    /**
+     * The filterable param `type` - Filter by order type
+     *
+     * @var {String}
+     */
+    @tracked type;
+
+    /**
+     * Flag to determine if the search is visible
+     *
+     * @type {Boolean}
+     */
     @tracked isSearchVisible = false;
+
+    /**
+     * Flag to determine if the orders panel is visible
+     *
+     * @type {Boolean}
+     */
     @tracked isOrdersPanelVisible = false;
+
+    /**
+     * Count of active orders
+     *
+     * @type {Number}
+     */
     @tracked activeOrdersCount = 0;
+
+    /**
+     * Reference to the leaflet map object
+     *
+     * @type {Object}
+     */
     @tracked leafletMap;
+
+    /**
+     * Current layout type (e.g., 'map', 'table', 'kanban', 'analytics')
+     *
+     * @type {String}
+     */
     @tracked layout = 'map';
+
+    /**
+     * Flag to determine if the layout is 'map'
+     *
+     * @type {Boolean}
+     */
     @equal('layout', 'map') isMapLayout;
+
+    /**
+     * Flag to determine if the layout is 'table'
+     *
+     * @type {Boolean}
+     */
     @equal('layout', 'table') isTableLayout;
+
+    /**
+     * Flag to determine if the view is 'kanban'
+     *
+     * @type {Boolean}
+     */
+    @equal('layout', 'kanban') isKanbanView;
+
+    /**
+     * Flag to determine if the layout is 'analytics'
+     *
+     * @type {Boolean}
+     */
     @equal('layout', 'analytics') isAnalyticsLayout;
 
     /**
@@ -293,8 +356,10 @@ export default class OperationsOrdersIndexController extends Controller {
             sortable: true,
             filterable: true,
             filterComponent: 'filter/model',
+            filterOptionLabel: 'address',
             filterComponentPlaceholder: 'Select order pickup location',
             filterParam: 'pickup',
+            modelNamePath: 'address',
             model: 'place',
         },
         {
@@ -308,6 +373,7 @@ export default class OperationsOrdersIndexController extends Controller {
             filterComponent: 'filter/model',
             filterComponentPlaceholder: 'Select order dropoff location',
             filterParam: 'dropoff',
+            modelNamePath: 'address',
             model: 'place',
         },
         {
@@ -369,6 +435,12 @@ export default class OperationsOrdersIndexController extends Controller {
             resizable: true,
             hidden: true,
             sortable: true,
+            filterable: true,
+            filterComponent: 'filter/select',
+            filterOptions: this.orderTypes,
+            filterOptionLabel: 'name',
+            filterOptionValue: 'key',
+            filterComponentPlaceholder: 'Filter by order type',
         },
         {
             label: 'Status',

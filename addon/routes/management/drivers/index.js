@@ -3,6 +3,7 @@ import { inject as service } from '@ember/service';
 
 export default class ManagementDriversIndexRoute extends Route {
     @service store;
+    @service intl;
 
     queryParams = {
         page: { refreshModel: true },
@@ -26,6 +27,10 @@ export default class ManagementDriversIndexRoute extends Route {
         'within[radius]': { refreshModel: true, replace: true },
         'within[where]': { refreshModel: true, replace: true },
     };
+
+    beforeModel() {
+        this.intl.setLocale(['en-us']);
+    }
 
     model(params) {
         return this.store.query('driver', { ...params });

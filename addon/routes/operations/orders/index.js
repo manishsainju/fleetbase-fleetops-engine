@@ -23,6 +23,8 @@ export default class OperationsOrdersIndexRoute extends Route {
         dropoff: { refreshModel: true },
         after: { refreshModel: true },
         before: { refreshModel: true },
+        type: { refreshModel: true },
+        layout: { refreshModel: false },
     };
 
     @action willTransition(transition) {
