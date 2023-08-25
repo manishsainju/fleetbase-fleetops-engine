@@ -25,10 +25,12 @@ export default class LiveMapComponent extends Component {
 
     @tracked routes = [];
     @tracked drivers = [];
+    @tracked places = [];
     @tracked channels = [];
     @tracked isLoading = true;
     @tracked isReady = false;
     @tracked isDriversVisible = true;
+    @tracked isPlacesVisible = true;
     @tracked isRoutesVisible = true;
     @tracked isDrawControlsVisible = false;
     @tracked isCreatingServiceArea = false;
@@ -105,6 +107,7 @@ export default class LiveMapComponent extends Component {
 
         this.routes = await this.fetchActiveRoutes();
         this.drivers = await this.fetchActiveDrivers();
+        this.places = await this.fetchActivePlaces();
         this.serviceAreaRecords = await this.fetchServiceAreas();
         this.isReady = true;
 
@@ -478,6 +481,18 @@ export default class LiveMapComponent extends Component {
         this.isDriversVisible = !this.isDriversVisible;
     }
 
+    @action hidePlaces() {
+        this.isPlacesVisible = false;
+    }
+
+    @action showPlaces() {
+        this.isPlacesVisible = true;
+    }
+
+    @action togglePlaces() {
+        this.isPlacesVisible = !this.isPlacesVisible;
+    }
+
     @action hideRoutes() {
         this.isRoutesVisible = false;
     }
@@ -838,6 +853,25 @@ export default class LiveMapComponent extends Component {
                 }
 
                 resolve(drivers);
+            });
+        });
+    }
+
+    @action fetchActivePlaces() {
+        this.isLoading = true;
+
+        // get the center of map
+        const center = this.leafletMap.getCenter();
+
+        return new Promise((resolve) => {
+            this.fetch.get('fleet-ops/live/places', { within: center }, { normalizeToEmberData: true, normalizeModelType: 'place' }).then((places) => {
+                this.isLoading = false;
+
+                if (typeof this.args.onPlacesLoaded === 'function') {
+                    this.args.onPlacesLoaded(places);
+                }
+
+                resolve(places);
             });
         });
     }

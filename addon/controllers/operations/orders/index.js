@@ -561,12 +561,25 @@ export default class OperationsOrdersIndexController extends Controller {
         this.query = value;
     }
 
-    @action resetView() {
-        const { leafletMap } = this;
+    @action viewPlacesOnMap() {
+        const {
+            leafletMap: { liveMap },
+        } = this;
 
-        leafletMap?.liveMap?.hideDrivers();
-        leafletMap?.liveMap?.hideRoutes();
-        // leafletMap?.remove();
+        if (liveMap) {
+            liveMap.togglePlaces();
+        }
+    }
+
+    @action resetView() {
+        const {
+            leafletMap: { liveMap },
+        } = this;
+
+        if (liveMap) {
+            liveMap.hideDrivers();
+            liveMap.hideRoutes();
+        }
     }
 
     @action toggleSearch() {
