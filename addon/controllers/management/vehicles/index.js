@@ -562,7 +562,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
                     (uploadedFile) => {
                         vehicle.setProperties({
                             photo_uuid: uploadedFile.id,
-                            photo_url: uploadedFile.s3url,
+                            photo_url: uploadedFile.url,
                             photo: uploadedFile,
                         });
                     }

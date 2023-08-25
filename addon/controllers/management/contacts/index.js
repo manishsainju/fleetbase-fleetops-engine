@@ -384,13 +384,13 @@ export default class ManagementContactsIndexController extends Controller {
                     {
                         path: `uploads/${contact.company_uuid}/contacts/${contact.slug}`,
                         subject_uuid: contact.id,
-                        subject_type: `contact`,
-                        type: `contact_photo`,
+                        subject_type: 'contact',
+                        type: 'contact_photo',
                     },
                     (uploadedFile) => {
                         contact.setProperties({
                             photo_uuid: uploadedFile.id,
-                            photo_url: uploadedFile.s3url,
+                            photo_url: uploadedFile.url,
                             photo: uploadedFile,
                         });
                     }

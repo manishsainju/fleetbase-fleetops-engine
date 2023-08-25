@@ -833,7 +833,7 @@ export default class OperationsOrdersIndexViewController extends Controller {
                     (uploadedFile) => {
                         entity.setProperties({
                             photo_uuid: uploadedFile.id,
-                            photo_url: uploadedFile.s3url,
+                            photo_url: uploadedFile.url,
                             photo: uploadedFile,
                         });
                     }
