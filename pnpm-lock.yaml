@@ -64,6 +64,9 @@ dependencies:
   leaflet-draw:
     specifier: ^1.0.4
     version: 1.0.4
+  leaflet-drift-marker:
+    specifier: ^2.0.0
+    version: 2.0.0(leaflet@1.9.4)
   leaflet-rotatedmarker:
     specifier: ^0.2.0
     version: 0.2.0
@@ -10401,6 +10404,14 @@ packages:
 
   /leaflet-draw@1.0.4:
     resolution: {integrity: sha512-rsQ6saQO5ST5Aj6XRFylr5zvarWgzWnrg46zQ1MEOEIHsppdC/8hnN8qMoFvACsPvTioAuysya/TVtog15tyAQ==}
+    dev: false
+
+  /leaflet-drift-marker@2.0.0(leaflet@1.9.4):
+    resolution: {integrity: sha512-dmYMW5A/rpNA2YGnakMzhhQNGJADjJG1L6THa/UKMYZ/CI3podhmsCaWCNh0/DnqcxRaSCR/8JBp+iimNx7lEQ==}
+    peerDependencies:
+      leaflet: '>=1.2.0'
+    dependencies:
+      leaflet: 1.9.4
     dev: false
 
   /leaflet-rotatedmarker@0.2.0:
