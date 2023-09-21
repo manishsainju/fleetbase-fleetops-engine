@@ -628,21 +628,22 @@ export default class ManagementDriversIndexController extends Controller {
      * @void
      */
     @action createDriver() {
-        const driver = this.store.createRecord('driver', {
-            status: `active`,
-            slug: generateSlug(),
-        });
+        return this.transitionToRoute('management.drivers.index.new');
+        // const driver = this.store.createRecord('driver', {
+        //     status: `active`,
+        //     slug: generateSlug(),
+        // });
 
-        return this.editDriver(driver, {
-            title: 'New Driver',
-            acceptButtonText: 'Create',
-            acceptButtonIcon: 'check',
-            acceptButtonIconPrefix: 'fas',
-            successNotification: (driver) => `New driver (${driver.name}) created.`,
-            onConfirm: () => {
-                return this.hostRouter.refresh();
-            },
-        });
+        // return this.editDriver(driver, {
+        //     title: 'New Driver',
+        //     acceptButtonText: 'Create',
+        //     acceptButtonIcon: 'check',
+        //     acceptButtonIconPrefix: 'fas',
+        //     successNotification: (driver) => `New driver (${driver.name}) created.`,
+        //     onConfirm: () => {
+        //         return this.hostRouter.refresh();
+        //     },
+        // });
     }
 
     /**
