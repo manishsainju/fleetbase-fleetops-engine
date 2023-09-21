@@ -4,16 +4,16 @@ import { later } from '@ember/runloop';
 import { action } from '@ember/object';
 
 export default class ManagementDriverIndexDetailsController extends Controller {
-  @tracked view;
-  queryParams = ['view'];
+  // @tracked view;
+  // queryParams = ['view'];
 
-  @action updateView(view) {
-    if (this.view === view) {
-      return;
-    }
+  // @action updateView(view) {
+  //   if (this.view === view) {
+  //     return;
+  //   }
 
-    this.view = view;
-  }
+  //   this.view = view;
+  // }
 
   @action transitionBack() {
     return this.transitionToRoute('management.drivers.index');

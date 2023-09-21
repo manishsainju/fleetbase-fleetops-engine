@@ -713,27 +713,17 @@ export default class ManagementDriversIndexController extends Controller {
     //         ...options,
     //     });
     // }
+
+    /**
+     * View a `driver` details in modal
+     *
+     * @param {VehicleModel} driver
+     * @param {Object} options
+     * @void
+     */
     @action editDriver(driver) {
         return this.transitionToRoute('management.drivers.index.edit', driver);
     }
-    /**
-     * View a `vehicle` details in modal
-     *
-     * @param {VehicleModel} vehicle
-     * @param {Object} options
-     * @void
-     */
-    /**
-     * Edit a `driver` details
-     *
-     * @param {DriverModel} vehicle
-     * @param {Object} options
-     * @void
-     */
-    @action viewVehicle(vehicle) {
-        return this.transitionToRoute('management.vehicles.index.details', vehicle);
-    }
-
     /**
      * Delete a `driver` via confirm prompt
      *
@@ -799,7 +789,7 @@ export default class ManagementDriversIndexController extends Controller {
     }
 
     /**
-     * Prompt user to assign a `vehicle` to a `driver`
+     * Prompt user to assign a `driver` to a `driver`
      *
      * @param {DriverModel} driver
      * @param {Object} options

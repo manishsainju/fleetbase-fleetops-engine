@@ -97,7 +97,6 @@ export default class ManagementDriversIndexNewController extends Controller {
      */
     @action createDriver() {
         const { driver } = this;
-        console.log(driver);
 
         this.isCreatingDriver = true;
         this.loader.showLoader('.overlay-inner-content', 'Creating driver...');
@@ -133,5 +132,9 @@ export default class ManagementDriversIndexNewController extends Controller {
      */
     @action resetForm() {
         this.driver = this.store.createRecord('driver');
+    }
+
+    @action transitionBack() {
+        return this.transitionToRoute('management.drivers.index');
     }
 }
