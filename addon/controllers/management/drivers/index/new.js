@@ -43,11 +43,6 @@ export default class ManagementDriversIndexNewController extends Controller {
     /**
      * The driver being created.
      *
-     * @var {DriversModel}
-     */
-    /**
-     * The driver being created.
-     *
      * @var {DriverModel}
      */
     @tracked driver = this.store.createRecord('driver', {
@@ -82,13 +77,6 @@ export default class ManagementDriversIndexNewController extends Controller {
      * @var {Boolean}
      */
     @tracked isCreatingDriver = false;
-
-    /**
-     * True if updating driver.
-     *
-     * @var {Boolean}
-     */
-    @tracked isUpdatingServiceRate = false;
 
     /**
      * Saves the driver to server
