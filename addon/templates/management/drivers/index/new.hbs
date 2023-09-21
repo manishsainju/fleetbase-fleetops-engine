@@ -1,1 +1,1 @@
-<DriverFormPanel @driver={{@model}} @onTabChanged={{this.updateView}}/>
+<DriverFormPanel @driver={{@model}} @onCreateDriver={{this.createDriver}} @onTabChanged={{this.updateView}} @onPressCancel={{this.transitionBack}}/>
