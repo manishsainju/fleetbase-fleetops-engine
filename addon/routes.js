@@ -30,6 +30,7 @@ export default buildRoutes(function () {
         });
         this.route('drivers', function () {
             this.route('index', { path: '/' });
+            this.route('new');
         });
         this.route('vehicles', function () {
             this.route('index', { path: '/' });
