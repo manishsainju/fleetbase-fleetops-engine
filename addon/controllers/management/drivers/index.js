@@ -500,8 +500,6 @@ export default class ManagementDriversIndexController extends Controller {
         return this.transitionToRoute('management.drivers.index.details', driver);
     }
 
-
-
     // @action viewDriver(driver, options = {}) {
     //     const viewDriverOnMap = () => {
     //         this.modalsManager.done().then(() => {

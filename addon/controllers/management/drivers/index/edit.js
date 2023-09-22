@@ -4,7 +4,6 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class ManagementDriversIndexEditController extends Controller {
-
     /**
      * True if updating service rate.
      *
@@ -42,7 +41,6 @@ export default class ManagementDriversIndexEditController extends Controller {
      */
     @action updateDriver() {
         const { driver } = this;
-        console.log(driver, driver.name);
 
         this.isUpdatingDriver = true;
         this.loader.showLoader('.overlay-inner-content', 'Updating driver...');

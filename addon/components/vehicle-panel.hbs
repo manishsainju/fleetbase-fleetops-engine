@@ -15,7 +15,7 @@
                         <FaIcon @icon="satellite-dish" class="mr-1" />
                         <span>Tracking</span>
                     </a>
-                    <a href="javascript:;" class="ui-tab {{if (eq this.currentTab "orders") 'active' }}" {{on "click" (fn this.changeTab "orders" )}}>
+                    <a href="javascript:;" class="ui-tab {{if (eq this.currentTab "devices") 'active' }}" {{on "click" (fn this.changeTab "devices" )}}>
                         <FaIcon @icon="hard-drive" class="mr-1" />
                         <span>Devices</span>
                     </a>
@@ -246,6 +246,19 @@
                         </ContentPanel>
                     </div>
                 </div>
+            {{/if}}
+            {{#if (eq this.currentTab "devices")}}
+                <div>
+                    <Button @icon="plus" @onClick={{@onCreateDevices}} @iconPrefix="fas" @type="primary" @text="Add device" class="mr-2" />
+                </div>
+                <ContentPanel @title="Details" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
+                    <div class="input-group">
+                    <label>
+                        Select device
+                    </label>
+                    <FespiDeviceSelect class="w-full form-input form-select form-datalist" @value={{@vehicle.flespi_devices}} @onChange={{@onChange}} placeholder="Device" />
+                </div>
+                </ContentPanel>
             {{/if}}
         </div>
     </Overlay::Body>

@@ -5,7 +5,6 @@ import { action } from '@ember/object';
 import generateSlug from '@fleetbase/ember-core/utils/generate-slug';
 
 export default class ManagementVehiclesIndexNewController extends Controller {
-
     /**
      * Inject the `currentUser` service
      *

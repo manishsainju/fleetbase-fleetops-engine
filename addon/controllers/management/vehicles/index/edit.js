@@ -4,7 +4,6 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class ManagementVehiclesIndexEditController extends Controller {
-
     /**
      * True if updating service rate.
      *
@@ -35,6 +34,7 @@ export default class ManagementVehiclesIndexEditController extends Controller {
      * @var {Service}
      */
     @service store;
+
     /**
      * Updates the vehicles to server
      *
@@ -62,7 +62,7 @@ export default class ManagementVehiclesIndexEditController extends Controller {
                     this.loader.removeLoader();
                 });
         } catch (error) {
-            console.log('error', error)
+            console.log('error', error);
             this.isUpdatingVehicle = false;
             this.loader.removeLoader();
         }
