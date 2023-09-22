@@ -251,14 +251,6 @@
                 <div>
                     <Button @icon="plus" @onClick={{@onCreateDevices}} @iconPrefix="fas" @type="primary" @text="Add device" class="mr-2" />
                 </div>
-                <ContentPanel @title="Details" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
-                    <div class="input-group">
-                    <label>
-                        Select device
-                    </label>
-                    <FespiDeviceSelect class="w-full form-input form-select form-datalist" @value={{@vehicle.flespi_devices}} @onChange={{@onChange}} placeholder="Device" />
-                </div>
-                </ContentPanel>
             {{/if}}
         </div>
     </Overlay::Body>

@@ -1,1 +1,12 @@
-{{yield}}
+
+<Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+    <div class="modal-body-container">
+        <div class="input-group">
+            <label>
+                Select device
+            </label>
+            <FlespiDeviceSelect class="w-full form-input form-select form-datalist" @value={{@options.vehicle.flespi_devices}} @onChange={{@options.onChange}} placeholder="Device" />
+        </div>
+    </div>
+    {{yield}}
+</Modal::Default>

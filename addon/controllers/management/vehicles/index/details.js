@@ -60,75 +60,34 @@ export default class ManagementVehiclesIndexDetailsController extends Controller
      * @void
      */
     @action createDevices() {
-        console.log('demo');
         const vehicle = this.store.createRecord('vehicle', {
             status: 'active',
             slug: generateSlug(),
         });
 
-        return this.editVehicle(vehicle, {
-            title: 'New Vehicle',
-            acceptButtonText: 'Confirm & Create',
-            acceptButtonIcon: 'check',
-            acceptButtonIconPrefix: 'fas',
-            // successNotification: `New vehicle (${vehicle.name}) created.`,
-            onConfirm: () => {
-                return this.hostRouter.refresh();
-            },
-        });
-    }
-
-    /**
-     * Edit a `vehicle` details
-     *
-     * @param {VehicleModel} vehicle
-     * @param {Object} options
-     * @void
-     */
-    @action async editVehicle(vehicle, options = {}) {
-        await vehicle?.loadDriver();
-
-        this.modalsManager.show('modals/vehicle-form', {
-            title: 'Edit Vehicle',
+        this.modalsManager.show('modals/vehicle-devices-form', {
+            title: 'Add Device',
             acceptButtonText: 'Save Changes',
             acceptButtonIcon: 'save',
             modalClass: 'modal-lg',
             vehicle,
-            uploadNewPhoto: (file) => {
-                this.fetch.uploadFile.perform(
-                    file,
-                    {
-                        path: `uploads/${this.currentUser.companyId}/vehicles/${vehicle.slug}`,
-                        subject_uuid: vehicle.id,
-                        subject_type: `vehicle`,
-                        type: `vehicle_photo`,
-                    },
-                    (uploadedFile) => {
-                        vehicle.setProperties({
-                            photo_uuid: uploadedFile.id,
-                            photo_url: uploadedFile.url,
-                            photo: uploadedFile,
-                        });
-                    }
-                );
-            },
             confirm: (modal, done) => {
                 modal.startLoading();
 
-                vehicle
-                    .save()
-                    .then((vehicle) => {
-                        this.notifications.success(options.successNotification ?? `${vehicle.name} details updated.`);
-                    })
-                    .catch((error) => {
-                        modal.stopLoading();
-                        this.notifications.serverError(error);
-                    })
-                    .finally(() => {
-                        done();
-                    });
+                // vehicle
+                //     .save()
+                //     .then((vehicle) => {
+                //         this.notifications.success(options.successNotification ?? `${vehicle.name} details updated.`);
+                //     })
+                //     .catch((error) => {
+                //         modal.stopLoading();
+                //         this.notifications.serverError(error);
+                //     })
+                //     .finally(() => {
+                //         done();
+                //     });
             },
-            ...options,
+            onChange: () => {},
         });
     }
 
