@@ -60,19 +60,16 @@ export default class ManagementVehiclesIndexDetailsController extends Controller
      * @void
      */
     @action createDevices() {
-        const vehicle = this.store.createRecord('vehicle', {
-            status: 'active',
-            slug: generateSlug(),
-        });
 
         this.modalsManager.show('modals/vehicle-devices-form', {
             title: 'Add Device',
             acceptButtonText: 'Save Changes',
             acceptButtonIcon: 'save',
             modalClass: 'modal-lg',
-            vehicle,
+            vehicle: this.vehicle,
             confirm: (modal, done) => {
                 modal.startLoading();
+                console.log(this.vehicle)
 
                 // vehicle
                 //     .save()
@@ -87,7 +84,7 @@ export default class ManagementVehiclesIndexDetailsController extends Controller
                 //         done();
                 //     });
             },
-            onChange: () => {},
+            // onChange: () => {},
         });
     }
 

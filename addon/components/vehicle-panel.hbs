@@ -251,6 +251,17 @@
                 <div>
                     <Button @icon="plus" @onClick={{@onCreateDevices}} @iconPrefix="fas" @type="primary" @text="Add device" class="mr-2" />
                 </div>
+                {{#each this.devices as |device|}}
+                    <ContentPanel @title="Device: {{device.name}}" @open={{false}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
+                        {{!-- {{device.name}} --}}
+                        {{#if device.messages.length}}
+                            {{#each device.messages as |message|}}
+                                <p>{{message}}</p>
+                            {{/each}}
+                        {{/if}}
+                    
+                    </ContentPanel>
+                {{/each}}
             {{/if}}
         </div>
     </Overlay::Body>
