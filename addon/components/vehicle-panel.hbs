@@ -249,7 +249,7 @@
             {{/if}}
             {{#if (eq this.currentTab "devices")}}
                 <div>
-                    <Button @icon="plus" @onClick={{@onCreateDevices}} @iconPrefix="fas" @type="primary" @text="Add device" class="mr-2" />
+                    <Button @icon="plus" @onClick={{this.createDevice}} @iconPrefix="fas" @type="primary" @text="Add device" class="mr-2" />
                 </div>
                 {{#each this.devices as |device|}}
                     <ContentPanel @title="Device: {{device.name}}" @open={{false}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">

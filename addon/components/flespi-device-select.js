@@ -57,9 +57,11 @@ export default class FespiDeviceSelectComponent extends Component {
     @action selectDevice(device) {
         const { onChange } = this.args;
         this.selected = device;
-
-        if (typeof onChange === 'function') {
-            onChange(device.id, device);
+        // if (typeof onChange === 'function') {
+        //     onChange(device.id, device);
+        // }
+        if (typeof this.args.onSelectDeviceFromApi === 'function') {
+            this.args.onSelectDeviceFromApi(device);
         }
     }
 

@@ -4,12 +4,21 @@ import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default class VehiclePanelComponent extends Component {
+    @service fetch;
+
+    @service modalsManager;
+
+    @service store;
+
     @tracked currentTab;
     @tracked devices = [];
-    @service fetch;
+    @tracked deviceApi = {};
+
+    @tracked vehicle;
 
     constructor() {
         super(...arguments);
+        this.vehicle = this.args.vehicle;
         this.changeTab(this.args.tab || 'details');
         this.fetch
             .get(
@@ -40,10 +49,10 @@ export default class VehiclePanelComponent extends Component {
                             }
                             self.devices.push(device);
                         })
-                        .finally(() => {});
+                        .finally(() => { });
                 });
             })
-            .finally(() => {});
+            .finally(() => { });
     }
 
     @action changeTab(tab) {
@@ -52,5 +61,33 @@ export default class VehiclePanelComponent extends Component {
         if (typeof this.args.onTabChanged === 'function') {
             this.args.onTabChanged(tab);
         }
+    }
+
+    @action createDevice() {
+        const device = this.store.createRecord('vehicle-device');
+
+        // const device = this.store.createRecord('vehicle-device', {
+        //     vehicle_uuid: this.model.id,
+        // });
+        this.modalsManager.show('modals/vehicle-devices-form', {
+            title: 'Add Device',
+            acceptButtonText: 'Save Changes',
+            acceptButtonIcon: 'save',
+            modalClass: 'modal-lg',
+            device,
+            onSelectDeviceFromApi: (deviceApi) => {
+                this.deviceApi = deviceApi;
+            },
+            confirm: (modal, done) => {
+                modal.startLoading();
+
+                device.device_id = this.deviceApi.id;
+                device.device_provider = "flespi";
+                device.device_type = this.deviceApi.device_type_id;
+                device.vehicle_uuid = this.vehicle.uuid;
+                device.device_name = this.deviceApi.name;
+                return device.save();
+            }
+        });
     }
 }
