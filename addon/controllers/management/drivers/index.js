@@ -858,7 +858,7 @@ export default class ManagementDriversIndexController extends Controller {
     @action async viewDriverVehicle(driver, options = {}) {
         this.modalsManager.displayLoader();
 
-        const vehicle = await this.store.findRecord('vehicle', driver.vehicle_uuid);
+        const vehicle = await this.store.queryRecord('vehicle', driver.vehicle_uuid);
 
         this.modalsManager.done().then(() => {
             return this.vehicles.viewVehicle(vehicle, options);

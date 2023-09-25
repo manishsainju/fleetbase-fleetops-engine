@@ -20,43 +20,14 @@ export default class VehiclePanelComponent extends Component {
         super(...arguments);
         this.vehicle = this.args.vehicle;
         this.changeTab(this.args.tab || 'details');
-        this.fetch
-            .get(
-                'devices',
-                {},
-                {
-                    namespace: 'flespi/int/v1',
-                }
-            )
-            .then((data) => {
-                var self = this;
-                data.result.forEach((device) => {
-                    this.fetch
-                        .get(
-                            `devices/${device.id}/messages`,
-                            {},
-                            {
-                                namespace: 'flespi/int/v1',
-                            }
-                        )
-                        .then((data) => {
-                            device.messages = [];
-                            if (data.result.length) {
-                                Object.keys(data.result[0]).forEach(function (key) {
-                                    let label = key.split('.').join(' ');
-                                    device.messages.push(label + ": " + data.result[0][key]);
-                                });
-                            }
-                            self.devices.push(device);
-                        })
-                        .finally(() => { });
-                });
-            })
-            .finally(() => { });
     }
 
-    @action changeTab(tab) {
+    @action async changeTab(tab) {
         this.currentTab = tab;
+        if (tab === 'devices') {
+            const { vehicle } = this;
+            this.devices = await this.store.query('vehicle-device', { vehicle_uuid: vehicle.uuid });
+        }
 
         if (typeof this.args.onTabChanged === 'function') {
             this.args.onTabChanged(tab);
@@ -64,11 +35,9 @@ export default class VehiclePanelComponent extends Component {
     }
 
     @action createDevice() {
+        const { vehicle } = this;
         const device = this.store.createRecord('vehicle-device');
 
-        // const device = this.store.createRecord('vehicle-device', {
-        //     vehicle_uuid: this.model.id,
-        // });
         this.modalsManager.show('modals/vehicle-devices-form', {
             title: 'Add Device',
             acceptButtonText: 'Save Changes',
@@ -76,18 +45,21 @@ export default class VehiclePanelComponent extends Component {
             modalClass: 'modal-lg',
             device,
             onSelectDeviceFromApi: (deviceApi) => {
-                this.deviceApi = deviceApi;
+                device.device_id = deviceApi.id;
+                device.device_provider = 'flespi';
+                device.device_type = deviceApi.device_type_id;
+                device.device_name = deviceApi.name;
             },
             confirm: (modal, done) => {
+                device.vehicle_uuid = vehicle.uuid;
                 modal.startLoading();
-
-                device.device_id = this.deviceApi.id;
-                device.device_provider = "flespi";
-                device.device_type = this.deviceApi.device_type_id;
-                device.vehicle_uuid = this.vehicle.uuid;
-                device.device_name = this.deviceApi.name;
                 return device.save();
-            }
+            },
         });
+    }
+
+    @action onOpen() {
+        alert(1)
+        return true;
     }
 }

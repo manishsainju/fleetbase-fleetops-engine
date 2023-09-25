@@ -55,17 +55,13 @@ export default class FespiDeviceSelectComponent extends Component {
     }
 
     @action selectDevice(device) {
-        const { onChange } = this.args;
         this.selected = device;
-        // if (typeof onChange === 'function') {
-        //     onChange(device.id, device);
-        // }
         if (typeof this.args.onSelectDeviceFromApi === 'function') {
             this.args.onSelectDeviceFromApi(device);
         }
     }
 
-    findDevice(iso2) {
-        return this.devices.find((device) => device.id === iso2.toUpperCase());
+    findDevice(id) {
+        return this.devices.find((device) => device.id === id.toUpperCase());
     }
 }
