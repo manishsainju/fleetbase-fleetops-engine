@@ -1,20 +1,42 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
+import { getOwner } from '@ember/application';
+import { action, computed } from '@ember/object';
 import { inject as service } from '@ember/service';
+import { isArray } from '@ember/array';
+import { dasherize } from '@ember/string';
+import VehiclePanelDetailComponent from './vehicle-panel/details';
+import VehiclePanelTrackingComponent from './vehicle-panel/tracking';
 
 export default class VehiclePanelComponent extends Component {
     @service fetch;
-
     @service modalsManager;
-
+    @service universe;
     @service store;
-
     @tracked currentTab;
     @tracked devices = [];
     @tracked deviceApi = {};
-
     @tracked vehicle;
+
+    get tabs() {
+        const registeredTabs = this.universe.getMenuItemsFromRegistry('vehiclePanel');
+        const defaultTabs = [
+            this.universe._createMenuItem('Details', null, { icon: 'circle-info', component: VehiclePanelDetailComponent }),
+            this.universe._createMenuItem('Tracking', null, { icon: 'satellite-dish', component: VehiclePanelTrackingComponent }),
+        ];
+
+        if (isArray(registeredTabs)) {
+            return [...defaultTabs, ...registeredTabs];
+        }
+
+        return defaultTabs;
+    }
+
+    @computed('currentTab') get tab() {
+        if (this.currentTab) {
+            return this.tabs.find(({ slug }) => slug === this.currentTab);
+        }
+    }
 
     constructor() {
         super(...arguments);
@@ -24,42 +46,9 @@ export default class VehiclePanelComponent extends Component {
 
     @action async changeTab(tab) {
         this.currentTab = tab;
-        if (tab === 'devices') {
-            const { vehicle } = this;
-            this.devices = await this.store.query('vehicle-device', { vehicle_uuid: vehicle.uuid });
-        }
 
         if (typeof this.args.onTabChanged === 'function') {
             this.args.onTabChanged(tab);
         }
-    }
-
-    @action createDevice() {
-        const { vehicle } = this;
-        const device = this.store.createRecord('vehicle-device');
-
-        this.modalsManager.show('modals/vehicle-devices-form', {
-            title: 'Add Device',
-            acceptButtonText: 'Save Changes',
-            acceptButtonIcon: 'save',
-            modalClass: 'modal-lg',
-            device,
-            onSelectDeviceFromApi: (deviceApi) => {
-                device.device_id = deviceApi.id;
-                device.device_provider = 'flespi';
-                device.device_type = deviceApi.device_type_id;
-                device.device_name = deviceApi.name;
-            },
-            confirm: (modal, done) => {
-                device.vehicle_uuid = vehicle.uuid;
-                modal.startLoading();
-                return device.save();
-            },
-        });
-    }
-
-    @action onOpen() {
-        alert(1)
-        return true;
     }
 }
