@@ -43,10 +43,10 @@ export default class FleetPanelComponent extends Component {
   }
 
   @action addVehicle(vehicle) {
-    this.fetch.post('fleets/add', { vehicle: vehicle.id, fleet: this.fleet.id });
+    this.fetch.post('fleets/addVehicle', { vehicle: vehicle.id, fleet: this.fleet.id });
   }
 
   @action removeVehicle(vehicle) {
-    this.fetch.post('fleets/remove', { vehicle: vehicle.id, fleet: this.fleet.id });
+    this.fetch.post('fleets/removeVehicle', { vehicle: vehicle.id, fleet: this.fleet.id });
   }
 }
