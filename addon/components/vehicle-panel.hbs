@@ -1,5 +1,5 @@
 <Overlay @position="right" @noBackdrop={{true}} @fullHeight={{true}} @width="700">
-    <Overlay::Header @hideLeftSection={{true}} @actionsWrapperClass="flex-1 flex-col py-3" class="h-auto-i border-b-4">
+    <Overlay::Header @hideLeftSection={{true}} @actionsWrapperClass="flex-1 flex-col py-3" class="h-auto-i min-h-[127px]">
         <div class="flex flex-row items-center justify-between w-full mb-4">
             <div class="flex flex-1">
                 <Button @type="default" @icon="location-arrow" @helpText="Locate vehicle" @onClick={{@onPressCancel}} />
@@ -24,7 +24,7 @@
                                 <DriverCard class="dark:bg-gray-800 rounded-md px-3 py-2" @driver={{@vehicle.driver}} @onClick={{@options.viewDriver}} />
                             {{else}}
                                 <div class="flex flex-row items-center">
-                                    <span class="text-sm dark:text-gray-500 text-gray-100 mr-3">No driver assigned</span>
+                                    <span class="text-sm dark:text-gray-500 text-gray-700 mr-3">No driver assigned</span>
                                     <Button @icon="user-plus" @size="xs" @helpText="Assign a driver to vehicle" />
                                 </div>
                             {{/if}}
@@ -37,7 +37,7 @@
             </div>
         </div>
     </Overlay::Header>
-    <Overlay::Body @increaseInnerBodyHeightBy={{1000}}>
+    <Overlay::Body class="no-padding" @increaseInnerBodyHeightBy={{1000}}>
         <div class="section-header-actions w-full overflow-x-scroll lg:overflow-x-auto">
             <div class="ui-tabs mt-4">
                 <nav>
@@ -51,7 +51,6 @@
             </div>
         </div>
         <div class="tab-content tab-{{this.currentTab}}">
-            {{log "[tab]" this.tab}}
             {{component this.tab.component vehicle=@vehicle tabOptions=this.tab params=this.tab.componentParams}}
         </div>
     </Overlay::Body>

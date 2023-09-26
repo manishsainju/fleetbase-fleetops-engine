@@ -6,7 +6,6 @@ import { inject as service } from '@ember/service';
 import { isArray } from '@ember/array';
 import { dasherize } from '@ember/string';
 import VehiclePanelDetailComponent from './vehicle-panel/details';
-import VehiclePanelTrackingComponent from './vehicle-panel/tracking';
 
 export default class VehiclePanelComponent extends Component {
     @service fetch;
@@ -20,10 +19,8 @@ export default class VehiclePanelComponent extends Component {
 
     get tabs() {
         const registeredTabs = this.universe.getMenuItemsFromRegistry('vehiclePanel');
-        const defaultTabs = [
-            this.universe._createMenuItem('Details', null, { icon: 'circle-info', component: VehiclePanelDetailComponent }),
-            this.universe._createMenuItem('Tracking', null, { icon: 'satellite-dish', component: VehiclePanelTrackingComponent }),
-        ];
+        // this.universe._createMenuItem('Tracking', null, { icon: 'satellite-dish', component: VehiclePanelTrackingComponent }),
+        const defaultTabs = [this.universe._createMenuItem('Details', null, { icon: 'circle-info', component: VehiclePanelDetailComponent })];
 
         if (isArray(registeredTabs)) {
             return [...defaultTabs, ...registeredTabs];
