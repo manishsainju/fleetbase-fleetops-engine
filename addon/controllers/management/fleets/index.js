@@ -294,8 +294,12 @@ export default class ManagementFleetsIndexController extends Controller {
                     fn: this.viewFleet,
                 },
                 {
+                    label: 'Edit fleet details...',
+                    fn: this.editFleet,
+                },
+                {
                     label: 'Assign driver to fleet...',
-                    fn: () => {},
+                    fn: () => { },
                 },
                 {
                     separator: true,
@@ -370,47 +374,8 @@ export default class ManagementFleetsIndexController extends Controller {
      * @param {Object} options
      * @void
      */
-    @action viewFleet(fleet, options = {}) {
-        this.modalsManager.show('modals/fleet-details', {
-            title: fleet.name,
-            titleComponent: 'modal/title-with-buttons',
-            headerStatus: fleet.status,
-            headerButtons: [
-                {
-                    icon: 'cog',
-                    iconPrefix: 'fas',
-                    type: 'link',
-                    size: 'xs',
-                    ddMenuLabel: 'Fleet Actions',
-                    options: [
-                        {
-                            title: 'Edit fleet details...',
-                            action: () => {
-                                this.modalsManager.done().then(() => {
-                                    return this.editFleet(fleet, {
-                                        onFinish: () => {
-                                            this.viewFleet(fleet);
-                                        },
-                                    });
-                                });
-                            },
-                        },
-                    ],
-                },
-            ],
-            acceptButtonText: 'Done',
-            acceptButtonIcon: 'check',
-            acceptButtonIconPrefix: 'fas',
-            hideDeclineButton: true,
-            fleet,
-            addDriver: (driver) => {
-                this.fetch.post('fleets/add', { driver: driver.id, fleet: fleet.id });
-            },
-            removeDriver: (driver) => {
-                this.fetch.post('fleets/remove', { driver: driver.id, fleet: fleet.id });
-            },
-            ...options,
-        });
+    @action viewFleet(fleet) {
+        return this.transitionToRoute('management.fleets.index.details', fleet);
     }
 
     /**
@@ -420,15 +385,7 @@ export default class ManagementFleetsIndexController extends Controller {
      * @void
      */
     @action createFleet() {
-        const fleet = this.store.createRecord('fleet', { status: 'active' });
-
-        return this.editFleet(fleet, {
-            title: 'New Fleet',
-            acceptButtonText: 'Confirm & Create',
-            acceptButtonIcon: 'check',
-            acceptButtonIconPrefix: 'fas',
-            successNotification: (fleet) => `New fleet (${fleet.name}) created.`,
-        });
+        return this.transitionToRoute('management.fleets.index.new');
     }
 
     /**
@@ -438,32 +395,8 @@ export default class ManagementFleetsIndexController extends Controller {
      * @param {Object} options
      * @void
      */
-    @action editFleet(fleet, options = {}) {
-        this.modalsManager.show('modals/fleet-form', {
-            title: 'Edit Fleet',
-            acceptButtonText: 'Save Changes',
-            acceptButtonIcon: 'save',
-            declineButtonIcon: 'times',
-            declineButtonIconPrefix: 'fas',
-            statusOptions: this.statusOptions,
-            fleet,
-            confirm: (modal) => {
-                modal.startLoading();
-
-                return fleet
-                    .save()
-                    .then((fleet) => {
-                        this.notifications.invoke('success', options.successNotification ?? `${fleet.name} details updated.`, fleet);
-
-                        return this.hostRouter.refresh();
-                    })
-                    .catch((error) => {
-                        modal.stopLoading();
-                        this.notifications.serverError(error);
-                    });
-            },
-            ...options,
-        });
+    @action editFleet(fleet) {
+        return this.transitionToRoute('management.fleets.index.edit', fleet);
     }
 
     /**
