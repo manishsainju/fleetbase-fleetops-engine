@@ -9,7 +9,7 @@ export default class ManagementFleetsIndexEditController extends Controller {
    *
    * @var {Boolean}
    */
-  @tracked isUpdatingDriver = false;
+  @tracked isUpdatingFleet = false;
   /**
    * Inject the `loader` service
    *
@@ -40,29 +40,29 @@ export default class ManagementFleetsIndexEditController extends Controller {
    * @void
    */
   @action updateFleet() {
-    const { fleet } = this;
+    const { model } = this;
 
-    console.log(fleet);
-    this.isUpdatingDriver = true;
+    console.log(model, model);
+    this.isUpdatingFleet = true;
     this.loader.showLoader('.overlay-inner-content', 'Updating fleet...');
 
     try {
-      return fleet
+      return model
         .save()
-        .then((fleet) => {
+        .then((model) => {
           return this.transitionToRoute('management.fleets.index').then(() => {
-            this.notifications.success(`Fleet '${fleet.name}' updated`);
+            this.notifications.success(`Fleet '${model.name}' updated`);
             this.resetForm();
             this.hostRouter.refresh();
           });
         })
         .catch(this.notifications.serverError)
         .finally(() => {
-          this.isUpdatingDriver = false;
+          this.isUpdatingFleet = false;
           this.loader.removeLoader();
         });
     } catch (error) {
-      this.isUpdatingDriver = false;
+      this.isUpdatingFleet = false;
       this.loader.removeLoader();
     }
   }
@@ -76,6 +76,6 @@ export default class ManagementFleetsIndexEditController extends Controller {
    * @void
    */
   @action resetForm() {
-    this.fleet = this.store.createRecord('fleet');
+    this.model = this.store.createRecord('fleet');
   }
 }

@@ -6,8 +6,4 @@ export default class ManagementFleetsIndexEditRoute extends Route {
   model({ public_id }) {
     return this.store.findRecord('fleet', public_id);
   }
-
-  async setupController(controller, model) {
-    controller.fleet = model;
-  }
 }

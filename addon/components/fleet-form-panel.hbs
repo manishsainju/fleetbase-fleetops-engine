@@ -1,5 +1,5 @@
 <Overlay @position="right" @noBackdrop={{true}} @fullHeight={{true}} @width="700">
-    <Overlay::Header @title="New Fleet" @status={{@fleet.public_id}} @hideStatusDot={{true}}
+    <Overlay::Header @title={{if @fleet.public_id "Update Fleet" "New Fleet"}} @status={{@fleet.public_id}} @hideStatusDot={{true}}
         @createdAt={{@fleet.createdAt}} @onPressCancel={{@onPressCancel}}>
         {{#if @fleet.id}}
         {{!-- <Button @icon="save" @type="primary" @text="Save Fleet `" @isLoading={{@isUpdatingServiceRate}}
@@ -34,15 +34,13 @@
                 <InputGroup @name="Status" @helpText="Select the status of the fleet.">
                     <Select this={{@statusOptions}} @value={{@fleet.status}} @onSelect={{fn (mut @fleet.status)}} @placeholder="Select status" class="w-full" />
                 </InputGroup>
-
-                <InputGroup @name="Vendor" @value={{@fleet.vendor_uuid}}>
-                    <ModelSelect @modelName="vendor" @selectedModel={{@fleet.vendor_uuid}} @placeholder="Select vendor to assign fleet to" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @onChange={{fn (mut @fleet.vendor_uuid)}} as |model|>
+                <InputGroup @name="Vendor" @value={{@fleet.vendor}}>
+                    <ModelSelect @modelName="vendor" @selectedModel={{@fleet.vendor}} @placeholder="Select vendor to assign fleet to" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @onChange={{fn (mut @fleet.vendor)}} as |model|>
                         {{model.name}}
                     </ModelSelect>
                 </InputGroup>
-
-                <InputGroup @name="Fleet" @value={{@fleet.parent_fleet_uuid}}>
-                    <ModelSelect @modelName="fleet" @selectedModel={{@fleet.parent_fleet_uuid}} @placeholder="Select parent fleet" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @onChange={{fn (mut @fleet.parent_fleet_uuid)}} as |model|>
+                <InputGroup @name="Fleet" @value={{@fleet.parent_fleet}}>
+                    <ModelSelect @modelName="fleet" @selectedModel={{@fleet.parent_fleet}} @placeholder="Select parent fleet to assign fleet to" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @onChange={{fn (mut @fleet.parent_fleet)}} as |model|>
                         {{model.name}}
                     </ModelSelect>
                 </InputGroup>

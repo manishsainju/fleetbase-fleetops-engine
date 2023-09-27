@@ -6,7 +6,7 @@ import generateSlug from '@fleetbase/ember-core/utils/generate-slug';
 
 export default class ManagementFleetsIndexNewController extends Controller {
   /**
-   * Inject the `management.drivers.index` controller
+   * Inject the `management.fleets.index` controller
    *
    * @var {Controller}
    */
@@ -41,21 +41,21 @@ export default class ManagementFleetsIndexNewController extends Controller {
   @service loader;
 
   /**
-   * The driver being created.
+   * The fleet being created.
    *
-   * @var {DriverModel}
+   * @var {FleetModel}
    */
   @tracked fleet = this.store.createRecord('fleet', { status: 'active' });
 
   /**
-   * True if creating driver.
+   * True if creating fleet.
    *
    * @var {Boolean}
    */
   @tracked isCreatingFleet = false;
 
   /**
-   * Saves the driver to server
+   * Saves the fleet to server
    *
    * @void
    */
@@ -63,7 +63,7 @@ export default class ManagementFleetsIndexNewController extends Controller {
     const { fleet } = this;
 
     this.isCreatingFleet = true;
-    this.loader.showLoader('.overlay-inner-content', 'Creating driver...');
+    this.loader.showLoader('.overlay-inner-content', 'Creating fleet...');
 
     try {
       return fleet
@@ -95,7 +95,7 @@ export default class ManagementFleetsIndexNewController extends Controller {
    * @void
    */
   @action resetForm() {
-    this.driver = this.store.createRecord('fleet');
+    this.fleet = this.store.createRecord('fleet');
   }
 
   @action transitionBack() {

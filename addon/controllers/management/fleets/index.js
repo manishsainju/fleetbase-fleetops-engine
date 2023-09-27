@@ -75,7 +75,7 @@ export default class ManagementFleetsIndexController extends Controller {
      *
      * @var {Array}
      */
-    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'zone', 'service_area', 'created_by', 'updated_by', 'status'];
+    queryParams = ['page', 'limit', 'sort', 'query', 'public_id', 'internal_id', 'zone', 'service_area', 'parent_fleet', 'vendor', 'created_by', 'updated_by', 'status'];
 
     /**
      * The current page of data being viewed
@@ -118,6 +118,18 @@ export default class ManagementFleetsIndexController extends Controller {
      * @var {String}
      */
     @tracked service_area;
+    /**
+     * The filterable param `parent_fleet`
+     *
+     * @var {String}
+     */
+    @tracked parent_fleet;
+    /**
+     * The filterable param `vendor`
+     *
+     * @var {String}
+     */
+    @tracked vendor;
 
     /**
      * The filterable param `zone`
@@ -183,6 +195,32 @@ export default class ManagementFleetsIndexController extends Controller {
             filterComponentPlaceholder: 'Select service area',
             filterParam: 'service_area',
             model: 'service-area',
+        },
+        {
+            label: 'Parent Fleet',
+            cellComponent: 'table/cell/anchor',
+            // action: this.viewServiceArea.bind(this),
+            valuePath: 'parent_fleet.name',
+            resizable: true,
+            width: '130px',
+            filterable: true,
+            filterComponent: 'filter/model',
+            filterComponentPlaceholder: 'Select fleet',
+            filterParam: 'parent_fleet',
+            model: 'fleet',
+        },
+        {
+            label: 'Vendor',
+            cellComponent: 'table/cell/anchor',
+            action: this.viewServiceArea.bind(this),
+            valuePath: 'vendor.name',
+            resizable: true,
+            width: '130px',
+            filterable: true,
+            filterComponent: 'filter/model',
+            filterComponentPlaceholder: 'Select vendor',
+            filterParam: 'vendor',
+            model: 'vendor',
         },
         {
             label: 'Zone',
@@ -396,6 +434,7 @@ export default class ManagementFleetsIndexController extends Controller {
      * @void
      */
     @action editFleet(fleet) {
+        console.log('xxx', fleet)
         return this.transitionToRoute('management.fleets.index.edit', fleet);
     }
 
