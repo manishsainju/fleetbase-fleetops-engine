@@ -42,6 +42,7 @@ export default class ManagementFleetsIndexEditController extends Controller {
   @action updateFleet() {
     const { fleet } = this;
 
+    console.log(fleet);
     this.isUpdatingDriver = true;
     this.loader.showLoader('.overlay-inner-content', 'Updating fleet...');
 

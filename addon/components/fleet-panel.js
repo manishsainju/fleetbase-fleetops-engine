@@ -35,18 +35,18 @@ export default class FleetPanelComponent extends Component {
   }
 
   @action addDriver(driver) {
-    this.fetch.post('fleets/add', { driver: driver.id, fleet: this.fleet.id });
+    this.fetch.post('fleets/assign-device', { driver: driver.id, fleet: this.fleet.id });
   }
 
   @action removeDriver(driver) {
-    this.fetch.post('fleets/remove', { driver: driver.id, fleet: this.fleet.id });
+    this.fetch.post('fleets/remove-device', { driver: driver.id, fleet: this.fleet.id });
   }
 
   @action addVehicle(vehicle) {
-    this.fetch.post('fleets/addVehicle', { vehicle: vehicle.id, fleet: this.fleet.id });
+    this.fetch.post('fleets/assign-vehicle', { vehicle: vehicle.id, fleet: this.fleet.id });
   }
 
   @action removeVehicle(vehicle) {
-    this.fetch.post('fleets/removeVehicle', { vehicle: vehicle.id, fleet: this.fleet.id });
+    this.fetch.post('fleets/remove-vehicle', { vehicle: vehicle.id, fleet: this.fleet.id });
   }
 }

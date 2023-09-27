@@ -51,8 +51,16 @@
                             <div class="field-value">{{@fleet.createdAtShort}}</div>
                         </div>
                     </div>
-                    <FleetDriverListing @fleet={{@fleet}} @onAddDriver={{this.addDriver}} @onRemoveDriver={{this.removeDriver}} />
+                </div>
+            {{/if}}
+            {{#if (eq this.currentTab "vehicles")}}
+                <div class="modal-body-container">
                     <FleetVehicleListing @fleet={{@fleet}} @onAddVehicle={{this.addVehicle}} @onRemoveVehicle={{this.removeVehicle}} />
+                </div>
+            {{/if}}
+            {{#if (eq this.currentTab "drivers")}}
+                <div class="modal-body-container">
+                    <FleetDriverListing @fleet={{@fleet}} @onAddDriver={{this.addDriver}} @onRemoveDriver={{this.removeDriver}} />
                 </div>
             {{/if}}
         </div>
