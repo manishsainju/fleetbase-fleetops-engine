@@ -19,10 +19,10 @@ export default class FleetOpsEngine extends Engine {
         universe.registerHeaderMenuItem('Fleet-Ops', 'console.fleet-ops', { icon: 'route', priority: 0 });
 
         // register the vehicle panel
-        universe.createRegistry('vehiclePanel');
+        universe.createRegistry('component:vehicle-panel');
 
         // register the driver panel
-        universe.createRegistry('driverPanel');
+        universe.createRegistry('component:driver-panel');
     };
 }
 

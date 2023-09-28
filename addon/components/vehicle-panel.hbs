@@ -1,8 +1,9 @@
 <Overlay @position="right" @noBackdrop={{true}} @fullHeight={{true}} @width="700">
     <Overlay::Header @hideLeftSection={{true}} @actionsWrapperClass="flex-1 flex-col py-3" class="h-auto-i min-h-[127px]">
         <div class="flex flex-row items-center justify-between w-full mb-4">
-            <div class="flex flex-1">
+            <div class="flex flex-1 space-x-2">
                 <Button @type="default" @icon="location-arrow" @helpText="Locate vehicle" @onClick={{@onPressCancel}} />
+                <Button @type="default" @icon="pen" @helpText="Edit vehicle" @onClick={{this.editVehicle}} />
             </div>
             <div class="flex flex-1 justify-end">
                 <Button @type="default" @icon="times" @helpText="Close vehicle details" @onClick={{@onPressCancel}} />

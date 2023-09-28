@@ -4,7 +4,8 @@ import { action } from '@ember/object';
 
 export default class ManagementVehiclesIndexDetailsController extends Controller {
     @tracked view = 'details';
-    queryParams = ['view'];
+    @tracked queryParams = ['view'];
+
     @action transitionBack() {
         return this.transitionToRoute('management.vehicles.index');
     }

@@ -1,342 +1,131 @@
 <Overlay @position="right" @noBackdrop={{true}} @fullHeight={{true}} @width="700">
-    <Overlay::Header @title="New Vehicle" @status={{@vehicle.public_id}} @hideStatusDot={{true}}
-        @createdAt={{@vehicle.createdAt}} @onPressCancel={{@onPressCancel}}>
-        {{#if @vehicle.id}}
-        {{!-- <Button @icon="save" @type="primary" @text="Save Vehicle `" @isLoading={{this.isUpdatingServiceRate}}
-            @isSubscriptionRequired={{true}} /> --}}
-        <Button @icon="save" @type="primary" @text="Save Vehicle" @onClick={{@onUpdateVehicle}}
-            @isSubscriptionRequired={{true}} />
-        {{else}}
-        <Button @icon="check" @type="primary" @text="Create Vehicle" @onClick={{@onCreateVehicle}}
-            @isSubscriptionRequired={{true}} />
-        {{/if}}
+    <Overlay::Header @hideLeftSection={{true}} @actionsWrapperClass="flex-1 flex-col py-3" class="h-auto-i min-h-[127px]">
+        <div class="flex flex-row items-center justify-between w-full mb-4">
+            <div class="flex flex-1 space-x-2">
+                {{#if @vehicle.id}}
+                    <Button @type="default" @icon="car" @helpText="View vehicle details" @onClick={{this.viewDetails}} />
+                {{/if}}
+            </div>
+            <div class="flex flex-1 justify-end">
+                <div class="mr-2">
+                    <Button @icon={{if @vehicle.id "save" "check"}} @type="primary" @text={{if @vehicle.id "Save Vehicle" "Create Vehicle"}} @onClick={{this.save}} />
+                </div>
+                <Button @type="default" @icon="times" @helpText={{if @vehicle.id "Cancel edit vehicle" "Cancel new vehicle"}} @onClick={{@onPressCancel}} />
+            </div>
+        </div>
+        <div class="flex flex-row justify-between w-full">
+            <div class="flex flex-col flex-1 w-3/4">
+                <div class="flex flex-row">
+                    <div class="w-14 flex items-center justify-center">
+                        <Image src={{@vehicle.photo_url}} @fallbackSrc={{config "defaultValues.vehicleImage"}} alt={{@vehicle.name}} height="48" width="48" class="h-12 w-12" />
+                        <Attach::Tooltip @class="clean" @animation="scale" @placement={{"top"}}>
+                            <InputInfo @text={{@vehicle.public_id}} />
+                        </Attach::Tooltip>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-gray-900 dark:text-white text-2xl">
+                            {{#if @vehicle.id}}
+                                {{@vehicle.displayName}}
+                            {{else}}
+                                {{#if @vehicle.displayName}}
+                                    {{@vehicle.displayName}}
+                                {{else}}
+                                    <span>New Vehicle</span>
+                                {{/if}}
+                            {{/if}}
+                        </h1>
+                        <div class="-mt-1">
+                            {{#if @vehicle.driver}}
+                                <div class="flex flex-row items-center">
+                                    <span class="text-sm dark:text-gray-500 text-gray-700 mr-3">{{@vehicle.driver.name}}</span>
+                                </div>
+                            {{else}}
+                                <div class="flex flex-row items-center">
+                                    <span class="text-sm dark:text-gray-500 text-gray-700 mr-3">No driver assigned</span>
+                                </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end w-1/4">
+                <Badge @status={{@vehicle.status}} />
+            </div>
+        </div>
     </Overlay::Header>
 
     <Overlay::Body @wrapperClass="new-service-rate-overlay-body px-4 space-y-4 pt-4" @increaseInnerBodyHeightBy={{1000}}>
-        <div class="flex">
-            <div class="w-32 mb-6 mr-6">
-                <Image src={{@vehicle.photo_url}} @fallbackSrc={{config "defaultValues.vehicleImage" }}
-                    alt={{@vehicle.name}} height="128" width="128" class="h-32 w-32 rounded-md" />
-                <UploadButton @name="photos" @accept="image/*" @onFileAdded={{@options.uploadNewPhoto}}
-                    class="w-32" />
-            </div>
-            <div class="flex-1 space-y-4">
-                <ContentPanel @title="Details" @open={{true}} @pad={{true}}
-                    @panelBodyClass="bg-white dark:bg-gray-800">
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-2">
-                        <div class="input-group mb-2">
-                            <label>
-                                Internal ID
-                            </label>
-                            <Input @value={{@vehicle.internal_id}} @type="text" class="w-full form-input"
-                                placeholder="Internal ID" />
-                        </div>
+        <div class="flex-1 space-y-4">
+            <ContentPanel @title="Details" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
+                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-2">
+                    <div class="input-group mb-2">
+                        <label>
+                            Internal ID
+                        </label>
+                        <Input @value={{@vehicle.internal_id}} @type="text" class="w-full form-input" placeholder="Internal ID" />
+                    </div>
 
-                        <div class="input-group mb-2">
-                            <label>
-                                Plate Number
-                            </label>
-                            <Input @value={{@vehicle.plate_number}} @type="text" class="w-full form-input"
-                                placeholder="Plate Number" />
-                        </div>
+                    <div class="input-group mb-2">
+                        <label>
+                            Plate Number
+                        </label>
+                        <Input @value={{@vehicle.plate_number}} @type="text" class="w-full form-input" placeholder="Plate Number" />
+                    </div>
 
-                        <div class="input-group mb-2">
-                            <label>
-                                VIN Number
-                            </label>
-                            <Input @value={{@vehicle.vin}} @type="text" class="w-full form-input"
-                                placeholder="VIN Number" />
-                        </div>
+                    <div class="input-group mb-2">
+                        <label>
+                            VIN Number
+                        </label>
+                        <Input @value={{@vehicle.vin}} @type="text" class="w-full form-input" placeholder="VIN Number" />
+                    </div>
 
-                        <div class="input-group mb-2">
-                            <label>
-                                Make
-                            </label>
-                            <Input @value={{@vehicle.make}} @type="text" class="w-full form-input"
-                                placeholder="Vehicle Make" />
-                        </div>
+                    <div class="input-group mb-2">
+                        <label>
+                            Make
+                        </label>
+                        <Input @value={{@vehicle.make}} @type="text" class="w-full form-input" placeholder="Vehicle Make" />
+                    </div>
 
-                        <div class="input-group mb-2">
-                            <label>
-                                Model
-                            </label>
-                            <Input @value={{@vehicle.model}} @type="text" class="w-full form-input"
-                                placeholder="Vehicle Model" />
-                        </div>
+                    <div class="input-group mb-2">
+                        <label>
+                            Model
+                        </label>
+                        <Input @value={{@vehicle.model}} @type="text" class="w-full form-input" placeholder="Vehicle Model" />
+                    </div>
 
-                        <div class="input-group mb-2">
-                            <label>
-                                Year
-                            </label>
-                            <Input @value={{@vehicle.year}} @type="text" class="w-full form-input"
-                                placeholder="Vehicle Year" />
-                        </div>
+                    <div class="input-group mb-2">
+                        <label>
+                            Year
+                        </label>
+                        <Input @value={{@vehicle.year}} @type="text" class="w-full form-input" placeholder="Vehicle Year" />
+                    </div>
 
-                        <div class="input-group mb-2">
-                            <label>
-                                Driver Assigned
-                            </label>
-                            <ModelSelect @modelName="driver" @selectedModel={{@vehicle.driver}}
-                                @placeholder="Select Driver" @triggerClass="form-select form-input"
-                                @infiniteScroll={{false}} @renderInPlace={{true}} @onChange={{fn (mut
+                    <div class="input-group mb-2">
+                        <label>
+                            Driver Assigned
+                        </label>
+                        <ModelSelect @modelName="driver" @selectedModel={{@vehicle.driver}} @placeholder="Select Driver" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @onChange={{fn (mut
                                 @vehicle.driver)}} as |model|>
-                                {{model.name}}
-                            </ModelSelect>
-                        </div>
+                            {{model.name}}
+                        </ModelSelect>
                     </div>
-                </ContentPanel>
+                </div>
+            </ContentPanel>
 
-                <ContentPanel @title="Avatar" @open={{false}} @pad={{true}}
-                    @panelBodyClass="bg-white dark:bg-gray-800">
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-2">
-                        <div class="input-group mb-2">
-                            <InputLabel @labelText="Select map avatar"
-                                @helpText="Select an avatar to be used for rendering on maps when using geolocation tracking features." />
-                            <FetchSelect class="w-60" @placeholder="Select avatar" @path="vehicles/avatars"
-                                @value={{@vehicle.avatar_url}} @onSelect={{fn (mut
+            <ContentPanel @title="Avatar" @open={{false}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
+                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-2">
+                    <div class="input-group mb-2">
+                        <InputLabel @labelText="Select map avatar" @helpText="Select an avatar to be used for rendering on maps when using geolocation tracking features." />
+                        <FetchSelect class="w-60" @placeholder="Select avatar" @path="vehicles/avatars" @value={{@vehicle.avatar_url}} @onSelect={{fn (mut
                                 @vehicle.avatar_url)}} as |option key|>
-                                {{titleize (humanize key)}}
-                            </FetchSelect>
-                        </div>
-                        <div>
-                            <img alt={{@vehicle.public_id}} src={{@vehicle.avatar_url}}
-                                class="w-24 h-24" />
-                        </div>
+                            {{titleize (humanize key)}}
+                        </FetchSelect>
                     </div>
-                </ContentPanel>
-
-                <ContentPanel @title="Model Information" @open={{false}} @pad={{true}}
-                    @panelBodyClass="bg-white dark:bg-gray-800">
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-2">
-                        <div class="input-group mb-2">
-                            <label>
-                                0 To 100 kph
-                            </label>
-                            <Input @value={{@vehicle.model_0_to_100_kph}} @type="text"
-                                class="w-full form-input" placeholder="0 To 100 kph" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Body
-                            </label>
-                            <Input @value={{@vehicle.model_body}} @type="text" class="w-full form-input"
-                                placeholder="Vehicle Body Type" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Doors
-                            </label>
-                            <Input @value={{@vehicle.model_doors}} @type="text" class="w-full form-input"
-                                placeholder="Number of Doors" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Drive
-                            </label>
-                            <Input @value={{@vehicle.model_drive}} @type="text" class="w-full form-input"
-                                placeholder="Vehicle Drive Type" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Length (mm)
-                            </label>
-                            <Input @value={{@vehicle.model_length_mm}} @type="text"
-                                class="w-full form-input" placeholder="Vehicle Length (mm)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Seats
-                            </label>
-                            <Input @value={{@vehicle.model_seats}} @type="text" class="w-full form-input"
-                                placeholder="Number of Seats" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Top Speed (kph)
-                            </label>
-                            <Input @value={{@vehicle.model_top_speed_kph}} @type="text"
-                                class="w-full form-input" placeholder="Vehicle Top Speed (kph)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Transmission Type
-                            </label>
-                            <Input @value={{@vehicle.model_transmission_type}} @type="text"
-                                class="w-full form-input" placeholder=" Vehicle Transmission Type" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Weight (kg)
-                            </label>
-                            <Input @value={{@vehicle.model_weight_kg}} @type="text"
-                                class="w-full form-input" placeholder="Vehicle Weight (kg)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Wheelbase (mm)
-                            </label>
-                            <Input @value={{@vehicle.model_wheelbase_mm}} @type="text"
-                                class="w-full form-input" placeholder="Vehicle Wheelbase Length (mm)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Width (mm)
-                            </label>
-                            <Input @value={{@vehicle.model_width_mm}} @type="text" class="w-full form-input"
-                                placeholder="Vehicle Width (mm)" />
-                        </div>
+                    <div>
+                        <img alt={{@vehicle.public_id}} src={{@vehicle.avatar_url}} class="w-24 h-24" />
                     </div>
-                </ContentPanel>
-
-                <ContentPanel @title="Engine Information" @open={{false}} @pad={{true}}
-                    @panelBodyClass="bg-white dark:bg-gray-800">
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-2">
-                        <div class="input-group mb-2">
-                            <label>
-                                Engine Bore (mm)
-                            </label>
-                            <Input @value={{@vehicle.model_engine_bore_mm}} @type="text"
-                                class="w-full form-input" placeholder="Engine Bore (mm)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                CC
-                            </label>
-                            <Input @value={{@vehicle.model_engine_cc}} @type="text"
-                                class="w-full form-input" placeholder="Engine CC" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Compression
-                            </label>
-                            <Input @value={{@vehicle.model_engine_compression}} @type="text"
-                                class="w-full form-input" placeholder=" Engine Compression" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Cylinders
-                            </label>
-                            <Input @value={{@vehicle.model_engine_cyl}} @type="text"
-                                class="w-full form-input" placeholder="Number of Cylinders" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Position
-                            </label>
-                            <Input @value={{@vehicle.model_engine_position}} @type="text"
-                                class="w-full form-input" placeholder="Engine Position" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Power (ps)
-                            </label>
-                            <Input @value={{@vehicle.model_engine_power_ps}} @type="text"
-                                class="w-full form-input" placeholder="Engine Power (ps)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Power (rpm)
-                            </label>
-                            <Input @value={{@vehicle.model_engine_power_rpm}} @type="text"
-                                class="w-full form-input" placeholder="Engine Power (rpm)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Stroke (mm)
-                            </label>
-                            <Input @value={{@vehicle.model_engine_stroke_mm}} @type="text"
-                                class="w-full form-input" placeholder="Stroke Length (mm)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Torque (nm)
-                            </label>
-                            <Input @value={{@vehicle.model_engine_torque_nm}} @type="text"
-                                class="w-full form-input" placeholder="Engine Torque (nm)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Torque (rpm)
-                            </label>
-                            <Input @value={{@vehicle.model_engine_torque_rpm}} @type="text"
-                                class="w-full form-input" placeholder="Engine Torque (rpm)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Valves per Cylinder
-                            </label>
-                            <Input @value={{@vehicle.model_engine_valves_per_cyl}} @type="text"
-                                class="w-full form-input" placeholder="Valves per Cylinder" />
-                        </div>
-                    </div>
-                </ContentPanel>
-
-                <ContentPanel @title="Fuel Information" @open={{false}} @pad={{true}}
-                    @panelBodyClass="bg-white dark:bg-gray-800">
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-2">
-                        <div class="input-group mb-2">
-                            <label>
-                                Fuel
-                            </label>
-                            <Input @value={{@vehicle.model_engine_fuel}} @type="text"
-                                class="w-full form-input" placeholder="Fuel Type" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Fuel Cap (L)
-                            </label>
-                            <Input @value={{@vehicle.model_fuel_cap_l}} @type="text"
-                                class="w-full form-input" placeholder="Fuel Cap Volume (L)" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Liters Per km City
-                            </label>
-                            <Input @value={{@vehicle.model_lkm_city}} @type="text" class="w-full form-input"
-                                placeholder="Liters Per km City" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Liters Per km Highway
-                            </label>
-                            <Input @value={{@vehicle.model_lkm_hwy}} @type="text" class="w-full form-input"
-                                placeholder="Liters Per km Highway" />
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label>
-                                Liters Per km Mixed
-                            </label>
-                            <Input @value={{@vehicle.model_lkm_mixed}} @type="text"
-                                class="w-full form-input" placeholder="Liters Per km Mixed" />
-                        </div>
-                    </div>
-                </ContentPanel>
-
-            </div>
+                </div>
+            </ContentPanel>
         </div>
     </Overlay::Body>
 </Overlay>

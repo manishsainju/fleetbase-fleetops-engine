@@ -12,13 +12,14 @@ export default class VehiclePanelComponent extends Component {
     @service modalsManager;
     @service universe;
     @service store;
+    @service hostRouter;
     @tracked currentTab;
     @tracked devices = [];
     @tracked deviceApi = {};
     @tracked vehicle;
 
     get tabs() {
-        const registeredTabs = this.universe.getMenuItemsFromRegistry('vehiclePanel');
+        const registeredTabs = this.universe.getMenuItemsFromRegistry('component:vehicle-panel');
         // this.universe._createMenuItem('Tracking', null, { icon: 'satellite-dish', component: VehiclePanelTrackingComponent }),
         const defaultTabs = [this.universe._createMenuItem('Details', null, { icon: 'circle-info', component: VehiclePanelDetailComponent })];
 
@@ -47,5 +48,9 @@ export default class VehiclePanelComponent extends Component {
         if (typeof this.args.onTabChanged === 'function') {
             this.args.onTabChanged(tab);
         }
+    }
+
+    @action editVehicle() {
+        this.hostRouter.transitionTo('console.fleet-ops.management.vehicles.index.edit', this.args.vehicle);
     }
 }
