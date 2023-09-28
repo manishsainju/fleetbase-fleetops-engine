@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { getOwner } from '@ember/application';
 import { action, computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { isArray } from '@ember/array';
@@ -51,6 +50,8 @@ export default class VehiclePanelComponent extends Component {
     }
 
     @action editVehicle() {
-        this.hostRouter.transitionTo('console.fleet-ops.management.vehicles.index.edit', this.args.vehicle);
+        const { vehicle } = this.args;
+        console.log('[vehicle]', vehicle);
+        return this.hostRouter.transitionTo('console.fleet-ops.management.vehicles.index.edit', vehicle.public_id);
     }
 }

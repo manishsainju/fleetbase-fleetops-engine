@@ -2,7 +2,7 @@
     <Overlay::Header @hideLeftSection={{true}} @actionsWrapperClass="flex-1 flex-col py-3" class="h-auto-i min-h-[127px]">
         <div class="flex flex-row items-center justify-between w-full mb-4">
             <div class="flex flex-1 space-x-2">
-                <Button @type="default" @icon="location-arrow" @helpText="Locate vehicle" @onClick={{@onPressCancel}} />
+                {{!-- <Button @type="default" @icon="location-arrow" @helpText="Locate vehicle" @onClick={{@onPressCancel}} /> --}}
                 <Button @type="default" @icon="pen" @helpText="Edit vehicle" @onClick={{this.editVehicle}} />
             </div>
             <div class="flex flex-1 justify-end">
@@ -22,11 +22,13 @@
                         <h1 class="text-gray-900 dark:text-white text-2xl">{{@vehicle.display_name}}</h1>
                         <div class="-mt-1">
                             {{#if @vehicle.driver}}
-                                <DriverCard class="dark:bg-gray-800 rounded-md px-3 py-2" @driver={{@vehicle.driver}} @onClick={{@options.viewDriver}} />
+                                <div class="flex flex-row items-center">
+                                    <span class="text-sm dark:text-gray-500 text-gray-700 mr-3">{{@vehicle.driver.name}}</span>
+                                </div>
                             {{else}}
                                 <div class="flex flex-row items-center">
                                     <span class="text-sm dark:text-gray-500 text-gray-700 mr-3">No driver assigned</span>
-                                    <Button @icon="user-plus" @size="xs" @helpText="Assign a driver to vehicle" />
+                                    {{!-- <Button @icon="user-plus" @size="xs" @helpText="Assign a driver to vehicle" /> --}}
                                 </div>
                             {{/if}}
                         </div>

@@ -34,6 +34,8 @@ export default class VehicleFormPanelComponent extends Component {
     }
 
     @action viewDetails() {
-        return this.hostRouter.transitionTo('console.fleet-ops.management.vehicles.index.details', this.args.vehicle);
+        const { vehicle } = this.args;
+        console.log('[vehicle]', vehicle);
+        return this.hostRouter.transitionTo('console.fleet-ops.management.vehicles.index.details', vehicle.public_id);
     }
 }
