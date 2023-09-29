@@ -2,11 +2,11 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@fleetbase/ember-core':
-    specifier: ^0.1.2
-    version: 0.1.2(@babel/core@7.23.0)(ember-fetch@8.1.2)(postcss@8.4.30)(webpack@5.74.0)
+    specifier: ^0.1.3
+    version: 0.1.3(@babel/core@7.23.0)(ember-fetch@8.1.2)(postcss@8.4.30)(webpack@5.74.0)
   '@fleetbase/ember-ui':
-    specifier: ^0.1.8
-    version: 0.1.8(@babel/core@7.23.0)(@ember/test-helpers@2.8.1)(ember-source@4.6.0)(postcss@8.4.30)(rollup@3.29.3)(webpack@5.74.0)
+    specifier: ^0.1.9
+    version: 0.1.9(@babel/core@7.23.0)(@ember/test-helpers@2.8.1)(ember-source@4.6.0)(postcss@8.4.30)(rollup@3.29.3)(webpack@5.74.0)
   '@fleetbase/fleetops-data':
     specifier: ^0.1.0
     version: 0.1.0
@@ -2241,14 +2241,14 @@ packages:
       - supports-color
     dev: true
 
-  /@fleetbase/ember-core@0.1.2(@babel/core@7.23.0)(ember-fetch@8.1.2)(postcss@8.4.30)(webpack@5.74.0):
-    resolution: {integrity: sha512-cd6rKJWxiXgI8OZtwp8bHOF1BLyfjQPAg3bqzSO/31MPVQHL230tmjbfB1yggb72iv247LXxgHHjiTb2th9lPw==}
+  /@fleetbase/ember-core@0.1.3(@babel/core@7.23.0)(ember-fetch@8.1.2)(postcss@8.4.30)(webpack@5.74.0):
+    resolution: {integrity: sha512-eTcVzpVz7J7B0ctZLIsyrJ3wk4ATDahfer/WK/udW4M8Q5vEgEXXr0e+Wjzy6g7gv+n9f0DKe6eZ3uz5NoGzQg==}
     engines: {node: 14.* || >= 16}
     dependencies:
       date-fns: 2.30.0
-      ember-auto-import: 2.4.2(webpack@5.74.0)
+      ember-auto-import: 2.6.3(webpack@5.74.0)
       ember-cli-babel: 7.26.11
-      ember-cli-htmlbars: 6.1.0
+      ember-cli-htmlbars: 6.3.0
       ember-cli-notifications: 8.0.0(@babel/core@7.23.0)(postcss@8.4.30)
       ember-concurrency: 2.3.7(@babel/core@7.23.0)
       ember-concurrency-decorators: 2.0.3(@babel/core@7.23.0)
@@ -2273,8 +2273,8 @@ packages:
       - webpack
     dev: false
 
-  /@fleetbase/ember-ui@0.1.8(@babel/core@7.23.0)(@ember/test-helpers@2.8.1)(ember-source@4.6.0)(postcss@8.4.30)(rollup@3.29.3)(webpack@5.74.0):
-    resolution: {integrity: sha512-9MAICV1fp25SPROLrJV1Sn6VtWiWkbZQtcD58ITzYQaqRBSvN8pbu3/OPeXpa8KqZjhmDyMn4zXshRj3rc28Ng==}
+  /@fleetbase/ember-ui@0.1.9(@babel/core@7.23.0)(@ember/test-helpers@2.8.1)(ember-source@4.6.0)(postcss@8.4.30)(rollup@3.29.3)(webpack@5.74.0):
+    resolution: {integrity: sha512-zB/a/r9YYW8QkZqKsaN/Af0wJWM/P1+/m5V/JK+jLO4yojUOa/e7oZYeeE/GRB1Kz3LwaSmhEWCMYKnxeiey2A==}
     engines: {node: 14.* || >= 16}
     dependencies:
       '@ember/render-modifiers': 2.1.0(@babel/core@7.23.0)(ember-source@4.6.0)
@@ -2297,11 +2297,11 @@ packages:
       chartjs-adapter-date-fns: 3.0.0(chart.js@4.4.0)(date-fns@2.30.0)
       date-fns: 2.30.0
       ember-animated: 1.0.4(@ember/test-helpers@2.8.1)(ember-source@4.6.0)
-      ember-auto-import: 2.4.2(webpack@5.74.0)
+      ember-auto-import: 2.6.3(webpack@5.74.0)
       ember-basic-dropdown: 7.2.2(@babel/core@7.23.0)(@ember/string@3.1.1)(ember-source@4.6.0)(webpack@5.74.0)
       ember-cli-accounting: 2.1.0
       ember-cli-babel: 7.26.11
-      ember-cli-htmlbars: 6.1.0
+      ember-cli-htmlbars: 6.3.0
       ember-cli-postcss: 8.2.0
       ember-cli-string-helpers: 6.1.0
       ember-composable-helpers: 5.0.0
@@ -2491,7 +2491,7 @@ packages:
       broccoli-source: 3.0.1
       camel-case: 4.1.2
       ember-ast-helpers: 0.3.5
-      ember-auto-import: 2.4.2(webpack@5.74.0)
+      ember-auto-import: 2.6.3(webpack@5.74.0)
       ember-cli-babel: 7.26.11
       ember-cli-htmlbars: 5.7.2
       ember-get-config: 2.1.1
@@ -7500,7 +7500,7 @@ packages:
       '@embroider/macros': 1.13.1
       '@glimmer/component': 1.1.2(@babel/core@7.23.0)
       '@glimmer/tracking': 1.1.2
-      ember-auto-import: 2.4.2(webpack@5.74.0)
+      ember-auto-import: 2.6.3(webpack@5.74.0)
       ember-modifier: 3.2.7(@babel/core@7.23.0)
       tracked-built-ins: 3.3.0
     transitivePeerDependencies:
