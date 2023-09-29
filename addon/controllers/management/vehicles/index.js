@@ -6,8 +6,6 @@ import { action } from '@ember/object';
 import { isBlank } from '@ember/utils';
 import { timeout } from 'ember-concurrency';
 import { task } from 'ember-concurrency-decorators';
-import withDefaultValue from '@fleetbase/ember-core/utils/with-default-value';
-import generateSlug from '@fleetbase/ember-core/utils/generate-slug';
 
 export default class ManagementVehiclesIndexController extends ManagementController {
     /**

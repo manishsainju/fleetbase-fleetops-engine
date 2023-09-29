@@ -804,7 +804,7 @@ export default class LiveMapComponent extends Component {
         // get incoming data and console out
         (async () => {
             for await (let output of channel) {
-                const { event, data } = output;
+                const { event } = output;
 
                 if (event === 'driver.location_changed' || event === 'driver.simulated_location_changed') {
                     // Add the incoming event to the buffer
@@ -905,17 +905,20 @@ export default class LiveMapComponent extends Component {
         this.isLoading = true;
 
         return new Promise((resolve) => {
-            this.fetch.get('fleet-ops/live/drivers', {}, { normalizeToEmberData: true, normalizeModelType: 'driver' }).then((drivers) => {
-                this.isLoading = false;
+            this.fetch
+                .get('fleet-ops/live/drivers', {}, { normalizeToEmberData: true, normalizeModelType: 'driver' })
+                .then((drivers) => {
+                    this.isLoading = false;
 
-                if (typeof this.args.onDriversLoaded === 'function') {
-                    this.args.onDriversLoaded(drivers);
-                }
+                    if (typeof this.args.onDriversLoaded === 'function') {
+                        this.args.onDriversLoaded(drivers);
+                    }
 
-                resolve(drivers);
-            });
-        }).catch(() => {
-            resolve([]);
+                    resolve(drivers);
+                })
+                .catch(() => {
+                    resolve([]);
+                });
         });
     }
 

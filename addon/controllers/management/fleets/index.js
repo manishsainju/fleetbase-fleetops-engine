@@ -337,7 +337,7 @@ export default class ManagementFleetsIndexController extends Controller {
                 },
                 {
                     label: 'Assign driver to fleet...',
-                    fn: () => { },
+                    fn: () => {},
                 },
                 {
                     separator: true,
@@ -434,7 +434,7 @@ export default class ManagementFleetsIndexController extends Controller {
      * @void
      */
     @action editFleet(fleet) {
-        console.log('xxx', fleet)
+        console.log('xxx', fleet);
         return this.transitionToRoute('management.fleets.index.edit', fleet);
     }
 

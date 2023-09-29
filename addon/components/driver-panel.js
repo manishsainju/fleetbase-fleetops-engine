@@ -3,7 +3,6 @@ import { tracked } from '@glimmer/tracking';
 import { action, computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { isArray } from '@ember/array';
-import { dasherize } from '@ember/string';
 import DriverPanelDetailComponent from './driver-panel/details';
 
 export default class DriverPanelComponent extends Component {
@@ -33,6 +32,8 @@ export default class DriverPanelComponent extends Component {
         if (this.currentTab) {
             return this.tabs.find(({ slug }) => slug === this.currentTab);
         }
+
+        return null;
     }
 
     constructor() {
