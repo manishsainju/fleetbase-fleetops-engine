@@ -8,7 +8,7 @@
             </div>
             <div class="flex flex-1 justify-end">
                 <div class="mr-2">
-                    <Button @icon={{if @driver.id "save" "check"}} @type="primary" @text={{if @vehicle.id "Save Driver" "Create Driver"}} @onClick={{this.save}} />
+                    <Button @icon={{if @driver.id "save" "check"}} @type="primary" @text={{if @driver.id "Save Driver" "Create Driver"}} @onClick={{this.save}} />
                 </div>
                 <Button @type="default" @icon="times" @helpText={{if @driver.id "Cancel edit driver" "Cancel new driver"}} @onClick={{@onPressCancel}} />
             </div>
