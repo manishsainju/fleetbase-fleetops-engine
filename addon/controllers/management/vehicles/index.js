@@ -217,7 +217,7 @@ export default class ManagementVehiclesIndexController extends ManagementControl
             filterable: true,
             filterComponent: 'filter/string',
             filterParam: 'name',
-            showOnlineIndicator: true
+            showOnlineIndicator: true,
         },
         {
             label: 'Plate Number',

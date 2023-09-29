@@ -1,19 +1,40 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
-export default class DriverFormPanelComponent extends Component {
-    @tracked currentTab;
 
-    constructor() {
-        super(...arguments);
-        this.changeTab(this.args.tab || 'details');
+export default class DriverFormPanelComponent extends Component {
+    @service store;
+    @service notifications;
+    @service hostRouter;
+    @service loader;
+
+    @action save() {
+        const { driver, onAfterSave } = this.args;
+
+        this.loader.showLoader('.overlay-inner-content', 'Saving driver...');
+
+        try {
+            return driver
+                .save()
+                .then((vehicle) => {
+                    this.notifications.success(`Driver (${driver.name}) saved successfully.`);
+
+                    if (typeof onAfterSave === 'function') {
+                        onAfterSave(vehicle);
+                    }
+                })
+                .catch(this.notifications.serverError)
+                .finally(() => {
+                    this.loader.removeLoader();
+                });
+        } catch (error) {
+            this.loader.removeLoader();
+        }
     }
 
-    @action changeTab(tab) {
-        this.currentTab = tab;
-
-        if (typeof this.args.onTabChanged === 'function') {
-            this.args.onTabChanged(tab);
-        }
+    @action viewDetails() {
+        const { driver } = this.args;
+        return this.hostRouter.transitionTo('console.fleet-ops.management.drivers.index.details', driver.public_id);
     }
 }

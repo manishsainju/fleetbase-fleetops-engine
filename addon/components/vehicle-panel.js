@@ -29,7 +29,7 @@ export default class VehiclePanelComponent extends Component {
         return defaultTabs;
     }
 
-    @computed('currentTab') get tab() {
+    @computed('currentTab', 'tabs') get tab() {
         if (this.currentTab) {
             return this.tabs.find(({ slug }) => slug === this.currentTab);
         }
@@ -51,7 +51,6 @@ export default class VehiclePanelComponent extends Component {
 
     @action editVehicle() {
         const { vehicle } = this.args;
-        console.log('[vehicle]', vehicle);
         return this.hostRouter.transitionTo('console.fleet-ops.management.vehicles.index.edit', vehicle.public_id);
     }
 }
