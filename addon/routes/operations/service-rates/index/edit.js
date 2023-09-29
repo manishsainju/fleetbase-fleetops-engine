@@ -9,7 +9,7 @@ export default class OperationsServiceRatesIndexEditRoute extends Route {
 
     templateName = 'operations.service-rates.index.new';
 
-    @action error(error, transition) {
+    @action error(error) {
         this.notifications.serverError(error);
         return this.transitionTo('operations.service-rates.index');
     }

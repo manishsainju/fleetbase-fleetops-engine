@@ -14,7 +14,7 @@ export default class OperationsOrdersIndexViewRoute extends Route {
         }
     }
 
-    @action error(error, transition) {
+    @action error(error) {
         this.notifications.serverError(error);
         return this.transitionTo('operations.orders.index');
     }
@@ -59,6 +59,10 @@ export default class OperationsOrdersIndexViewRoute extends Route {
         (async () => {
             for await (let output of channel) {
                 this.refresh();
+
+                if (typeof this.onOrderEvent === 'function') {
+                    this.onOrderEvent(output);
+                }
             }
         })();
 

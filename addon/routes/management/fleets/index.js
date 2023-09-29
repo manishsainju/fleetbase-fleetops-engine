@@ -18,6 +18,7 @@ export default class ManagementFleetsIndexRoute extends Route {
         internal_id: { refreshModel: true },
         zone: { refreshModel: true },
         service_area: { refreshModel: true },
+        parent_fleet: { refreshModel: true },
         task: { refreshModel: true },
     };
 

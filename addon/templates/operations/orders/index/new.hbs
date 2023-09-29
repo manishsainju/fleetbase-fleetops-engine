@@ -43,7 +43,7 @@
             </div>
         </DropdownButton>
         <Button @icon="upload" @type="magic" @text={{if (media 'isMobile') "" "Import"}} @onClick={{this.importOrder}} @disabled={{this.isCreatingOrder}} class="mr-2" />
-        <Button @icon="check" @type="primary" @text={{if (media 'isMobile') "" "Submit"}} @onClick={{this.createOrder}} @isLoading={{this.isCreatingOrder}} @isSubscriptionRequired={{true}} @disabled={{not this.isValid}} />
+        <Button @icon="check" @type="primary" @text={{if (media 'isMobile') "" "Submit"}} @onClick={{this.createOrder}} @isLoading={{this.isCreatingOrder}} @disabled={{not this.isValid}} />
     </Overlay::Header>
 
     <Overlay::Body @wrapperClass="new-order-overlay-body" @increaseInnerBodyHeightBy={{1000}}>
