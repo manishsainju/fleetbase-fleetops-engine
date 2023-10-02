@@ -1,6 +1,6 @@
 <Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
-        <LeafletMap class="rounded-md shadow-md map-height-base" @lat={{@options.latitude}} @lng={{@options.longitude}} @zoom={{12}} as |layers|>
+        <LeafletMap class="rounded-md shadow-md map-height-base" @lat={{@options.latitude}} @lng={{@options.longitude}} @zoom={{12}} @onLoad={{this.setMapReference}} as |layers|>
             <layers.tile @url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />
 
             <layers.marker @icon={{@options.icon}} @location={{point-to-coordinates @options.location}} as |marker|>
