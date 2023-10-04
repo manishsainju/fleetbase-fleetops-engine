@@ -1,7 +1,7 @@
 <Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
-        <LeafletMap class="rounded-md shadow-md map-height-base" @lat={{@options.latitude}} @lng={{@options.longitude}} @zoom={{12}} as |layers|>
-            <layers.tile @url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />
+        <LeafletMap class="rounded-md shadow-md map-height-base" @lat={{@options.longitude}} @lng={{@options.latitude}} @zoom={{13}} as |layers|>
+            <layers.tile @url="https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=sk.eyJ1IjoibWFuaXNoc2Fpbmp1IiwiYSI6ImNsa2M0MTkzYjBva3YzZG13bDZnbndmenQifQ.Pu1ml0Rzl6_1vksMskI1Fw" />
 
             <layers.marker @icon={{@options.icon}} @location={{point-to-coordinates @options.location}} as |marker|>
                 <marker.popup @maxWidth="500" @minWidth="180">
