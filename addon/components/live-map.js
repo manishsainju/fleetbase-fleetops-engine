@@ -10,8 +10,8 @@ import { guidFor } from '@ember/object/internals';
 import { later } from '@ember/runloop';
 import { allSettled } from 'rsvp';
 
-const DEFAULT_LATITUDE = 1.369;
-const DEFAULT_LONGITUDE = 103.8864;
+const DEFAULT_LATITUDE = 29.3375;
+const DEFAULT_LONGITUDE = 47.65;
 
 export default class LiveMapComponent extends Component {
     @service store;
@@ -60,7 +60,10 @@ export default class LiveMapComponent extends Component {
             return 'https://{s}.tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=';
         }
 
-        return tileSourceUrl ?? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+        return (
+            tileSourceUrl ??
+            'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=sk.eyJ1IjoibWFuaXNoc2Fpbmp1IiwiYSI6ImNsa2M0MTkzYjBva3YzZG13bDZnbndmenQifQ.Pu1ml0Rzl6_1vksMskI1Fw'
+        );
     }
 
     /**
@@ -791,7 +794,7 @@ export default class LiveMapComponent extends Component {
                 // update driver heading degree
                 driver._marker.setRotationAngle(data.heading);
                 // move driver's marker to new coordinates
-                driver._marker.slideTo(data.location.coordinates, { duration: 2000 });
+                driver._marker.slideTo(data.location.coordinates.reverse(), { duration: 2000 });
             }
 
             // Clear the buffer
