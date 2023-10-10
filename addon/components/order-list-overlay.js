@@ -41,6 +41,13 @@ export default class OrderListOverlayComponent extends Component {
     @service hostRouter;
 
     /**
+     * Inject the `modals-manager` service
+     *
+     * @var {Service}
+     */
+    @service modalsManager;
+
+    /**
      * The loading state of the orders overlay
      *
      * @memberof OrderListOverlayComponent
@@ -117,6 +124,34 @@ export default class OrderListOverlayComponent extends Component {
         const router = this.router ?? this.hostRouter;
 
         return router.transitionTo('console.fleet-ops.operations.orders.index.view', order);
+    }
+
+    /**
+     * Prompt user to assign a driver
+     *
+     * @param {OrderModel} orders
+     * @void
+     */
+    // FIXME: this was meant for bulk updates but this could get confusing so currently only 1 order gets assigned at a time
+    @action async assignDrivers(order) {
+        if (order[0].canLoadDriver) {
+            this.modalsManager.displayLoader();
+
+            order[0].driver = await this.store.findRecord('driver', order[0].driver_uuid);
+            await this.modalsManager.done();
+        }
+
+        this.modalsManager.show(`modals/order-assign-driver`, {
+            title: order[0].driver_uuid ? 'Change order driver' : 'Assign driver to order',
+            acceptButtonText: 'Save Changes',
+            order: order[0],
+            confirm: (modal) => {
+                modal.startLoading();
+                return order[0].save().then(() => {
+                    this.notifications.success(`${order[0].public_id} assigned driver updated.`);
+                });
+            },
+        });
     }
 
     /**

@@ -22,7 +22,7 @@
                         </div>
                         <div class="next-dd-menu-seperator"></div>
                         <div class="px-1">
-                            <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.onDropdownAction dd "onPressAssignOrders")}}>Assign to driver...</a>
+                            <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.assignDrivers this.selectedOrders)}}>Assign to driver...</a>
                             <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.onDropdownAction dd "onPressCancelOrders" this.selectedOrders)}}>Cancel orders...</a>
                             <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (fn this.onDropdownAction dd "onPressDeleteOrders" this.selectedOrders)}}>Delete orders...</a>
                         </div>
