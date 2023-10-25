@@ -66,6 +66,16 @@
                 <ContentPanel @title="Active orders" @subtitle={{pluralize this.activeOrders.length "Order"}} @open={{this.activeOrders.length}} @pad={{true}} @panelSubtitleInlineClass="text-xs" @panelBodyClass="order-listings bg-white dark:bg-gray-800">
                     {{#each this.activeOrders as |order index|}}
                         <OrderListOverlay::Order @order={{order}} @index={{add index 1}} @isSelected={{includes order this.selectedOrders}} @onClick={{this.selectOrder}} @onDoubleClick={{fn this.onAction "onPressViewOrder"}} as |isSelected|>
+                            <div class="flex flex-wrap text-sm pt-1 pb-6">
+                                <div class="w-1/2 pr-4">
+                                    <p class="text-blue-300">Pickup</p>
+                                    <DisplayPlace @place={{order.payload.pickup}} />
+                                </div>
+                                <div class="w-1/2">
+                                    <p class="text-blue-300">Dropoff</p>
+                                    <DisplayPlace @place={{order.payload.dropoff}} />
+                                </div>
+                            </div>
                             {{#if isSelected}}
                                 <div class="order-listings-row selected px-4 py-2">
                                     <div class="flex flex-row items-center space-x-2">
@@ -80,6 +90,16 @@
                 <ContentPanel @title="Unassigned orders" @subtitle={{pluralize this.unassignedOrders.length "Order"}} @open={{this.unassignedOrders.length}} @pad={{true}} @panelSubtitleInlineClass="text-xs" @panelBodyClass="order-listings bg-white dark:bg-gray-800">
                     {{#each this.unassignedOrders as |order index|}}
                         <OrderListOverlay::Order @order={{order}} @index={{add index 1}} @isSelected={{includes order this.selectedOrders}} @onClick={{this.selectOrder}} @onDoubleClick={{fn this.onAction "onPressViewOrder"}} as |isSelected|>
+                            <div class="flex flex-wrap text-sm py-4">
+                                <div class="w-1/2 pr-4">
+                                    <p class="text-blue-300">Pickup</p>
+                                    <DisplayPlace @place={{order.payload.pickup}} />
+                                </div>
+                                <div class="w-1/2">
+                                    <p class="text-blue-300">Dropoff</p>
+                                    <DisplayPlace @place={{order.payload.dropoff}} />
+                                </div>
+                            </div>
                             {{#if isSelected}}
                                 <div class="order-listings-row selected px-4 py-2">
                                     <div class="flex flex-row items-center space-x-2">
