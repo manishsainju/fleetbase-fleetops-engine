@@ -5,6 +5,7 @@ import { action } from '@ember/object';
 import { all } from 'rsvp';
 
 export default class OrderListOverlayComponent extends Component {
+    @service dataRefresh;
     /**
      * Inject the `store` service
      *
@@ -258,5 +259,11 @@ export default class OrderListOverlayComponent extends Component {
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    @action async refreshData() {
+        console.log('Refetching data... in orderlist');
+        await this.fetchActiveOrders();
+        await this.fetchUnassignedOrders();
     }
 }

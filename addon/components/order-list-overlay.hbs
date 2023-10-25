@@ -60,7 +60,7 @@
                 <span>Loading...</span>
             </div>
         {{/if}}
-
+        <Button @type="default" @icon="sync" @text="Refresh Data" @size="xs" class="btn-transparent-border" @onClick={{this.refreshData}} />
         <div class="space-y-4 orders-panel-fleets">
             <div class="next-content-panel-wrapper mb-2">
                 <ContentPanel @title="Active orders" @subtitle={{pluralize this.activeOrders.length "Order"}} @open={{this.activeOrders.length}} @pad={{true}} @panelSubtitleInlineClass="text-xs" @panelBodyClass="order-listings bg-white dark:bg-gray-800">

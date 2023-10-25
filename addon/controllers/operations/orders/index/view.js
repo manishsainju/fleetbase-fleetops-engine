@@ -615,8 +615,26 @@ export default class OperationsOrdersIndexViewController extends Controller {
     @action async createNewActivity(order) {
         this.modalsManager.displayLoader();
 
-        const activityOptions = await this.fetch.get(`orders/next-activity/${order.id}`);
-        await this.modalsManager.done();
+        // FIXME: this is temporary. add a get all-activity to server
+        // const xyz = await this.fetch.get(`orders/next-activity/${order.id}`);
+        const activityOptions = [
+            {
+                status: 'Driver en-route',
+                details: 'Driver en-route to location',
+                code: 'driver_enroute',
+                pod_method: 'signature',
+                require_pod: true,
+            },
+            {
+                status: 'Order completed',
+                details: 'Driver has completed order',
+                code: 'completed',
+                pod_method: 'signature',
+                require_pod: true,
+            },
+        ];
+
+        // await this.modalsManager.done();
 
         this.modalsManager.show(`modals/order-new-activity`, {
             title: 'Add new activity to order',

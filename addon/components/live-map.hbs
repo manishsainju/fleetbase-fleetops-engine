@@ -1,4 +1,7 @@
 <div class="live-map-component {{@wrapperClass}}" {{did-insert this.setupLiveMap}}>
+    <div style="position: absolute; z-index:999999; bottom: 0px">
+        <Button @type="default" @icon="sync" @text="Refresh Map" @size="xs" class="btn-transparent-border" @onClick={{this.refreshData}} />
+    </div>
     <LeafletMap id={{this.mapId}} class={{@mapClass}} @lat={{this.latitude}} @lng={{this.longitude}} @zoom={{this.zoom}} @zoomControl={{@zoomControl}} @contextmenu={{true}} @contextmenuWidth={{140}} @contextmenuItems={{this.contextMenuItems}} @onLoad={{this.setMapReference}} {{will-destroy this.closeChannels}} ...attributes as |layers|>
         <layers.tile @url={{this.tileSourceUrl}} />
 

@@ -125,6 +125,10 @@ export default class LiveMapComponent extends Component {
         this.universe.trigger('livemap.ready', this);
     }
 
+    @action async refreshData() {
+        await this.setupLiveMap();
+    }
+
     @action setMapReference(event) {
         const { target } = event;
 
