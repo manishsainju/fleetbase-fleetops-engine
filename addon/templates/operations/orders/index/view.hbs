@@ -218,7 +218,7 @@
             {{/each}}
         {{/if}}
 
-        {{#if @model.tracking_number}}
+        {{!-- {{#if @model.tracking_number}}
             <ContentPanel @title="Tracking" @prefixTitleRight={{@model.tracking}} @isLoading={{this.isLoadingAdditionalData}} @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
                 <div class="mb-4 flex justify-end">
                     <Button @size="xs" @type="default" @icon="barcode" @text="Get Order Label" @onClick={{fn this.viewOrderLabel @model}} />
@@ -232,7 +232,7 @@
                     </div>
                 </div>
             </ContentPanel>
-        {{/if}}
+        {{/if}} --}}
 
         <ContentPanel @title="Route" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800" @actionButtons={{this.routePanelButtons}}>
             {{#if @model.payload.isMultiDrop}}

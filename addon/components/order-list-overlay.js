@@ -262,7 +262,6 @@ export default class OrderListOverlayComponent extends Component {
     }
 
     @action async refreshData() {
-        console.log('Refetching data... in orderlist');
         await this.fetchActiveOrders();
         await this.fetchUnassignedOrders();
     }
