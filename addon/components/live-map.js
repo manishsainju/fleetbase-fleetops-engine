@@ -30,7 +30,7 @@ export default class LiveMapComponent extends Component {
     @tracked isLoading = true;
     @tracked isReady = false;
     @tracked isDriversVisible = true;
-    @tracked isPlacesVisible = true;
+    @tracked isPlacesVisible = false;
     @tracked isRoutesVisible = true;
     @tracked isDrawControlsVisible = false;
     @tracked isCreatingServiceArea = false;
