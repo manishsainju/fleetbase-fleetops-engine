@@ -616,8 +616,15 @@ export default class OperationsOrdersIndexViewController extends Controller {
         this.modalsManager.displayLoader();
 
         // FIXME: this is temporary. add a get all-activity to server
-        // const xyz = await this.fetch.get(`orders/next-activity/${order.id}`);
+        // const activityOptions = await this.fetch.get(`orders/next-activity/${order.id}`);
         const activityOptions = [
+            {
+                status: 'Driver pickedup',
+                details: 'Driver pickedup the order',
+                code: 'driver_pickedup',
+                pod_method: 'signature',
+                require_pod: true,
+            },
             {
                 status: 'Driver en-route',
                 details: 'Driver en-route to location',
