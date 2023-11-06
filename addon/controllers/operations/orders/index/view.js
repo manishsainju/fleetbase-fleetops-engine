@@ -303,6 +303,9 @@ export default class OperationsOrdersIndexViewController extends Controller {
             alternativeClassName: 'hidden',
             addWaypoints: false,
             router,
+            lineOptions: {
+                styles: [{ color: 'blue', weight: 3 }],
+            },
         }).addTo(leafletMap);
 
         this.routeControl?.on('routesfound', (event) => {
