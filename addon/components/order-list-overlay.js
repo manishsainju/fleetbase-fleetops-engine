@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
 import { all } from 'rsvp';
+import { alias } from '@ember/object/computed';
 
 export default class OrderListOverlayComponent extends Component {
     @service dataRefresh;
@@ -90,6 +91,13 @@ export default class OrderListOverlayComponent extends Component {
      */
     @tracked query = null;
 
+    @tracked markerGroup = L.layerGroup().addTo(this.leafletMap);
+    /**
+     * Reference to the leaflet map object
+     *
+     * @type {Object}
+     */
+    @alias('args.map') leafletMap;
     /**
      * Creates an instance of OrderListOverlayComponent.
      * @memberof OrderListOverlayComponent
@@ -100,6 +108,48 @@ export default class OrderListOverlayComponent extends Component {
         all([this.fetchFleets(), this.fetchUnassignedOrders(), this.fetchActiveOrders()]);
     }
 
+    @action calculateRouteWaypoints(payload) {
+        const waypoints = [];
+        const coordinates = [];
+
+        waypoints.push(payload.pickup, ...payload.waypoints.toArray(), payload.dropoff);
+        waypoints.forEach((place) => {
+            if (place && place.get('longitude') && place.get('latitude')) {
+                if (place.hasInvalidCoordinates) {
+                    return;
+                }
+
+                coordinates.push([place.get('latitude'), place.get('longitude')]);
+            }
+        });
+
+        return coordinates;
+    }
+    @action displayOrderRoute(order) {
+        const payload = order.payload;
+        const redIcon = L.divIcon({
+            className: 'custom-icon',
+            html: '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"><circle cx="12" cy="12" r="10" fill="red" /></svg>',
+            iconSize: [25, 25],
+            iconAnchor: [12, 12],
+        });
+        const greenIcon = L.divIcon({
+            className: 'custom-icon',
+            html: '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"><circle cx="12" cy="12" r="10" fill="green" /></svg>',
+            iconSize: [25, 25],
+            iconAnchor: [12, 12],
+        });
+        const pickupMarker = L.marker([payload.pickup.latitude, payload.pickup.longitude], { icon: redIcon });
+        const dropoffMarker = L.marker([payload.dropoff.latitude, payload.dropoff.longitude], { icon: greenIcon });
+        const markerLocations = [pickupMarker.getLatLng(), dropoffMarker.getLatLng()];
+        this.markerGroup.clearLayers();
+        if (!this.selectedOrders.includes(order)) {
+            this.markerGroup.addLayer(pickupMarker);
+            this.markerGroup.addLayer(dropoffMarker);
+            this.leafletMap.fitBounds(markerLocations, { padding: [100, 100] });
+        }
+    }
+
     /**
      * Toggles an order selection.
      *
@@ -107,6 +157,7 @@ export default class OrderListOverlayComponent extends Component {
      * @memberof OrderListOverlayComponent
      */
     @action selectOrder(order) {
+        this.displayOrderRoute(order);
         if (this.selectedOrders.includes(order)) {
             this.selectedOrders.removeObject(order);
         } else {
