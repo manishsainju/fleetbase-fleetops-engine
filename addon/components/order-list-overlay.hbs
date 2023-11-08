@@ -115,6 +115,21 @@
                                     <DisplayPlace @place={{order.payload.dropoff}} />
                                 </div>
                             </div>
+                            {{#if order.meta.customername}}
+                            <p class="text-sm">Customer Name: <span class="text-green-500">{{order.meta.customername}}</span></p>
+                            {{/if}}
+
+                            {{#if order.meta.customerPhone}}
+                            <p class="text-sm">Customer Phone: <span class="text-green-500">{{order.meta.customerPhone}}</span></p>
+                            {{/if}}
+
+                            {{#if order.meta.storeName}}
+                            <p class="text-sm">Store Name: <span class="text-green-500">{{order.meta.storeName}}</span></p>
+                            {{/if}}
+
+                            {{#if order.meta.orderNumber}}
+                            <p class="text-sm">Order Number: <span class="text-green-500">{{order.meta.orderNumber}}</span></p>
+                            {{/if}}
                             {{#if isSelected}}
                                 <div class="order-listings-row selected px-4 py-2">
                                     <div class="flex flex-row items-center space-x-2">
