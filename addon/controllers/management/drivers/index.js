@@ -840,7 +840,7 @@ export default class ManagementDriversIndexController extends Controller {
             location,
             popupText: `${driver.name} (${driver.public_id})`,
             icon: leafletIcon({
-                iconUrl: driver?.vehicle_avatar,
+                iconUrl: driver.current_job_uuid ? 'http://ik.imagekit.io/aktech/assets/blue.svg' : 'http://ik.imagekit.io/aktech/assets/green.svg',
                 iconSize: [40, 40],
             }),
             ...options,
