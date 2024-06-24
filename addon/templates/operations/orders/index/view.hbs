@@ -85,13 +85,13 @@
             {{#if @model.tracking_statuses}}
                 <Timeline @activity={{@model.tracking_statuses}} @wrapperClass="space-x-4 px-2" @arrowClass="bg-gray-600 border border-gray-900 shadow-md" as |TimelineItem|>
                     <TimelineItem class="flex flex-col w-40 px-3 py-2 rounded text-sm leading-4 truncate space-y-2 bg-gray-100 dark:bg-gray-900 dark:text-white" as |trackingStatus|>
-                        <div class="font-semibold truncate">
+                        <div class="font-semibold whitespace-normal">
                             {{trackingStatus.status}}
                         </div>
-                        <div class="truncate">
+                        <div class="whitespace-normal">
                             {{trackingStatus.details}}
                         </div>
-                        <div class="truncate">
+                        <div class="whitespace-normal">
                             {{trackingStatus.createdAt}}
                         </div>
                         <Attach::Tooltip @class="clean" @animation="scale" @placement="top">
@@ -218,7 +218,7 @@
             {{/each}}
         {{/if}}
 
-        {{#if @model.tracking_number}}
+        {{!-- {{#if @model.tracking_number}}
             <ContentPanel @title="Tracking" @prefixTitleRight={{@model.tracking}} @isLoading={{this.isLoadingAdditionalData}} @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800">
                 <div class="mb-4 flex justify-end">
                     <Button @size="xs" @type="default" @icon="barcode" @text="Get Order Label" @onClick={{fn this.viewOrderLabel @model}} />
@@ -232,7 +232,7 @@
                     </div>
                 </div>
             </ContentPanel>
-        {{/if}}
+        {{/if}} --}}
 
         <ContentPanel @title="Route" @open={{true}} @pad={{true}} @panelBodyClass="bg-white dark:bg-gray-800" @actionButtons={{this.routePanelButtons}}>
             {{#if @model.payload.isMultiDrop}}

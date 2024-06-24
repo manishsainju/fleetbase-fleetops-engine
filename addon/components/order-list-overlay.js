@@ -3,8 +3,10 @@ import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
 import { all } from 'rsvp';
+import { alias } from '@ember/object/computed';
 
 export default class OrderListOverlayComponent extends Component {
+    @service dataRefresh;
     /**
      * Inject the `store` service
      *
@@ -39,6 +41,13 @@ export default class OrderListOverlayComponent extends Component {
      * @memberof OrderListOverlayComponent
      */
     @service hostRouter;
+
+    /**
+     * Inject the `modals-manager` service
+     *
+     * @var {Service}
+     */
+    @service modalsManager;
 
     /**
      * The loading state of the orders overlay
@@ -82,6 +91,13 @@ export default class OrderListOverlayComponent extends Component {
      */
     @tracked query = null;
 
+    @tracked markerGroup = L.layerGroup().addTo(this.leafletMap);
+    /**
+     * Reference to the leaflet map object
+     *
+     * @type {Object}
+     */
+    @alias('args.map') leafletMap;
     /**
      * Creates an instance of OrderListOverlayComponent.
      * @memberof OrderListOverlayComponent
@@ -92,6 +108,48 @@ export default class OrderListOverlayComponent extends Component {
         all([this.fetchFleets(), this.fetchUnassignedOrders(), this.fetchActiveOrders()]);
     }
 
+    @action calculateRouteWaypoints(payload) {
+        const waypoints = [];
+        const coordinates = [];
+
+        waypoints.push(payload.pickup, ...payload.waypoints.toArray(), payload.dropoff);
+        waypoints.forEach((place) => {
+            if (place && place.get('longitude') && place.get('latitude')) {
+                if (place.hasInvalidCoordinates) {
+                    return;
+                }
+
+                coordinates.push([place.get('latitude'), place.get('longitude')]);
+            }
+        });
+
+        return coordinates;
+    }
+    @action displayOrderRoute(order) {
+        const payload = order.payload;
+        const redIcon = L.divIcon({
+            className: 'custom-icon',
+            html: '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"><circle cx="12" cy="12" r="10" fill="red" /></svg>',
+            iconSize: [25, 25],
+            iconAnchor: [12, 12],
+        });
+        const greenIcon = L.divIcon({
+            className: 'custom-icon',
+            html: '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"><circle cx="12" cy="12" r="10" fill="green" /></svg>',
+            iconSize: [25, 25],
+            iconAnchor: [12, 12],
+        });
+        const pickupMarker = L.marker([payload.pickup.latitude, payload.pickup.longitude], { icon: redIcon });
+        const dropoffMarker = L.marker([payload.dropoff.latitude, payload.dropoff.longitude], { icon: greenIcon });
+        const markerLocations = [pickupMarker.getLatLng(), dropoffMarker.getLatLng()];
+        this.markerGroup.clearLayers();
+        if (!this.selectedOrders.includes(order)) {
+            this.markerGroup.addLayer(pickupMarker);
+            this.markerGroup.addLayer(dropoffMarker);
+            this.leafletMap.fitBounds(markerLocations, { padding: [100, 100] });
+        }
+    }
+
     /**
      * Toggles an order selection.
      *
@@ -99,6 +157,8 @@ export default class OrderListOverlayComponent extends Component {
      * @memberof OrderListOverlayComponent
      */
     @action selectOrder(order) {
+        console.log(order);
+        this.displayOrderRoute(order);
         if (this.selectedOrders.includes(order)) {
             this.selectedOrders.removeObject(order);
         } else {
@@ -119,6 +179,48 @@ export default class OrderListOverlayComponent extends Component {
         return router.transitionTo('console.fleet-ops.operations.orders.index.view', order);
     }
 
+    /**
+     * Prompt user to assign a driver
+     *
+     * @param {OrderModel} orders
+     * @void
+     */
+    // FIXME: this was meant for bulk updates but this could get confusing so currently only 1 order gets assigned at a time
+    @action async assignDrivers(order) {
+        if (order[0].canLoadDriver) {
+            this.modalsManager.displayLoader();
+
+            order[0].driver = await this.store.findRecord('driver', order[0].driver_uuid);
+            await this.modalsManager.done();
+        }
+
+        this.modalsManager.show(`modals/order-assign-driver`, {
+            title: order[0].driver_uuid ? 'Change order driver' : 'Assign driver to order',
+            acceptButtonText: 'Save Changes',
+            order: order[0],
+            confirm: (modal) => {
+                modal.startLoading();
+                return order[0].save().then(() => {
+                    this.notifications.success(`${order[0].public_id} assigned driver updated.`);
+                });
+            },
+            computeDistanceInKilometers: (coordinates1, coordinates2) => this.computeDistanceInKilometers(coordinates1, coordinates2),
+        });
+    }
+
+    computeDistanceInKilometers(coordinates1, coordinates2) {
+        const [lat1, lon1] = coordinates1;
+        const [lat2, lon2] = coordinates2;
+
+        if (!isNaN(lat1) && !isNaN(lon1) && !isNaN(lat2) && !isNaN(lon2)) {
+            const distance = calculateDistance(lat1, lon1, lat2, lon2);
+            this.distance = distance.toFixed(3);
+        } else {
+            this.distance = 'N/A';
+        }
+
+        return this.distance;
+    }
     /**
      * Triggers a component action.
      *
@@ -224,4 +326,26 @@ export default class OrderListOverlayComponent extends Component {
                 this.isLoading = false;
             });
     }
+
+    @action async refreshData() {
+        await this.fetchActiveOrders();
+        await this.fetchUnassignedOrders();
+    }
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const earthRadius = 6371;
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = earthRadius * c;
+
+    return distance;
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
 }

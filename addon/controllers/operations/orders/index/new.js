@@ -94,12 +94,13 @@ export default class OperationsOrdersIndexNewController extends Controller {
      */
     @service universe;
 
+    @tracked initialDate = new Date();
     /**
      * Create an OrderModel instance.
      *
      * @var {OrderModel}
      */
-    @tracked order = this.store.createRecord('order', { meta: [] });
+    @tracked order = this.store.createRecord('order', { meta: [], scheduled_at: this.initialDate });
 
     /**
      * Create an PayloadModel instance.

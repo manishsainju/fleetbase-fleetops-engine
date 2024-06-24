@@ -22,7 +22,7 @@
                         </div>
                         <div class="next-dd-menu-seperator"></div>
                         <div class="px-1">
-                            <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.onDropdownAction dd "onPressAssignOrders")}}>Assign to driver...</a>
+                            <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.assignDrivers this.selectedOrders)}}>Assign to driver...</a>
                             <a href="javascript:;" class="next-dd-item" {{on "click" (fn this.onDropdownAction dd "onPressCancelOrders" this.selectedOrders)}}>Cancel orders...</a>
                             <a href="javascript:;" class="next-dd-item text-danger" {{on "click" (fn this.onDropdownAction dd "onPressDeleteOrders" this.selectedOrders)}}>Delete orders...</a>
                         </div>
@@ -60,12 +60,39 @@
                 <span>Loading...</span>
             </div>
         {{/if}}
-
+        <Button @type="default" @icon="sync" @text="Refresh Data" @size="xs" class="btn-transparent-border" @onClick={{this.refreshData}} />
         <div class="space-y-4 orders-panel-fleets">
             <div class="next-content-panel-wrapper mb-2">
                 <ContentPanel @title="Active orders" @subtitle={{pluralize this.activeOrders.length "Order"}} @open={{this.activeOrders.length}} @pad={{true}} @panelSubtitleInlineClass="text-xs" @panelBodyClass="order-listings bg-white dark:bg-gray-800">
                     {{#each this.activeOrders as |order index|}}
                         <OrderListOverlay::Order @order={{order}} @index={{add index 1}} @isSelected={{includes order this.selectedOrders}} @onClick={{this.selectOrder}} @onDoubleClick={{fn this.onAction "onPressViewOrder"}} as |isSelected|>
+                            <div class={{if isSelected "bg-blue-500" null}}>
+                            <div class="flex flex-wrap text-sm pt-1 pb-6">
+                                <div class="w-1/2 pr-4">
+                                    <p class="text-blue-300">Pickup</p>
+                                    <DisplayPlace @place={{order.payload.pickup}} />
+                                </div>
+                                <div class="w-1/2">
+                                    <p class="text-blue-300">Dropoff</p>
+                                    <DisplayPlace @place={{order.payload.dropoff}} />
+                                </div>
+                            </div>
+                            {{#if order.meta.customername}}
+                            <p class="text-sm">Customer Name: <span class="text-green-500">{{order.meta.customername}}</span></p>
+                            {{/if}}
+
+                            {{#if order.meta.customerPhone}}
+                            <p class="text-sm">Customer Phone: <span class="text-green-500">{{order.meta.customerPhone}}</span></p>
+                            {{/if}}
+
+                            {{#if order.meta.storeName}}
+                            <p class="text-sm">Store Name: <span class="text-green-500">{{order.meta.storeName}}</span></p>
+                            {{/if}}
+
+                            {{#if order.meta.orderNumber}}
+                            <p class="text-sm">Order Number: <span class="text-green-500">{{order.meta.orderNumber}}</span></p>
+                            {{/if}}
+                            </div>
                             {{#if isSelected}}
                                 <div class="order-listings-row selected px-4 py-2">
                                     <div class="flex flex-row items-center space-x-2">
@@ -80,6 +107,33 @@
                 <ContentPanel @title="Unassigned orders" @subtitle={{pluralize this.unassignedOrders.length "Order"}} @open={{this.unassignedOrders.length}} @pad={{true}} @panelSubtitleInlineClass="text-xs" @panelBodyClass="order-listings bg-white dark:bg-gray-800">
                     {{#each this.unassignedOrders as |order index|}}
                         <OrderListOverlay::Order @order={{order}} @index={{add index 1}} @isSelected={{includes order this.selectedOrders}} @onClick={{this.selectOrder}} @onDoubleClick={{fn this.onAction "onPressViewOrder"}} as |isSelected|>
+                            <div class={{if isSelected "bg-blue-500" null}}>
+                            <div class="flex flex-wrap text-sm py-4">
+                                <div class="w-1/2 pr-4">
+                                    <p class="text-blue-300">Pickup</p>
+                                    <DisplayPlace @place={{order.payload.pickup}} />
+                                </div>
+                                <div class="w-1/2">
+                                    <p class="text-blue-300">Dropoff</p>
+                                    <DisplayPlace @place={{order.payload.dropoff}} />
+                                </div>
+                            </div>
+                                {{#if order.meta.customername}}
+                                <p class="text-sm">Customer Name: <span class="text-green-500">{{order.meta.customername}}</span></p>
+                                {{/if}}
+
+                                {{#if order.meta.customerPhone}}
+                                <p class="text-sm">Customer Phone: <span class="text-green-500">{{order.meta.customerPhone}}</span></p>
+                                {{/if}}
+
+                                {{#if order.meta.storeName}}
+                                <p class="text-sm">Store Name: <span class="text-green-500">{{order.meta.storeName}}</span></p>
+                                {{/if}}
+
+                                {{#if order.meta.orderNumber}}
+                                <p class="text-sm">Order Number: <span class="text-green-500">{{order.meta.orderNumber}}</span></p>
+                                {{/if}}
+                            </div>
                             {{#if isSelected}}
                                 <div class="order-listings-row selected px-4 py-2">
                                     <div class="flex flex-row items-center space-x-2">

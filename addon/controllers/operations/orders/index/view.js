@@ -303,6 +303,9 @@ export default class OperationsOrdersIndexViewController extends Controller {
             alternativeClassName: 'hidden',
             addWaypoints: false,
             router,
+            lineOptions: {
+                styles: [{ color: 'blue', weight: 3 }],
+            },
         }).addTo(leafletMap);
 
         this.routeControl?.on('routesfound', (event) => {
@@ -615,8 +618,33 @@ export default class OperationsOrdersIndexViewController extends Controller {
     @action async createNewActivity(order) {
         this.modalsManager.displayLoader();
 
-        const activityOptions = await this.fetch.get(`orders/next-activity/${order.id}`);
-        await this.modalsManager.done();
+        // FIXME: this is temporary. add a get all-activity to server
+        // const activityOptions = await this.fetch.get(`orders/next-activity/${order.id}`);
+        const activityOptions = [
+            {
+                status: 'Driver pickedup',
+                details: 'Driver pickedup the order',
+                code: 'driver_pickedup',
+                pod_method: 'signature',
+                require_pod: true,
+            },
+            {
+                status: 'Driver en-route',
+                details: 'Driver en-route to location',
+                code: 'driver_enroute',
+                pod_method: 'signature',
+                require_pod: true,
+            },
+            {
+                status: 'Order completed',
+                details: 'Driver has completed order',
+                code: 'completed',
+                pod_method: 'signature',
+                require_pod: true,
+            },
+        ];
+
+        // await this.modalsManager.done();
 
         this.modalsManager.show(`modals/order-new-activity`, {
             title: 'Add new activity to order',
@@ -691,7 +719,22 @@ export default class OperationsOrdersIndexViewController extends Controller {
                     this.notifications.success(`${order.public_id} assigned driver updated.`);
                 });
             },
+            computeDistanceInKilometers: (coordinates1, coordinates2) => this.computeDistanceInKilometers(coordinates1, coordinates2),
         });
+    }
+
+    computeDistanceInKilometers(coordinates1, coordinates2) {
+        const [lat1, lon1] = coordinates1;
+        const [lat2, lon2] = coordinates2;
+
+        if (!isNaN(lat1) && !isNaN(lon1) && !isNaN(lat2) && !isNaN(lon2)) {
+            const distance = calculateDistance(lat1, lon1, lat2, lon2);
+            this.distance = distance.toFixed(3);
+        } else {
+            this.distance = 'N/A';
+        }
+
+        return this.distance;
     }
 
     /**
@@ -863,4 +906,21 @@ export default class OperationsOrdersIndexViewController extends Controller {
             },
         });
     }
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const earthRadius = 6371;
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = earthRadius * c;
+
+    return distance;
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
 }

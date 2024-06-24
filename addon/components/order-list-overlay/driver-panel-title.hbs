@@ -1,5 +1,5 @@
 <div class="flex flex-row items-center">
-    <img src={{@context.vehicle_avatar}} alt={{@context.name}} class="w-5 h-5 mr-1.5" />
+    <img src={{@context.current_job_uuid ? 'http://ik.imagekit.io/aktech/assets/blue.svg' : 'http://ik.imagekit.io/aktech/assets/green.svg'}} alt={{@context.name}} class="w-5 h-5 mr-1.5" />
     <div>
         <div class="text-sm">{{@context.name}}</div>
     </div>

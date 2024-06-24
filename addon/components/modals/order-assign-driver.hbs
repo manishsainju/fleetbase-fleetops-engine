@@ -1,14 +1,31 @@
 <Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
     <div class="modal-body-container">
         <InputGroup @name="Select Driver">
-            <ModelSelect @modelName="driver" @selectedModel={{@options.order.driver_assigned}} @placeholder="Select Driver to Assign" @triggerClass="form-select form-input" @infiniteScroll={{false}} @renderInPlace={{true}} @onChange={{fn (mut @options.order.driver_assigned)}} as |model|>
+            <ModelSelect 
+                @modelName="driver"
+                @selectedModel={{@options.order.driver_assigned}}
+                @placeholder="Select Driver to Assign"
+                @computeDistanceInKilometers={{@options.computeDistanceInKilometers}}
+                @coordinates={{@options.order.payload.pickup.location.coordinates}}
+                @triggerClass="form-select form-input"
+                @infiniteScroll={{false}}
+                @renderInPlace={{true}}
+                @pageSize={{2000}}
+                @onChange={{fn (mut @options.order.driver_assigned)}} as |model|>
                 <div class="flex items-center">
                     <div class="w-7">
                         <FaIcon @icon="id-card-alt" />
                     </div>
-                    <div class="flex-1 flex flex-row truncate">
-                        <span class="uppercase mr-2">{{model.name}}</span>
-                        <span class="uppercase">{{model.phone}}</span>
+                   <div class="flex-1 flex flex-row justify-between">
+                        <div>
+                            <span class="uppercase mr-2">{{model.name}}</span>
+                            <span class="uppercase mr-4">{{model.phone}}</span>
+                        </div>
+                        <div>
+                            <span class="uppercase text-green-500">
+                                {{@options.computeDistanceInKilometers model.location.coordinates @options.order.payload.pickup.location.coordinates}} KM
+                            </span>
+                        </div>
                     </div>
                     {{#if @options.order.facilitator}}
                         <div class="px-1 ml-2 leading-5 bg-green-400 rounded shadow">
